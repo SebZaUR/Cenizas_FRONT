@@ -25,7 +25,6 @@ export class MainScene extends Phaser.Scene {
     create() {
    
     const { width, height } = this.sys.game.canvas;
- 
     const mapa = this.make.tilemap({ key: 'lobby' });
     const spaceShip = mapa.addTilesetImage('spaceShip', 'space');
 
@@ -44,14 +43,16 @@ export class MainScene extends Phaser.Scene {
     } else {
         console.error("La imagen 'spaceShip' es null. Asegúrate de haber cargado la imagen correctamente.");
     }
-  
+
     this.player = this.matter.add.sprite(400,300, 'player');
-    this.player.setScale(2, 2);
+    this.player.setDisplaySize(70,90);
+    this.player.setRectangle(20,35);
+    this.player.setOrigin(0.5,0.70);
     this.player.setFixedRotation();
     this.cameras.main.setBounds(0,0,width,height);
     this.cameras.main.startFollow(this.player);
     this.cameras.main.zoomTo(2);
-
+    console.log(this.matter.bodies);
       
     
 
