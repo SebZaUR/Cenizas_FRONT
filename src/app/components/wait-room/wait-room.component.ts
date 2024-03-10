@@ -23,5 +23,7 @@ export class WaitRoomComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       const codigo = params['code'];
     });
+    this.numberGamers++;
+    console.log(this.numberGamers);
   }
 }

@@ -10,11 +10,7 @@ export class MainScene extends Phaser.Scene {
     private isKnockedDown: boolean = false; 
     private isAttacking: boolean = false; 
     private lastDirection: string = "down";
-    private playerVelocity = new Phaser.Math.Vector2();
-   // private minicapa!: Phaser.Tilemaps.TilemapLayer | null;
-   // private solidos!: Phaser.Tilemaps.TilemapLayer | null;
-    //private subcapa!: Phaser.Tilemaps.TilemapLayer | null;
-
+    private playerVelocity = new Phaser.Math.Vector2(); 
   
     preload() {
       this.load.spritesheet("player", "assets/characters/player.png",{
@@ -28,41 +24,37 @@ export class MainScene extends Phaser.Scene {
   
     create() {
    
-      const { width, height } = this.sys.game.canvas;
- 
+    const { width, height } = this.sys.game.canvas;
     const mapa = this.make.tilemap({ key: 'lobby' });
     const spaceShip = mapa.addTilesetImage('spaceShip', 'space');
 
     if (spaceShip !== null) {
-        const minicapa = mapa.createLayer('subcapa', spaceShip);
+        mapa.createLayer('subcapa', spaceShip);
         const solidos = mapa.createLayer('solidos', spaceShip);
        
-
         if (solidos) {
             solidos.setCollisionByProperty({ pared: true });
-            
-            // Establecer las colisiones con Matter.js
             this.matter.world.setBounds(0, 0, width, height);
-            this.matter.world.convertTilemapLayer(solidos); // Convertir la capa a colisiones Matter.js
+            this.matter.world.convertTilemapLayer(solidos);
+
         } else {
             console.error("La capa 'solidos' es null.");
         }
     } else {
         console.error("La imagen 'spaceShip' es null. Asegúrate de haber cargado la imagen correctamente.");
     }
-   
 
-     
-
-
-      this.matter.world.setBounds(-20, -20, width + 40, height + 20);
-
-      this.player = this.matter.add.sprite(400,300, 'player');
-      this.player.setSize(2, 2);
-      this.player.setScale(2, 2);
-      this.player.setFixedRotation();
+    this.player = this.matter.add.sprite(400,300, 'player');
+    this.player.setDisplaySize(70,90);
+    this.player.setRectangle(20,35);
+    this.player.setOrigin(0.5,0.70);
+    this.player.setFixedRotation();
+    this.cameras.main.setBounds(0,0,width,height);
+    this.cameras.main.startFollow(this.player);
+    this.cameras.main.zoomTo(2);
+    console.log(this.matter.bodies);
       
-      
+    
 
       if (this.input && this.input.keyboard) {
         this.keys = this.input.keyboard.addKeys({ 
