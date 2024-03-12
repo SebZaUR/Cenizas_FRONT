@@ -10,7 +10,7 @@ import { MainScene } from './scenes/MainScene';
 export class GameComponent implements OnInit {
   phaserGame!: Phaser.Game; 
   config: Phaser.Types.Core.GameConfig;
-
+  
   constructor() {
     this.config = {
       type: Phaser.AUTO,
