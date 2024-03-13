@@ -22,15 +22,14 @@ export class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.socket = io('http://localhost:2525/');
         this.socket.on('connect', () => {
-          if (this.socket.id) {
-            this.playerId = this.socket.id; 
-            console.log('Conectado al servidor, ID del jugador:', this.playerId);
-            
-            this.socket.on('initialCoordinates', ({ x, y }) => {
-                this.startx = x;
-                this.starty = y;
-            });        
-        } 
+            if (this.socket.id) {
+                this.playerId = this.socket.id; 
+                console.log('Conectado al servidor, ID del jugador:', this.playerId);      
+                this.socket.on('initialCoordinates', ({ x, y }) => {
+                    this.startx = x;
+                    this.starty = y;
+                });        
+            } 
         });
     }
 
@@ -60,9 +59,9 @@ export class MainScene extends Phaser.Scene {
         
 
         this.socket.on('updatePlayers', (data) => {
-          data.forEach((player: { id: string, posx: number, posy: number, velocityx: number, velocityy: number, animation: string, key: string }) => {
-            if (player.id !== this.playerId) {
-                    const existingSprite = this.otherSprites[player.id];
+            data.forEach((player: { id: string, posx: number, posy: number, velocityx: number, velocityy: number, animation: string, key: string }) => {
+                if (player.id !== this.playerId) { // FUNDAMENTAL
+                    const existingSprite = this.otherSprites[player.id]; // FUNDAMENTAL
                     if (existingSprite && existingSprite != this.player) {
                         existingSprite.setVelocity(player.velocityx, player.velocityy);
                         if (player.animation) {
@@ -87,7 +86,7 @@ export class MainScene extends Phaser.Scene {
                             newSprite.setRectangle(20, 35);
                             newSprite.setOrigin(0.5, 0.70);
                             newSprite.setFixedRotation();
-                            this.otherSprites[player.id] = newSprite;
+                            this.otherSprites[player.id] = newSprite;  // jugadores remotos 
                             if (player.animation) {
                                 if(player.key === undefined || player.key === 'dead'){
                                     existingSprite.setStatic(true)
@@ -116,12 +115,18 @@ export class MainScene extends Phaser.Scene {
         const mapa = this.make.tilemap({ key: key });
         const spaceShip = mapa.addTilesetImage(tileImage, tileSet);
         if (spaceShip !== null) {
-            mapa.createLayer('subcapa', spaceShip);
+            mapa.createLayer('negro',spaceShip);
+            const subcapa = mapa.createLayer('subcapa', spaceShip);
             const solidos = mapa.createLayer('solidos', spaceShip);
             if (solidos) {
                 solidos.setCollisionByProperty({ pared: true });
                 this.matter.world.setBounds(0, 0, width, height);
                 this.matter.world.convertTilemapLayer(solidos);
+            }
+            if (subcapa) {
+                subcapa.setCollisionByProperty({ pared: true });
+                this.matter.world.setBounds(0, 0, width, height);
+                this.matter.world.convertTilemapLayer(subcapa);
             }
         }
     }
@@ -137,7 +142,7 @@ export class MainScene extends Phaser.Scene {
         this.player.setFixedRotation();
         this.cameras.main.setBounds(0, 0, width, height);
         this.cameras.main.startFollow(this.player);
-        this.cameras.main.zoomTo(2);
+        this.cameras.main.zoomTo(2.5);
 
         if (this.input && this.input.keyboard) {
             this.keys = this.input.keyboard.addKeys({
@@ -346,7 +351,7 @@ export class MainScene extends Phaser.Scene {
                             } else if (other.animation.key === 'move_x' && other.velocityx < 0) {
                                 newPlayer.setFlipX(true);
                                 newPlayer.anims.play(other.animation, true);
-                            } else if (other.animation.key === 'move_x' && other.velocityx > 0){
+                            } else if(other.animation.key === 'move_x' && other.velocityx > 0){
                                 newPlayer.anims.play(other.animation, true);
                                 newPlayer.setFlipX(false);
                             } else{
@@ -370,7 +375,7 @@ export class MainScene extends Phaser.Scene {
                                 existingSprite.anims.play(other.animation, true);
                                 existingSprite.setFlipX(false);
                             } else {
-                                existingSprite.anims.play(other.animation, true);
+                                existingSprite.anims.play(other.anima0tion, true);
                             }
                         }
                     }
@@ -378,4 +383,4 @@ export class MainScene extends Phaser.Scene {
             }
         }
     }
-}
+}   

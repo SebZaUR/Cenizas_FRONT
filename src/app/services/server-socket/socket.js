@@ -11,7 +11,7 @@ const io = require('socket.io')(http, {
   io.on('connection', (socket) => {
     
     console.log('Un cliente se ha conectado');
-    const initialCoordinates = {x: 370 + players.length * 30, y: 300}; 
+    const initialCoordinates = {x: 370 + players.length * 30, y: 270};  
     players.push({ id: socket.id, posx: initialCoordinates.x, posy: initialCoordinates.y, velocityx: 0, velocityy: 0, animation: null });
     socket.emit('initialCoordinates', initialCoordinates);
 

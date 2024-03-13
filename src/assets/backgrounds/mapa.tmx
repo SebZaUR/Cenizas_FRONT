@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="1">
  <editorsettings>
   <export target="mapa.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" name="spaceShip" tilewidth="32" tileheight="32" tilecount="256" columns="16">
-  <image source="spaceShip.png" width="512" height="512"/>
+ <tileset firstgid="1" name="spaceShip" tilewidth="32" tileheight="32" tilecount="480" columns="30">
+  <image source="spaceShip.png" width="960" height="512"/>
   <tile id="0">
    <properties>
     <property name="pared" type="bool" value="true"/>
@@ -157,16 +157,31 @@
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.289135" y="30.2146">
+     <polygon points="0,0 13.0111,-9.68602 22.9862,-14.1676 31.6603,-16.9144 31.3711,1.59024 -0.433702,1.51796"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="27">
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.433702" y="13.2279">
+     <polygon points="0,0 16.4807,-2.45765 23.6368,-1.73481 31.6603,0 31.3711,18.7938 -0.361419,18.3601"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="28">
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.722837" y="13.2279">
+     <polygon points="0,0 13.0111,4.69844 19.8057,8.38491 30.9374,17.1312 30.8651,18.9383 -0.433702,18.4323"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="29">
    <properties>
@@ -306,6 +321,11 @@
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="30.8651" y="0.289135">
+     <polygon points="0,0 -11.2763,14.529 -15.1073,24.2873 -17.7818,31.1543 0.939688,31.4434 1.22882,-0.0722837"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="56">
    <properties>
@@ -326,6 +346,11 @@
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.650553" y="0.0722837">
+     <polygon points="0,0 8.74633,10.7703 14.4567,21.6128 17.7095,31.6603 -0.722837,31.6603"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="60">
    <properties>
@@ -476,6 +501,11 @@
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="13.3002" y="0.361419">
+     <polygon points="0,0 -1.59024,9.18003 -1.73481,18.5769 0.361419,30.8651 18.3601,31.6603 18.2155,0.0722837"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="86">
    <properties>
@@ -496,6 +526,11 @@
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="18.0709" y="0.505986">
+     <polygon points="0,0 2.81906,13.0834 2.16851,22.6971 0.0722837,31.082 -17.8541,30.8651 -18.2878,-0.216851"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="90">
    <properties>
@@ -626,6 +661,11 @@
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="12.7942" y="0.289135">
+     <polygon points="0,0 2.16851,7.0838 7.87892,17.5649 19.2275,31.8771 19.2275,-0.216851"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="116">
    <properties>
@@ -646,20 +686,25 @@
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="1.30111" y="31.3711">
+     <polygon points="0,0 9.97515,-12.5051 13.5171,-22.7694 17.059,-32.0217 -2.09623,-31.4434 -1.37339,0.867405"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="120">
    <properties>
-    <property name="pared" type="bool" value="true"/>
+    <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="121">
    <properties>
-    <property name="pared" type="bool" value="true"/>
+    <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="122">
    <properties>
-    <property name="pared" type="bool" value="true"/>
+    <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="123">
@@ -786,16 +831,31 @@
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.722837" y="0.939688">
+     <polygon points="0,0 13.7339,9.18003 33.2505,17.7095 32.8168,-0.867405 0.505986,-1.01197"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="147">
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.0722837" y="18.3601">
+     <polygon points="0,0 8.96318,1.87938 22.6248,2.09623 32.2385,0.216851 31.7326,-18.2878 -0.216851,-17.9986"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="148">
    <properties>
     <property name="pared" type="bool" value="true"/>
    </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.216851" y="-0.0722837">
+     <polygon points="0,0 0.144567,18.2155 14.3845,13.6616 24.3596,6.57782 31.8048,0.0722837"/>
+    </object>
+   </objectgroup>
   </tile>
   <tile id="149">
    <properties>
@@ -804,17 +864,17 @@
   </tile>
   <tile id="150">
    <properties>
-    <property name="pared" type="bool" value="true"/>
+    <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="151">
    <properties>
-    <property name="pared" type="bool" value="true"/>
+    <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="152">
    <properties>
-    <property name="pared" type="bool" value="true"/>
+    <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="153">
@@ -954,17 +1014,17 @@
   </tile>
   <tile id="180">
    <properties>
-    <property name="pared" type="bool" value="true"/>
+    <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="181">
    <properties>
-    <property name="pared" type="bool" value="true"/>
+    <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="182">
    <properties>
-    <property name="pared" type="bool" value="true"/>
+    <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="183">
@@ -1089,22 +1149,22 @@
   </tile>
   <tile id="204">
    <properties>
-    <property name="pared" type="bool" value="false"/>
+    <property name="pared" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="205">
    <properties>
-    <property name="pared" type="bool" value="false"/>
+    <property name="pared" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="206">
    <properties>
-    <property name="pared" type="bool" value="false"/>
+    <property name="pared" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="207">
    <properties>
-    <property name="pared" type="bool" value="false"/>
+    <property name="pared" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="208">
@@ -1288,22 +1348,22 @@
   </tile>
   <tile id="236">
    <properties>
-    <property name="pared" type="bool" value="false"/>
+    <property name="pared" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="237">
    <properties>
-    <property name="pared" type="bool" value="false"/>
+    <property name="pared" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="238">
    <properties>
-    <property name="pared" type="bool" value="false"/>
+    <property name="pared" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="239">
    <properties>
-    <property name="pared" type="bool" value="false"/>
+    <property name="pared" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="240">
@@ -1393,61 +1453,1303 @@
   </tile>
   <tile id="254">
    <properties>
-    <property name="pared" type="bool" value="false"/>
+    <property name="pared" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="255">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="256">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="257">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="258">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="259">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="260">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="261">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="262">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="263">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="15.3964" y="31.0097">
+     <polygon points="0,0 0.0722837,-16.2638 16.1916,-16.047 16.4084,-31.2266 -15.4687,-31.0097 -15.3964,0.722837 0.0722837,1.15654"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="264">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="0.144567">
+     <polygon points="0,0 0,15.3964 31.7326,15.1796 31.9494,-0.0722837"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="265">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.216851" y="0.144567">
+     <polygon points="0,0 -0.361419,15.3241 16.047,15.4687 15.7578,31.6603 31.8048,31.6603 31.588,-0.144567 0,0.650553"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="266">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="267">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.289135" y="0.0722837">
+     <polygon points="0,0 -0.144567,31.3711 31.2988,31.6603 30.9374,16.4084 31.588,16.047 31.1543,0.144567 -1.01197,-0.0722837"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="268">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.289135" y="15.8301">
+     <polygon points="0,0 31.3711,-0.289135 31.5157,-15.6856 -0.433702,-15.7578"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="269">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.0722837" y="0.144567">
+     <polygon points="0,0 0.144567,15.3964 1.22882,16.1916 1.08426,31.2266 32.3831,31.7326 31.6603,-0.289135"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="274">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="275">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.361419" y="6.86695">
+     <polygon points="0,0 17.5649,0.144567 17.4204,25.0102 -0.505986,24.9379"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="276">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="277">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="278">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="279">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="13.8785" y="0.289135">
+     <polygon points="0,0 0.361419,31.4434 17.9986,31.5157 17.8541,-0.216851"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="280">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.361419" y="0.144567">
+     <polygon points="0,0 31.588,6.86695 31.2988,31.2988 -0.57827,31.588"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="281">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="282">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.216851" y="0.361419">
+     <polygon points="0,0 18.2878,-0.289135 18.0709,30.9374 0.216851,31.588"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="283">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="284">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="285">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="286">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="287">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="288">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="289">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="290">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="291">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="292">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="293">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.289135" y="0.216851">
+     <polygon points="0,0 0,31.4434 15.8301,31.8048 15.9024,-0.361419"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="294">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="295">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="16.047" y="-0.144567">
+     <polygon points="0,0 0,31.9494 15.9024,31.8771 15.7578,0.0722837"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="296">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="297">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="298">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.144567" y="31.588">
+     <polygon points="0,0 0.361419,-31.588 31.9494,-31.4434 31.9494,-0.144567 31.2988,-0.0722837 31.4434,-31.1543 0.867405,-31.1543"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="299">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.216851" y="0.144567">
+     <polygon points="0,0 0.216851,32.094 31.6603,31.588 32.3108,0.216851"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="304">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="305">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="306">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="307">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="308">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="309">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="310">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="311">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="312">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.0722837" y="0.216851">
+     <polygon points="0,0 17.4927,-0.144567 17.6372,31.5157 0,31.8048"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="313">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="314">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="315">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="316">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="317">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="318">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="319">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="320">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="321">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="322">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="323">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="324">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="325">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="326">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="327">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="328">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="329">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="334">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="335">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="336">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="337">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="338">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="339">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="14.2399" y="0">
+     <polygon points="0,0 -0.0722837,24.7933 6.93924,24.7933 6.72239,20.6009 13.7339,12.8665 17.7818,11.5654 17.6372,-0.0722837"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="340">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.57827" y="10.4811">
+     <polygon points="0,0 30.9374,0 31.2266,-10.4811 -0.57827,-10.2643"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="341">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="342">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.722837" y="11.1317">
+     <polygon points="0,0 4.69844,3.32505 9.54145,8.74633 10.6257,13.0111 16.553,13.0834 17.059,-11.0594 -0.722837,-10.9148"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="343">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="344">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="345">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="346">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="347">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="348">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="349">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="350">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="351">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="352">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="353">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="354">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="355">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="356">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="357">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="358">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="359">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="366">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="367">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="368">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="369">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="370">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="371">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="372">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="373">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="374">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="375">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="376">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="377">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="378">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="379">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="380">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="381">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="20.5286" y="-0.289135">
+     <polygon points="0,0 0.433702,11.1317 11.4208,11.6377 11.4931,32.094 -20.4563,32.1663 -20.4563,0.216851"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="382">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.144567" y="10.8426">
+     <polygon points="0,0 31.8048,0.0722837 31.6603,20.6731 0.289135,21.0346"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="383">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.0722837" y="10.8426">
+     <polygon points="0,0 31.8771,0.0722837 31.8771,20.7454 0.361419,21.0346"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="384">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="3">
+    <object id="2" x="0.144567" y="10.6257">
+     <polygon points="0,0 31.9494,0.289135 32.0217,20.89 -0.289135,21.1791"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="385">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.57827" y="10.9871">
+     <polygon points="0,0 9.97515,0.289135 10.698,-11.3485 31.2266,-10.6257 31.2988,20.5286 -0.867405,20.7454"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="386">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="387">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="388">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="389">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="396">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="397">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="398">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="399">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="400">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="401">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="402">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="403">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="404">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="405">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="406">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="407">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="408">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="409">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="410">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="411">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="412">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="413">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="414">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="415">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="416">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="417">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="418">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="419">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="426">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="427">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="428">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="429">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="430">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="431">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="432">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="433">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="434">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="435">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="436">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="437">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="438">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="439">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="440">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="441">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="31.1543">
+     <polygon points="0,0 8.81861,-3.03592 15.3241,-11.9268 20.0949,-20.3117 31.7326,-20.0949 31.9494,0.505986 -0.144567,0.867405"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="442">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="10.9871">
+     <polygon points="0,0 0.0722837,20.9623 32.0217,20.89 31.7326,0.0722837"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="443">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.216851" y="11.0594">
+     <polygon points="0,0 -0.144567,20.384 31.9494,20.8177 31.7326,-0.144567"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="444">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.144567" y="10.8426">
+     <polygon points="0,0 31.8771,-0.144567 31.588,21.0346 0.0722837,20.89"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="445">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.144567" y="10.6257">
+     <polygon points="0,0 -0.144567,21.1068 32.094,21.1791 24.5765,17.9986 17.4204,9.46917 11.4931,0.361419"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="446">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="447">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="448">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="449">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="464">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="465">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="466">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="467">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="468">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="469">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="470">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="471">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.0722837" y="0.0722837">
+     <polygon points="0,0 -0.0722837,31.5157 21.1791,31.6603 20.6731,-0.289135"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="472">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.0722837" y="11.1317">
+     <polygon points="0,0 -0.0722837,20.4563 32.094,20.8177 31.9494,-0.144567"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="473">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="474">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="475">
+   <properties>
+    <property name="pared" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="10.9871" y="0">
+     <polygon points="0,0 -0.0722837,31.3711 20.89,31.6603 20.8177,0.144567"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="476">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="477">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="478">
+   <properties>
+    <property name="pared" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="479">
    <properties>
     <property name="pared" type="bool" value="false"/>
    </properties>
   </tile>
  </tileset>
+ <tileset firstgid="481" name="scifi_space_rpg_tiles_lpcized (1)" tilewidth="32" tileheight="32" tilecount="24" columns="14">
+  <image source="computador.png" width="448" height="256"/>
+  <tile id="75">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.289135" y="7.01152">
+     <polygon points="0,0 18.1432,-0.0722837 18.2878,24.721 0.216851,24.8656"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="76">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="77">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="78">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="79">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="14.2399" y="0.216851">
+     <polygon points="0,0 -0.0722837,31.588 17.7095,31.6603 17.6372,0"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="80">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.144567" y="0.0722837">
+     <polygon points="0,0 -0.0722837,31.9494 26.0944,31.9494 31.8771,32.0217 32.094,7.01152"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="81">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="82">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="89">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="90">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="91">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="92">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="93">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="14.2399" y="0">
+     <polygon points="0,0 -0.144567,31.8771 17.6372,31.8771 17.5649,-0.0722837"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="94">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="95">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="96">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.144567" y="31.9494">
+     <polygon points="0,0 18.5769,-0.0722837 18.1432,-32.3108 0.216851,-31.8771"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="103">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="104">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="105">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="106">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="107">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="13.9508" y="0.0722837">
+     <polygon points="0,0 0.0722837,24.721 7.30066,24.9379 6.93924,21.9742 16.1916,12.0714 18.0709,11.8545 17.8541,0.144567"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="108">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.289135" y="0">
+     <polygon points="0,0 -0.144567,10.2643 23.2754,10.7703 31.6603,10.8426 31.4434,0.144567"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="109">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="110">
+   <properties>
+    <property name="computador" type="bool" value="true"/>
+   </properties>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="11.3485" y="24.215">
+     <polygon points="0,0 6.36097,0 6.43325,-24.5042 -11.3485,-24.1428 -11.3485,-12.8665 -5.42128,-9.97515 -2.09623,-5.49356"/>
+    </object>
+   </objectgroup>
+  </tile>
+ </tileset>
+ <layer id="8" name="negro" width="30" height="20">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,77,78,0,0,0,47,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,47,48,0,0,0,47,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,77,78,0,329,0,77,78,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,105,106,107,108,0,0,107,108,0,359,0,107,108,0,0,0,0,414,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,137,138,0,0,0,137,138,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,388,389,389,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,418,419,419,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,448,449,449,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,47,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,77,47,48,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,77,0,0,0,47,48,48,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,77,78,78,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,107,108,108,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,137,138,138,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
  <layer id="5" name="subcapa" width="30" height="20">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,2,222,223,224,1,1,2,3,4,4,4,4,4,4,2,1,2,3,4,50,
-0,0,0,0,0,0,214,0,0,0,2,238,239,240,17,1,1,1,1,34,2,3,3,3,3,17,18,19,3,4,
-0,0,20,0,0,0,203,0,214,0,52,254,255,256,33,17,17,17,1,2,3,1,1,2,3,19,19,18,19,20,
-0,0,0,20,17,20,50,20,0,0,50,254,255,256,49,33,33,33,17,18,174,18,17,18,19,33,1,2,3,36,
-0,0,0,1,34,35,49,20,35,35,35,238,239,240,52,49,49,49,33,34,190,35,49,50,33,49,34,35,19,52,
-20,20,20,20,206,207,208,35,35,35,35,254,255,256,35,33,33,2,34,206,206,206,3,33,49,49,50,51,52,52,
-20,20,36,206,222,223,224,35,35,35,35,239,239,239,239,206,206,2,220,206,206,206,19,49,49,50,51,52,2,2,
-20,20,17,222,238,239,240,206,207,208,208,208,207,208,239,239,239,206,206,206,206,206,206,206,206,206,206,206,206,206,
-20,20,17,238,238,239,240,208,208,208,224,224,223,224,239,239,239,206,206,206,206,206,206,206,206,206,206,206,206,206,
-17,17,35,238,239,240,240,224,224,224,240,240,239,240,239,239,239,206,206,206,206,206,206,206,206,206,206,206,206,206,
-17,17,35,239,238,239,240,240,240,240,221,223,223,223,206,206,206,206,206,206,206,206,206,206,206,206,206,206,206,206,
-35,35,35,35,239,239,239,35,35,35,20,223,223,223,19,19,18,18,18,18,18,18,18,18,18,51,51,18,19,19,
-35,35,35,35,239,239,239,35,35,35,35,223,223,223,2,2,2,52,52,20,34,34,34,4,4,51,51,51,19,19,
-3,3,35,35,239,239,239,2,2,35,35,223,223,223,2,2,2,2,2,2,2,2,52,19,19,51,51,51,19,52,
-3,3,35,35,35,35,35,35,35,35,2,47,47,63,2,52,2,36,19,1,19,2,2,19,19,19,51,51,19,52,
-3,51,51,35,35,35,35,35,35,2,52,47,47,45,52,19,18,36,19,19,1,34,34,19,4,19,1,1,19,52,
-3,18,18,51,3,2,2,51,2,2,2,254,255,256,52,19,52,36,34,19,19,36,19,19,1,19,20,20,19,19,
-3,18,18,2,2,3,2,2,2,2,2,223,223,223,2,2,52,4,36,36,36,34,52,52,19,19,20,52,52,19,
-3,2,2,2,2,2,2,2,2,2,2,223,223,223,3,18,52,4,36,34,52,19,34,34,34,19,34,52,18,19,
-2,2,2,2,2,2,2,2,2,3,3,223,223,223,19,18,18,36,34,34,34,36,19,19,19,1,52,52,18,19
+0,0,0,0,15,16,17,18,0,46,380,388,419,478,381,18,2,47,47,47,47,47,48,4,2,1,2,3,4,46,
+15,16,17,18,18,18,47,48,0,76,410,477,450,478,411,48,1,77,77,77,77,77,78,3,0,0,0,0,3,46,
+45,46,46,48,48,48,77,78,17,106,380,388,269,479,441,78,18,107,107,107,107,107,108,0,0,19,0,0,0,46,
+75,76,46,383,384,385,107,108,47,48,106,298,389,449,441,108,18,18,48,0,0,0,106,46,0,33,1,2,0,46,
+105,106,76,413,414,415,75,76,77,78,106,448,447,450,77,78,48,48,78,34,0,0,106,76,46,46,46,46,46,46,
+20,106,106,388,389,390,105,106,107,108,106,450,388,448,107,108,78,78,108,450,447,478,76,106,76,76,76,76,76,76,
+20,106,36,388,389,390,0,0,414,35,35,450,450,480,0,107,108,414,0,479,477,417,106,0,414,106,106,106,106,106,
+0,106,280,281,276,417,417,417,390,418,477,121,122,123,387,480,417,420,447,121,122,123,450,479,480,479,448,388,419,448,
+0,106,310,311,313,447,447,447,419,419,389,151,152,153,479,447,478,447,389,151,152,153,417,449,477,477,420,479,390,448,
+0,106,340,341,343,477,477,477,449,447,388,181,182,183,388,450,387,417,477,181,182,183,448,387,419,447,450,479,390,480,
+46,106,46,388,389,390,46,46,46,46,46,420,417,448,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,
+76,106,76,388,389,390,76,76,76,46,76,419,419,449,76,46,76,76,76,76,76,76,76,76,76,76,76,76,76,76,
+106,76,106,35,239,46,106,106,106,76,106,390,478,477,351,46,106,106,106,106,106,106,106,106,106,106,106,106,106,106,
+3,106,35,35,239,76,239,2,2,17,410,449,420,479,381,18,0,2,2,2,2,2,52,19,19,51,0,0,19,52,
+3,0,35,35,35,106,35,35,35,47,48,87,88,89,411,48,0,36,19,1,19,2,2,19,19,19,51,0,19,52,
+3,0,51,35,35,35,35,35,35,77,78,117,118,119,441,78,0,36,19,19,1,34,34,19,4,19,1,0,19,52,
+3,0,0,51,3,2,2,51,2,107,108,448,449,450,107,108,0,36,34,19,19,36,19,19,1,19,20,0,19,19,
+3,0,0,2,2,3,2,2,2,2,106,390,477,448,46,76,0,4,36,36,36,34,52,52,19,19,20,0,0,19,
+3,2,2,2,2,2,2,2,2,2,106,479,418,388,76,106,0,4,36,34,52,19,34,34,34,19,34,0,0,19,
+2,2,2,2,46,2,2,2,2,3,106,390,450,479,106,0,0,36,34,34,34,36,19,19,19,1,52,0,0,19
 </data>
  </layer>
  <layer id="1" name="solidos" width="30" height="20">
   <data encoding="csv">
-33,33,33,33,33,33,33,33,33,34,198,0,0,0,197,33,33,33,34,49,50,49,33,17,18,18,18,18,18,18,
-49,49,49,49,49,49,49,49,19,20,214,13,14,15,213,49,49,49,50,13,14,15,49,33,34,34,34,34,34,34,
-49,50,50,20,1,17,18,19,35,36,28,29,29,29,32,17,33,34,28,61,61,61,32,49,50,50,50,50,50,50,
-2,3,4,88,170,171,172,89,19,20,44,142,143,144,48,33,49,50,44,142,143,144,48,33,33,33,33,33,49,50,
-17,18,20,104,186,187,188,105,35,36,60,158,0,160,64,49,49,50,198,158,190,160,199,49,49,49,49,49,49,49,
-17,18,88,204,0,0,0,200,201,201,204,0,0,0,200,202,202,169,204,0,0,0,200,170,171,171,172,202,202,202,
-17,18,104,220,0,0,0,216,217,217,220,0,0,0,216,217,217,185,220,0,0,0,216,186,187,187,188,218,218,218,
-18,18,104,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-18,34,104,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-18,50,104,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-17,18,120,236,0,0,0,232,233,233,236,0,0,0,232,233,234,201,201,201,201,201,201,201,201,201,201,201,235,235,
-17,17,18,252,0,0,0,248,17,18,214,0,0,0,248,17,17,17,17,18,18,18,18,18,18,18,18,18,18,18,
-33,17,18,252,0,0,0,248,33,34,214,13,14,15,105,33,33,17,18,34,34,34,34,34,34,34,34,34,34,34,
-49,17,18,120,233,233,233,121,49,50,28,29,29,29,32,49,49,17,18,50,50,50,50,50,50,50,50,50,50,50,
-49,17,18,17,17,17,17,17,17,18,44,106,107,108,48,49,50,17,18,17,17,17,17,17,17,17,17,17,17,17,
-49,17,18,33,33,33,17,33,17,18,60,122,123,124,64,49,50,17,18,33,33,33,33,33,33,33,33,33,33,17,
-17,18,18,49,49,49,33,49,17,18,198,77,78,79,215,49,50,17,17,49,49,49,49,49,49,49,49,49,49,17,
-33,34,17,18,18,18,18,18,18,18,214,0,0,0,199,49,50,33,17,18,18,18,18,18,18,18,18,18,18,18,
-49,50,33,34,34,34,34,34,34,34,214,0,0,0,215,49,50,17,18,18,34,34,34,34,34,34,34,34,34,34,
-49,50,49,50,50,50,50,50,50,50,230,0,0,0,231,49,50,33,34,34,50,50,50,50,50,50,50,50,50,50
+45,45,45,45,75,75,45,46,47,25,26,27,28,29,30,48,48,48,48,107,107,108,33,17,15,16,17,18,18,18,
+75,75,75,75,105,105,75,76,77,55,56,57,58,59,60,48,17,18,26,27,28,29,30,15,16,17,18,17,18,34,
+105,105,105,105,105,106,105,106,107,85,86,268,329,270,90,48,47,48,56,57,58,59,60,45,46,47,48,47,48,50,
+77,78,172,271,272,273,173,0,19,20,380,193,359,300,381,78,77,78,86,87,328,89,90,75,76,77,78,77,78,50,
+107,108,202,301,302,303,203,0,0,36,410,0,0,0,411,108,107,108,116,117,358,119,120,105,106,107,108,107,108,49,
+108,172,386,0,0,0,382,0,0,201,386,0,0,0,382,323,323,322,386,0,0,0,382,322,322,324,325,325,326,322,
+108,202,416,0,0,0,412,413,247,415,416,0,0,0,412,353,353,247,416,0,0,0,412,352,164,354,355,355,356,352,
+108,380,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+108,410,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+78,440,446,0,0,0,442,385,383,384,446,0,0,0,442,443,444,445,443,444,445,443,444,445,443,444,445,443,444,445,
+108,0,202,0,0,0,203,0,0,0,380,0,0,0,381,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+48,0,232,443,444,445,233,0,0,0,410,0,0,0,411,15,15,16,17,18,18,18,18,18,18,18,18,16,17,18,
+78,16,17,18,18,0,0,0,33,25,410,27,28,29,411,45,45,46,15,16,17,18,48,48,48,48,48,46,47,48,
+108,16,17,18,48,18,15,16,17,48,56,57,58,59,60,75,75,76,15,16,17,18,78,78,78,78,78,76,77,78,
+15,16,17,18,78,48,45,46,47,78,86,204,205,206,90,105,105,106,15,16,17,18,108,108,108,108,108,106,107,108,
+15,16,17,18,108,78,15,16,17,108,380,234,235,236,411,105,106,107,15,15,16,17,18,105,105,106,107,108,107,108,
+16,17,18,18,108,108,18,18,17,18,380,0,0,0,381,105,106,107,45,15,15,16,17,18,107,108,18,16,17,18,
+46,47,48,48,107,108,48,48,47,48,380,0,0,0,381,105,106,107,75,45,15,15,16,17,18,78,48,46,47,48,
+76,77,78,78,107,108,78,78,77,78,380,0,0,0,381,105,106,107,105,75,45,45,46,47,48,108,78,76,77,78,
+106,107,108,108,107,108,108,108,107,108,410,0,0,0,411,105,106,107,108,105,75,75,76,77,78,108,108,106,107,108
 </data>
  </layer>
 </map>
