@@ -21,9 +21,7 @@ export class MainScene extends Phaser.Scene {
           if (this.socket.id) {
             this.playerId = this.socket.id; 
             console.log('Conectado al servidor, ID del jugador:', this.playerId);
-        } else {
-            console.error('No se pudo obtener el ID del jugador.');
-        }
+        } 
         });
     }
 
@@ -50,13 +48,18 @@ export class MainScene extends Phaser.Scene {
                     if (existingSprite && existingSprite != this.player) {
                         existingSprite.setVelocity(player.velocityx, player.velocityy);
                         if (player.animation) {
-                            if (player.key === 'move_x' && player.velocityx < 0) {
+                            if(player.key === undefined || player.key === 'dead'){
+                                existingSprite.setStatic(true);
+                                existingSprite.anims.play('laying');
+                                existingSprite.anims.stopAfterRepeat(0);
+                                return;
+                            } else if (player.key === 'move_x' && player.velocityx < 0) {
                                 existingSprite.setFlipX(true);
                                 existingSprite.anims.play(player.animation, true);
                             } else if(player.key === 'move_x' && player.velocityx > 0){
                                 existingSprite.anims.play(player.animation, true);
                                 existingSprite.setFlipX(false);
-                            } else {
+                            } else{
                                 existingSprite.anims.play(player.animation, true);
                             }
                         }
@@ -68,13 +71,18 @@ export class MainScene extends Phaser.Scene {
                         newSprite.setFixedRotation();
                         this.otherSprites[player.id] = newSprite;
                         if (player.animation) {
-                            if (player.key === 'move_x' && player.velocityx < 0) {
+                            if(player.key === undefined || player.key === 'dead'){
+                                existingSprite.setStatic(true);
+                                existingSprite.anims.play('laying');
+                                existingSprite.anims.stopAfterRepeat(0);
+                                return;
+                            } else if (player.key === 'move_x' && player.velocityx < 0) {
                                 existingSprite.setFlipX(true);
                                 existingSprite.anims.play(player.animation, true);
                             } else if (player.key === 'move_x' && player.velocityx > 0){
                                 existingSprite.anims.play(player.animation, true);
                                 existingSprite.setFlipX(false);
-                            } else {
+                            } else{
                                 existingSprite.anims.play(player.animation, true);
                             }
                         }
@@ -91,16 +99,11 @@ export class MainScene extends Phaser.Scene {
         if (spaceShip !== null) {
             mapa.createLayer('subcapa', spaceShip);
             const solidos = mapa.createLayer('solidos', spaceShip);
-
             if (solidos) {
                 solidos.setCollisionByProperty({ pared: true });
                 this.matter.world.setBounds(0, 0, width, height);
                 this.matter.world.convertTilemapLayer(solidos);
-            } else {
-                console.error("La capa 'solidos' es null.");
             }
-        } else {
-            console.error("La imagen 'spaceShip' es null. Asegúrate de haber cargado la imagen correctamente.");
         }
     }
 
@@ -113,8 +116,6 @@ export class MainScene extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, width, height);
         this.cameras.main.startFollow(this.player);
         this.cameras.main.zoomTo(2);
-        this.player.setData('player', true);
-
 
         if (this.input && this.input.keyboard) {
             this.keys = this.input.keyboard.addKeys({
@@ -202,15 +203,16 @@ export class MainScene extends Phaser.Scene {
             frameRate: 4,
             repeat: 0,
         });
+
         this.anims.create({
             key: 'laying',
             frames: this.anims.generateFrameNumbers('player', { start: 56, end: 56 }),
-            frameRate: 10,
-            repeat: 10,
-        });
+            frameRate: 4,
+            repeat: 0
+        })
     }
 
-    override update() {
+    override update() {  
         if (this.keys.up.isUp && this.keys.down.isUp && this.keys.left.isUp && this.keys.right.isUp && this.keys.space.isUp && !this.isKnockedDown) {
             this.player.anims.play('stand_' + this.lastDirection, true);
         }
@@ -223,11 +225,21 @@ export class MainScene extends Phaser.Scene {
 
         if (!this.isKnockedDown) {
             if (this.keys.s1.isDown) {
-                this.player.setVelocity(0, this.playerVelocity.y);
+                this.player.setVelocity(0, 0);
                 this.isKnockedDown = true;
                 this.player.anims.play('dead');
                 this.player.anims.stopAfterRepeat(0);
-                this.player.anims.chain('laying');
+                this.player.setStatic(true); 
+
+                this.socket.emit('updatePlayers', {
+                    posx: this.player.x, 
+                    posy: this.player.y, 
+                    velocityx: 0, 
+                    velocityy: 0,
+                    animation: this.player.anims.currentAnim, 
+                    key: undefined
+                });
+                this.updateRemoteMovements();
                 return;
             }
 
@@ -272,19 +284,21 @@ export class MainScene extends Phaser.Scene {
                     this.playerVelocity.x = 0;
                 }
             }
-            this.playerVelocity.normalize();
-            this.playerVelocity.scale(1.2);
-            this.player.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
-
-            this.socket.emit('updatePlayers', {
-                posx: this.player.x, 
-                posy: this.player.y, 
-                velocityx: this.playerVelocity.x, 
-                velocityy: this.playerVelocity.y, 
-                animation: this.player.anims.currentAnim, 
-                key: this.player.anims.currentAnim?.key
-            });
-            this.updateRemoteMovements();
+            if(this.player.anims.currentAnim?.key !== 'dead')  {
+                this.playerVelocity.normalize();
+                this.playerVelocity.scale(1.2);
+                this.player.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
+            
+                this.socket.emit('updatePlayers', {
+                    posx: this.player.x, 
+                    posy: this.player.y, 
+                    velocityx: this.playerVelocity.x, 
+                    velocityy: this.playerVelocity.y, 
+                    animation: this.player.anims.currentAnim,
+                    key: this.player.anims.currentAnim?.key
+                    });
+                this.updateRemoteMovements();
+            }
         }
     }
 
@@ -300,9 +314,14 @@ export class MainScene extends Phaser.Scene {
                         newPlayer.setOrigin(0.5, 0.70);
                         newPlayer.setFixedRotation();
                         this.otherSprites[playerId] = newPlayer;
+
                         if (other.animation) {
-                            console.log(other.animation);
-                            if (other.animation.key === 'move_x' && other.velocityx < 0) {
+                            if (other.animation.key === undefined || other.animation.key === 'dead'){
+                                newPlayer.anims.play('laying');
+                                newPlayer.setStatic(true);
+                                newPlayer.anims.stopAfterRepeat(0);
+                                return;
+                            } else if (other.animation.key === 'move_x' && other.velocityx < 0) {
                                 newPlayer.setFlipX(true);
                                 newPlayer.anims.play(other.animation, true);
                             } else if (other.animation.key === 'move_x' && other.velocityx > 0){
@@ -310,20 +329,25 @@ export class MainScene extends Phaser.Scene {
                                 newPlayer.setFlipX(false);
                             } else{
                                 newPlayer.anims.play(other.animation, true);
-                            }
+                            }   
                         }
-                    } else {
+                    }
+                     else {
                         const existingSprite = this.otherSprites[playerId];
                         existingSprite.setPosition(other.posx, other.posy);
                         if (other.animation) {
-                            console.log(other.animation);
-                            if (other.animation.key === 'move_x' && other.velocityx < 0) {
+                            if (other.animation.key === undefined || other.animation.key === 'dead'){
+                                existingSprite.anims.play('laying');
+                                existingSprite.setStatic(true);
+                                existingSprite.anims.stopAfterRepeat(0);
+                                return;
+                            } else if (other.animation.key === 'move_x' && other.velocityx < 0) {
                                 existingSprite.setFlipX(true);
                                 existingSprite.anims.play(other.animation, true);
                             } else if(other.animation.key === 'move_x' && other.velocityx > 0){
                                 existingSprite.anims.play(other.animation, true);
                                 existingSprite.setFlipX(false);
-                            } else{
+                            } else {
                                 existingSprite.anims.play(other.animation, true);
                             }
                         }
