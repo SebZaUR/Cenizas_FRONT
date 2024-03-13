@@ -19,7 +19,7 @@ export class MainScene extends Phaser.Scene {
         this.socket = io('http://localhost:2525/');
         this.socket.on('connect', () => {
           if (this.socket.id) {
-            this.playerId = this.socket.id; // Usar el ID asignado por el servidor
+            this.playerId = this.socket.id; 
             console.log('Conectado al servidor, ID del jugador:', this.playerId);
         } else {
             console.error('No se pudo obtener el ID del jugador.');
@@ -42,14 +42,23 @@ export class MainScene extends Phaser.Scene {
         this.create_player(width, height, 400, 300, 'player');
         this.create_animation();
 
+
         this.socket.on('updatePlayers', (data) => {
-          data.forEach((player: { id: string, posx: number, posy: number, velocityx: number, velocityy: number, animation: string }) => {
+          data.forEach((player: { id: string, posx: number, posy: number, velocityx: number, velocityy: number, animation: string, key: string }) => {
             if (player.id !== this.playerId) {
                     const existingSprite = this.otherSprites[player.id];
                     if (existingSprite && existingSprite != this.player) {
                         existingSprite.setVelocity(player.velocityx, player.velocityy);
                         if (player.animation) {
-                            existingSprite.anims.play(player.animation, true);
+                            if (player.key === 'move_x' && player.velocityx < 0) {
+                                existingSprite.setFlipX(true);
+                                existingSprite.anims.play(player.animation, true);
+                            } else if(player.key === 'move_x' && player.velocityx > 0){
+                                existingSprite.anims.play(player.animation, true);
+                                existingSprite.setFlipX(false);
+                            } else {
+                                existingSprite.anims.play(player.animation, true);
+                            }
                         }
                     } else {
                         const newSprite = this.matter.add.sprite(player.posx, player.posy, 'player');
@@ -59,7 +68,15 @@ export class MainScene extends Phaser.Scene {
                         newSprite.setFixedRotation();
                         this.otherSprites[player.id] = newSprite;
                         if (player.animation) {
-                            newSprite.anims.play(player.animation, true);
+                            if (player.key === 'move_x' && player.velocityx < 0) {
+                                existingSprite.setFlipX(true);
+                                existingSprite.anims.play(player.animation, true);
+                            } else if (player.key === 'move_x' && player.velocityx > 0){
+                                existingSprite.anims.play(player.animation, true);
+                                existingSprite.setFlipX(false);
+                            } else {
+                                existingSprite.anims.play(player.animation, true);
+                            }
                         }
                     }
                 }
@@ -258,7 +275,15 @@ export class MainScene extends Phaser.Scene {
             this.playerVelocity.normalize();
             this.playerVelocity.scale(1.2);
             this.player.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
-            this.socket.emit('updatePlayers', { velocityx: this.playerVelocity.x, velocityy: this.playerVelocity.y, animation: this.player.anims.currentAnim });
+
+            this.socket.emit('updatePlayers', {
+                posx: this.player.x, 
+                posy: this.player.y, 
+                velocityx: this.playerVelocity.x, 
+                velocityy: this.playerVelocity.y, 
+                animation: this.player.anims.currentAnim, 
+                key: this.player.anims.currentAnim?.key
+            });
             this.updateRemoteMovements();
         }
     }
@@ -276,13 +301,31 @@ export class MainScene extends Phaser.Scene {
                         newPlayer.setFixedRotation();
                         this.otherSprites[playerId] = newPlayer;
                         if (other.animation) {
-                            newPlayer.anims.play(other.animation, true);
+                            console.log(other.animation);
+                            if (other.animation.key === 'move_x' && other.velocityx < 0) {
+                                newPlayer.setFlipX(true);
+                                newPlayer.anims.play(other.animation, true);
+                            } else if (other.animation.key === 'move_x' && other.velocityx > 0){
+                                newPlayer.anims.play(other.animation, true);
+                                newPlayer.setFlipX(false);
+                            } else{
+                                newPlayer.anims.play(other.animation, true);
+                            }
                         }
                     } else {
                         const existingSprite = this.otherSprites[playerId];
                         existingSprite.setPosition(other.posx, other.posy);
                         if (other.animation) {
-                            existingSprite.anims.play(other.animation, true);
+                            console.log(other.animation);
+                            if (other.animation.key === 'move_x' && other.velocityx < 0) {
+                                existingSprite.setFlipX(true);
+                                existingSprite.anims.play(other.animation, true);
+                            } else if(other.animation.key === 'move_x' && other.velocityx > 0){
+                                existingSprite.anims.play(other.animation, true);
+                                existingSprite.setFlipX(false);
+                            } else{
+                                existingSprite.anims.play(other.animation, true);
+                            }
                         }
                     }
                 }

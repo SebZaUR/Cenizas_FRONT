@@ -15,9 +15,13 @@ const io = require('socket.io')(http, {
     socket.on('updatePlayers', (data) => {
         const index = players.findIndex(player => player.id === socket.id);
         if (index !== -1) {
+            players[index].posx = data.posx;
+            players[index].posy = data.posy;
             players[index].velocityx = data.velocityx;
             players[index].velocityy = data.velocityy;
             players[index].animation = data.animation; 
+            players[index].key = data.key;
+
         }
         io.emit('updatePlayers', players); 
     });
