@@ -14,6 +14,10 @@ export class MainScene extends Phaser.Scene {
     private playerId!: string;
     private socket: Socket;
 
+    private startx: number = 370;
+    private starty: number = 300;
+
+
     constructor() {
         super({ key: 'MainScene' });
         this.socket = io('http://localhost:2525/');
@@ -21,6 +25,11 @@ export class MainScene extends Phaser.Scene {
           if (this.socket.id) {
             this.playerId = this.socket.id; 
             console.log('Conectado al servidor, ID del jugador:', this.playerId);
+            
+            this.socket.on('initialCoordinates', ({ x, y }) => {
+                this.startx = x;
+                this.starty = y;
+            });        
         } 
         });
     }
@@ -37,9 +46,18 @@ export class MainScene extends Phaser.Scene {
     create() {
         const { width, height } = this.sys.game.canvas;
         this.create_mapa(width, height, 'lobby', 'spaceShip', 'space');
-        this.create_player(width, height, 400, 300, 'player');
         this.create_animation();
+        this.create_player(width, height, this.startx, this.starty, 'player');      
 
+        this.socket.on('playerDisconnected', (playerId: string) => {
+            console.log(`Jugador desconectado: ${playerId}`);
+            const disconnectedPlayerSprite = this.otherSprites[playerId];
+            if (disconnectedPlayerSprite) {
+                disconnectedPlayerSprite.destroy(); 
+                delete this.otherSprites[playerId]; 
+            }
+        });
+        
 
         this.socket.on('updatePlayers', (data) => {
           data.forEach((player: { id: string, posx: number, posy: number, velocityx: number, velocityy: number, animation: string, key: string }) => {
@@ -49,7 +67,6 @@ export class MainScene extends Phaser.Scene {
                         existingSprite.setVelocity(player.velocityx, player.velocityy);
                         if (player.animation) {
                             if(player.key === undefined || player.key === 'dead'){
-                                existingSprite.setStatic(true);
                                 existingSprite.anims.play('laying');
                                 existingSprite.anims.stopAfterRepeat(0);
                                 return;
@@ -64,32 +81,34 @@ export class MainScene extends Phaser.Scene {
                             }
                         }
                     } else {
-                        const newSprite = this.matter.add.sprite(player.posx, player.posy, 'player');
-                        newSprite.setDisplaySize(70, 90);
-                        newSprite.setRectangle(20, 35);
-                        newSprite.setOrigin(0.5, 0.70);
-                        newSprite.setFixedRotation();
-                        this.otherSprites[player.id] = newSprite;
-                        if (player.animation) {
-                            if(player.key === undefined || player.key === 'dead'){
-                                existingSprite.setStatic(true);
-                                existingSprite.anims.play('laying');
-                                existingSprite.anims.stopAfterRepeat(0);
-                                return;
-                            } else if (player.key === 'move_x' && player.velocityx < 0) {
-                                existingSprite.setFlipX(true);
-                                existingSprite.anims.play(player.animation, true);
-                            } else if (player.key === 'move_x' && player.velocityx > 0){
-                                existingSprite.anims.play(player.animation, true);
-                                existingSprite.setFlipX(false);
-                            } else{
-                                existingSprite.anims.play(player.animation, true);
+                        if(player.id != null){
+                            const newSprite = this.matter.add.sprite(player.posx, player.posy, 'player');
+                            newSprite.setDisplaySize(70, 90);
+                            newSprite.setRectangle(20, 35);
+                            newSprite.setOrigin(0.5, 0.70);
+                            newSprite.setFixedRotation();
+                            this.otherSprites[player.id] = newSprite;
+                            if (player.animation) {
+                                if(player.key === undefined || player.key === 'dead'){
+                                    existingSprite.setStatic(true)
+                                    existingSprite.anims.play('laying');
+                                    existingSprite.anims.stopAfterRepeat(0);
+                                    return;
+                                } else if (player.key === 'move_x' && player.velocityx < 0) {
+                                    existingSprite.setFlipX(true);
+                                    existingSprite.anims.play(player.animation, true);
+                                } else if (player.key === 'move_x' && player.velocityx > 0){
+                                    existingSprite.anims.play(player.animation, true);
+                                    existingSprite.setFlipX(false);
+                                } else{
+                                    existingSprite.anims.play(player.animation, true);
+                                }
                             }
                         }
                     }
                 }
             });
-        });      
+        });
 
     }
 
@@ -108,7 +127,10 @@ export class MainScene extends Phaser.Scene {
     }
 
     create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
-        this.player = this.matter.add.sprite(position_x, position_y, spray);
+        const newPositionX = position_x + Object.keys(this.otherSprites).length * 30;
+        console.log(newPositionX);
+        
+        this.player = this.matter.add.sprite(newPositionX, position_y, spray);
         this.player.setDisplaySize(70, 90);
         this.player.setRectangle(20, 35);
         this.player.setOrigin(0.5, 0.70);

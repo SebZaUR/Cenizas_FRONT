@@ -9,8 +9,11 @@ const io = require('socket.io')(http, {
   });
 
   io.on('connection', (socket) => {
+    
     console.log('Un cliente se ha conectado');
-    players.push({ id: socket.id, posx: 400, posy: 300,velocityx: 0, velocityy: 0 , animation: null });
+    const initialCoordinates = {x: 370 + players.length * 30, y: 300}; 
+    players.push({ id: socket.id, posx: initialCoordinates.x, posy: initialCoordinates.y, velocityx: 0, velocityy: 0, animation: null });
+    socket.emit('initialCoordinates', initialCoordinates);
 
     socket.on('updatePlayers', (data) => {
         const index = players.findIndex(player => player.id === socket.id);
@@ -26,14 +29,14 @@ const io = require('socket.io')(http, {
         io.emit('updatePlayers', players); 
     });
 
-    socket.on('disconnect', () => {        
-        const index = players.findIndex(player => player.id === socket.id);
+    socket.on('disconnect', () => {     
+    const index = players.findIndex(player => player.id === socket.id);
         if (index !== -1) {
             players.splice(index, 1); 
-            io.emit('updatePlayers', players);
+            io.emit('playerDisconnected', socket.id);
         }
+        });
     });
-});
 
 http.listen(2525, () => {
     console.log('Servidor escuchando en el puerto 2525');
