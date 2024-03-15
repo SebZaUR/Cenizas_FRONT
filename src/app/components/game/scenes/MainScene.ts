@@ -11,24 +11,32 @@ export class MainScene extends Phaser.Scene {
     private isAttacking: boolean = false;
     private lastDirection: string = "down";
     private playerVelocity = new Phaser.Math.Vector2();
-    private playerId!: string;
-    private socket: Socket;
+    protected playerId!: string;
+    protected socket!: Socket;
 
-    private startx: number = 370;
-    private starty: number = 300;
+    protected startx: number = 370;
+    protected starty: number = 300;
 
+    constructor(key: string) {
+        super({ key: key });
+    }
 
-    constructor() {
-        super({ key: 'MainScene' });
+    init(data: any) {
         this.socket = io('http://localhost:2525/');
         this.socket.on('connect', () => {
             if (this.socket.id) {
                 this.playerId = this.socket.id; 
                 console.log('Conectado al servidor, ID del jugador:', this.playerId);      
                 this.socket.on('initialCoordinates', ({ x, y }) => {
-                    this.startx = x;
+                    this.startx = x;    
                     this.starty = y;
-                });        
+                });
+                
+                this.socket.on('firstPlayer', (isFirstPlayer) => {
+                    if (isFirstPlayer) {
+                        this.enableStartButton();
+                    }
+                });
             } 
         });
     }
@@ -328,6 +336,7 @@ export class MainScene extends Phaser.Scene {
             }
         }
     }
+        
 
     private updateRemoteMovements() {
         if (this.others != null) {
@@ -383,4 +392,43 @@ export class MainScene extends Phaser.Scene {
             }
         }
     }
-}   
+
+    enableStartButton() {
+        const canvas = this.sys.game.canvas;
+        const rect = canvas.getBoundingClientRect();
+        const canvasLeft = rect.left;
+        const canvasTop = rect.top;
+    
+        const startButton = document.createElement('button');
+        startButton.id = 'startButton'; 
+        startButton.innerHTML = 'Todo listo?';
+        startButton.style.position = 'absolute';
+        startButton.style.left = (canvasLeft + canvas.width - startButton.offsetWidth - 220) + 'px'; // Ajuste adicional hacia la izquierda
+        startButton.style.top = (canvasTop + canvas.height - startButton.offsetHeight -100) + 'px'; // Ajuste adicional hacia arriba
+        startButton.style.zIndex = '1'; 
+        startButton.style.padding = '20px 40px'; 
+        startButton.style.backgroundColor = '#192841'; // Azul oscuro para representar el espacio
+        startButton.style.color = '#FFFFFF'; // Texto blanco para contraste
+        startButton.style.border = 'none'; 
+        startButton.style.borderRadius = '5px'; 
+        startButton.style.cursor = 'pointer';
+        startButton.style.fontSize = '25px'; 
+        startButton.style.fontFamily = 'minecraft';
+        document.body.appendChild(startButton); 
+    
+        startButton.addEventListener('click', () => {
+            this.goToDesertScene();
+        });
+    }
+
+    private goToDesertScene() {
+        this.tweens.add({
+            targets: this.cameras.main,
+            alpha: 0,
+            duration: 2000,
+            onComplete: () => {
+                    this.scene.start('DesertScene', { datos: '', socket: this.socket });
+            }
+        });
+    }  
+} 

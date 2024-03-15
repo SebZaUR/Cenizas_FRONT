@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import Phaser from 'phaser'; //import Phaser
 import { MainScene } from './scenes/MainScene';
+import { DesertScene } from './scenes/DesertScene';
+
+
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
@@ -14,7 +17,7 @@ export class GameComponent implements OnInit {
   constructor() {
     this.config = {
       type: Phaser.AUTO,
-      scene: [ MainScene ],
+      scene: [ new MainScene('MainScene'), DesertScene ],
       width: 900,
       height: 630,
       parent: 'gameContainer',
