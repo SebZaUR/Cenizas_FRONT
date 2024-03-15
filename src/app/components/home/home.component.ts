@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { RoomsService } from '../../services/rooms/rooms.service';
+import { PopupService } from 'src/app/services/popup/popup.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -8,10 +9,10 @@ import { RoomsService } from '../../services/rooms/rooms.service';
 })
 export class HomeComponent implements OnInit{
 
-  constructor(private router: Router, private roomService:RoomsService){}
+  constructor(private router: Router, private roomService:RoomsService,private popup: PopupService){}
 
   ngOnInit(): void {
-    // Not in Use
+    this.popup.openPopUp();
   }
 
   crearSala(){
