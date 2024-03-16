@@ -14,6 +14,7 @@ export class SearchComponent implements OnInit{
   constructor(private roomService: RoomsService, private router :Router, private cdr: ChangeDetectorRef){}
 
   ngOnInit(): void {
+    // Not in Use
   }
 
   unirseSala(){
