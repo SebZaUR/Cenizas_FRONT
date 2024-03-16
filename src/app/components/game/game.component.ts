@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import Phaser from 'phaser'; //import Phaser
 import { MainScene } from './scenes/MainScene';
 import { DesertScene } from './scenes/DesertScene';
+import { io } from 'socket.io-client';
 
 
 @Component({
@@ -11,13 +12,14 @@ import { DesertScene } from './scenes/DesertScene';
 })
 
 export class GameComponent implements OnInit {
+  socket = io('http://localhost:2525/');
   phaserGame!: Phaser.Game; 
   config: Phaser.Types.Core.GameConfig;
   
   constructor() {
     this.config = {
       type: Phaser.AUTO,
-      scene: [ new MainScene('MainScene'), DesertScene ],
+      scene: [ new MainScene('MainScene', this.socket), new DesertScene(this.socket) ],
       width: 900,
       height: 630,
       parent: 'gameContainer',

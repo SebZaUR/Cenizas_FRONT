@@ -10,8 +10,6 @@ const io = require('socket.io')(http, {
 
   io.on('connection', (socket) => {
     
-    console.log('Un cliente se ha conectado');
-
     const isFirstPlayer = players.length === 0;
 
     socket.emit('firstPlayer', isFirstPlayer);
@@ -33,6 +31,11 @@ const io = require('socket.io')(http, {
         }
         io.emit('updatePlayers', players); 
     });
+
+    socket.on('goToDesert', () => {
+        io.emit('goToDesert');
+    });
+
 
     socket.on('disconnect', () => {     
     const index = players.findIndex(player => player.id === socket.id);
