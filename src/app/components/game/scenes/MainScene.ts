@@ -1,36 +1,62 @@
 import Phaser from 'phaser';
-import { io, Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 
 export class MainScene extends Phaser.Scene {
     keys!: any;
     solidos!: any;
-    others!: any;
-    private otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
     private player!: Phaser.Physics.Matter.Sprite;
     private isKnockedDown: boolean = false;
     private isAttacking: boolean = false;
     private lastDirection: string = "down";
-    private playerVelocity = new Phaser.Math.Vector2();
-    private playerId!: string;
-    private socket: Socket;
+    
+    protected playerVelocity = new Phaser.Math.Vector2();
+    protected startx: number = 370;
+    protected starty: number = 300;
+    protected playerId!: string;
+    protected socket!: Socket;
+    protected otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
 
-    private startx: number = 370;
-    private starty: number = 300;
+    constructor(key: string, socket: any) {
+        super({ key: key });
+        this.socket = socket
+    }
 
-
-    constructor() {
-        super({ key: 'MainScene' });
-        this.socket = io('http://localhost:2525/');
+    init(data: any) {
         this.socket.on('connect', () => {
-          if (this.socket.id) {
-            this.playerId = this.socket.id; 
-            console.log('Conectado al servidor, ID del jugador:', this.playerId);
-            
-            this.socket.on('initialCoordinates', ({ x, y }) => {
-                this.startx = x;
-                this.starty = y;
-            });        
-        } 
+            if (this.socket.id) {
+                this.playerId = this.socket.id; 
+                this.socket.on('initialCoordinates', ({ x, y }) => {
+                    this.startx = x;    
+                    this.starty = y;
+                });
+                
+                this.socket.on('firstPlayer', (isFirstPlayer) => {
+                    if (isFirstPlayer) {
+                        this.enableStartButton();
+                    }
+                });
+
+
+                this.socket.on('goToDesert', () => {
+                    this.tweens.add({
+                        targets: this.cameras.main,
+                        alpha: 0,
+                        duration: 2000,
+                        onComplete: () => {
+                            this.scene.start('DesertScene', { otherSprites: this.otherSprites });
+                        }
+                    });
+                });
+
+                this.socket.on('playerDisconnected', (playerId: string) => {
+                    console.log(`Jugador desconectado: ${playerId}`);
+                    const disconnectedPlayerSprite = this.otherSprites[playerId];
+                    if (disconnectedPlayerSprite) {
+                        disconnectedPlayerSprite.destroy(); 
+                        delete this.otherSprites[playerId]; 
+                    }
+                });
+            } 
         });
     }
 
@@ -48,21 +74,57 @@ export class MainScene extends Phaser.Scene {
         this.create_mapa(width, height, 'lobby', 'spaceShip', 'space');
         this.create_animation();
         this.create_player(width, height, this.startx, this.starty, 'player');      
+        this.create_remote_players();
+    }
 
-        this.socket.on('playerDisconnected', (playerId: string) => {
-            console.log(`Jugador desconectado: ${playerId}`);
-            const disconnectedPlayerSprite = this.otherSprites[playerId];
-            if (disconnectedPlayerSprite) {
-                disconnectedPlayerSprite.destroy(); 
-                delete this.otherSprites[playerId]; 
+    create_mapa(width: number, height: number, key: string, tileImage: string, tileSet: string) {
+        const mapa = this.make.tilemap({ key: key });
+        const spaceShip = mapa.addTilesetImage(tileImage, tileSet);
+        if (spaceShip !== null) {
+            mapa.createLayer('negro',spaceShip);
+            const subcapa = mapa.createLayer('subcapa', spaceShip);
+            const solidos = mapa.createLayer('solidos', spaceShip);
+            if (solidos) {
+                solidos.setCollisionByProperty({ pared: true });
+                this.matter.world.setBounds(0, 0, width, height);
+                this.matter.world.convertTilemapLayer(solidos);
             }
-        });
-        
+            if (subcapa) {
+                subcapa.setCollisionByProperty({ pared: true });
+                this.matter.world.setBounds(0, 0, width, height);
+                this.matter.world.convertTilemapLayer(subcapa);
+            }
+        }
+    }
 
+    create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
+        const newPositionX = position_x + Object.keys(this.otherSprites).length * 30;        
+        this.player = this.matter.add.sprite(newPositionX, position_y, spray);
+        this.player.setDisplaySize(70, 90);
+        this.player.setRectangle(20, 35);
+        this.player.setOrigin(0.5, 0.70);
+        this.player.setFixedRotation();
+        this.cameras.main.setBounds(0, 0, width, height);
+        this.cameras.main.startFollow(this.player);
+        this.cameras.main.zoomTo(2.5);
+
+        if (this.input && this.input.keyboard) {
+            this.keys = this.input.keyboard.addKeys({
+                'up': Phaser.Input.Keyboard.KeyCodes.W,
+                'down': Phaser.Input.Keyboard.KeyCodes.S,
+                'left': Phaser.Input.Keyboard.KeyCodes.A,
+                'right': Phaser.Input.Keyboard.KeyCodes.D,
+                'space': Phaser.Input.Keyboard.KeyCodes.SPACE,
+                's1': Phaser.Input.Keyboard.KeyCodes.ONE
+            });
+        }
+    }
+
+    create_remote_players() {
         this.socket.on('updatePlayers', (data) => {
-          data.forEach((player: { id: string, posx: number, posy: number, velocityx: number, velocityy: number, animation: string, key: string }) => {
-            if (player.id !== this.playerId) {
-                    const existingSprite = this.otherSprites[player.id];
+            data.forEach((player: { id: string, posx: number, posy: number, velocityx: number, velocityy: number, animation: string, key: string }) => {
+                if (player.id !== this.playerId) { 
+                    const existingSprite = this.otherSprites[player.id]; 
                     if (existingSprite && existingSprite != this.player) {
                         existingSprite.setVelocity(player.velocityx, player.velocityy);
                         if (player.animation) {
@@ -87,7 +149,7 @@ export class MainScene extends Phaser.Scene {
                             newSprite.setRectangle(20, 35);
                             newSprite.setOrigin(0.5, 0.70);
                             newSprite.setFixedRotation();
-                            this.otherSprites[player.id] = newSprite;
+                            this.otherSprites[player.id] = newSprite; 
                             if (player.animation) {
                                 if(player.key === undefined || player.key === 'dead'){
                                     existingSprite.setStatic(true)
@@ -109,46 +171,6 @@ export class MainScene extends Phaser.Scene {
                 }
             });
         });
-
-    }
-
-    create_mapa(width: number, height: number, key: string, tileImage: string, tileSet: string) {
-        const mapa = this.make.tilemap({ key: key });
-        const spaceShip = mapa.addTilesetImage(tileImage, tileSet);
-        if (spaceShip !== null) {
-            mapa.createLayer('subcapa', spaceShip);
-            const solidos = mapa.createLayer('solidos', spaceShip);
-            if (solidos) {
-                solidos.setCollisionByProperty({ pared: true });
-                this.matter.world.setBounds(0, 0, width, height);
-                this.matter.world.convertTilemapLayer(solidos);
-            }
-        }
-    }
-
-    create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
-        const newPositionX = position_x + Object.keys(this.otherSprites).length * 30;
-        console.log(newPositionX);
-        
-        this.player = this.matter.add.sprite(newPositionX, position_y, spray);
-        this.player.setDisplaySize(70, 90);
-        this.player.setRectangle(20, 35);
-        this.player.setOrigin(0.5, 0.70);
-        this.player.setFixedRotation();
-        this.cameras.main.setBounds(0, 0, width, height);
-        this.cameras.main.startFollow(this.player);
-        this.cameras.main.zoomTo(2);
-
-        if (this.input && this.input.keyboard) {
-            this.keys = this.input.keyboard.addKeys({
-                'up': Phaser.Input.Keyboard.KeyCodes.W,
-                'down': Phaser.Input.Keyboard.KeyCodes.S,
-                'left': Phaser.Input.Keyboard.KeyCodes.A,
-                'right': Phaser.Input.Keyboard.KeyCodes.D,
-                'space': Phaser.Input.Keyboard.KeyCodes.SPACE,
-                's1': Phaser.Input.Keyboard.KeyCodes.ONE
-            });
-        }
     }
 
     create_animation() {
@@ -261,7 +283,6 @@ export class MainScene extends Phaser.Scene {
                     animation: this.player.anims.currentAnim, 
                     key: undefined
                 });
-                this.updateRemoteMovements();
                 return;
             }
 
@@ -319,63 +340,36 @@ export class MainScene extends Phaser.Scene {
                     animation: this.player.anims.currentAnim,
                     key: this.player.anims.currentAnim?.key
                     });
-                this.updateRemoteMovements();
             }
         }
     }
+        
 
-    private updateRemoteMovements() {
-        if (this.others != null) {
-            for (const playerId in this.others) {
-                const other = this.others[playerId];
-                if (playerId !== this.playerId) {
-                    if (!this.otherSprites[playerId]) {
-                        const newPlayer: Phaser.Physics.Matter.Sprite = this.matter.add.sprite(other.posx, other.posy, 'player');
-                        newPlayer.setDisplaySize(70, 90);
-                        newPlayer.setRectangle(20, 35);
-                        newPlayer.setOrigin(0.5, 0.70);
-                        newPlayer.setFixedRotation();
-                        this.otherSprites[playerId] = newPlayer;
-
-                        if (other.animation) {
-                            if (other.animation.key === undefined || other.animation.key === 'dead'){
-                                newPlayer.anims.play('laying');
-                                newPlayer.setStatic(true);
-                                newPlayer.anims.stopAfterRepeat(0);
-                                return;
-                            } else if (other.animation.key === 'move_x' && other.velocityx < 0) {
-                                newPlayer.setFlipX(true);
-                                newPlayer.anims.play(other.animation, true);
-                            } else if (other.animation.key === 'move_x' && other.velocityx > 0){
-                                newPlayer.anims.play(other.animation, true);
-                                newPlayer.setFlipX(false);
-                            } else{
-                                newPlayer.anims.play(other.animation, true);
-                            }   
-                        }
-                    }
-                     else {
-                        const existingSprite = this.otherSprites[playerId];
-                        existingSprite.setPosition(other.posx, other.posy);
-                        if (other.animation) {
-                            if (other.animation.key === undefined || other.animation.key === 'dead'){
-                                existingSprite.anims.play('laying');
-                                existingSprite.setStatic(true);
-                                existingSprite.anims.stopAfterRepeat(0);
-                                return;
-                            } else if (other.animation.key === 'move_x' && other.velocityx < 0) {
-                                existingSprite.setFlipX(true);
-                                existingSprite.anims.play(other.animation, true);
-                            } else if(other.animation.key === 'move_x' && other.velocityx > 0){
-                                existingSprite.anims.play(other.animation, true);
-                                existingSprite.setFlipX(false);
-                            } else {
-                                existingSprite.anims.play(other.animation, true);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    private enableStartButton() {
+        const canvas = this.sys.game.canvas;
+        const rect = canvas.getBoundingClientRect();
+        const canvasLeft = rect.left;
+        const canvasTop = rect.top;
+    
+        const startButton = document.createElement('button');
+        startButton.id = 'startButton'; 
+        startButton.innerHTML = 'Todo listo?';
+        startButton.style.position = 'absolute';
+        startButton.style.left = (canvasLeft + canvas.width - startButton.offsetWidth - 220) + 'px'; // Ajuste adicional hacia la izquierda
+        startButton.style.top = (canvasTop + canvas.height - startButton.offsetHeight -100) + 'px'; // Ajuste adicional hacia arriba
+        startButton.style.zIndex = '1'; 
+        startButton.style.padding = '20px 40px'; 
+        startButton.style.backgroundColor = '#192841'; 
+        startButton.style.color = '#FFFFFF'; 
+        startButton.style.border = 'none'; 
+        startButton.style.borderRadius = '5px'; 
+        startButton.style.cursor = 'pointer';
+        startButton.style.fontSize = '25px'; 
+        startButton.style.fontFamily = 'minecraft';
+        document.body.appendChild(startButton); 
+    
+        startButton.addEventListener('click', () => {
+            this.socket.emit('goToDesert');
+        });
     }
-}
+} 

@@ -10,8 +10,11 @@ const io = require('socket.io')(http, {
 
   io.on('connection', (socket) => {
     
-    console.log('Un cliente se ha conectado');
-    const initialCoordinates = {x: 370 + players.length * 30, y: 300}; 
+    const isFirstPlayer = players.length === 0;
+
+    socket.emit('firstPlayer', isFirstPlayer);
+
+    const initialCoordinates = {x: 370 + players.length * 30, y: 270};  
     players.push({ id: socket.id, posx: initialCoordinates.x, posy: initialCoordinates.y, velocityx: 0, velocityy: 0, animation: null });
     socket.emit('initialCoordinates', initialCoordinates);
 
@@ -28,6 +31,11 @@ const io = require('socket.io')(http, {
         }
         io.emit('updatePlayers', players); 
     });
+
+    socket.on('goToDesert', () => {
+        io.emit('goToDesert');
+    });
+
 
     socket.on('disconnect', () => {     
     const index = players.findIndex(player => player.id === socket.id);
