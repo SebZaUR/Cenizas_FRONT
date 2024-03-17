@@ -4,11 +4,10 @@ import { Socket } from 'socket.io-client';
 export class MainScene extends Phaser.Scene {
     keys!: any;
     solidos!: any;
-    private player!: Phaser.Physics.Matter.Sprite;
-    private isKnockedDown: boolean = false;
-    private isAttacking: boolean = false;
-    private lastDirection: string = "down";
-    
+    protected player!: Phaser.Physics.Matter.Sprite;
+    protected isKnockedDown: boolean = false;
+    protected isAttacking: boolean = false;
+    protected lastDirection: string = "down";
     protected playerVelocity = new Phaser.Math.Vector2();
     protected startx: number = 370;
     protected starty: number = 300;
@@ -36,20 +35,22 @@ export class MainScene extends Phaser.Scene {
                     }
                 });
 
-
-                this.socket.on('goToDesert', () => {
+                this.socket.on('goToDesert', (data) => {
+                    data.socketId = this.socket.id;
+                    this.socket.disconnect();
+                    this.socket.off('updatePlayers');
                     this.tweens.add({
                         targets: this.cameras.main,
                         alpha: 0,
                         duration: 2000,
                         onComplete: () => {
-                            this.scene.start('DesertScene', { otherSprites: this.otherSprites });
+                            this.scene.start('DesertScene',  data);
+                            this.scene.stop('MainScene');                            
                         }
                     });
                 });
 
                 this.socket.on('playerDisconnected', (playerId: string) => {
-                    console.log(`Jugador desconectado: ${playerId}`);
                     const disconnectedPlayerSprite = this.otherSprites[playerId];
                     if (disconnectedPlayerSprite) {
                         disconnectedPlayerSprite.destroy(); 
@@ -71,33 +72,31 @@ export class MainScene extends Phaser.Scene {
 
     create() {
         const { width, height } = this.sys.game.canvas;
-        this.create_mapa(width, height, 'lobby', 'spaceShip', 'space');
+        var spaceShip;
+        this.create_mapa(width, height, 'lobby', 'spaceShip', 'space', ['negro','subcapa','solidos'], spaceShip);
         this.create_animation();
         this.create_player(width, height, this.startx, this.starty, 'player');      
         this.create_remote_players();
     }
 
-    create_mapa(width: number, height: number, key: string, tileImage: string, tileSet: string) {
+    protected create_mapa(width : number, height: number, key: string, tileImage: any, tileSet: any, layerNames: any, variableName: any) {
         const mapa = this.make.tilemap({ key: key });
-        const spaceShip = mapa.addTilesetImage(tileImage, tileSet);
-        if (spaceShip !== null) {
-            mapa.createLayer('negro',spaceShip);
-            const subcapa = mapa.createLayer('subcapa', spaceShip);
-            const solidos = mapa.createLayer('solidos', spaceShip);
-            if (solidos) {
-                solidos.setCollisionByProperty({ pared: true });
-                this.matter.world.setBounds(0, 0, width, height);
-                this.matter.world.convertTilemapLayer(solidos);
-            }
-            if (subcapa) {
-                subcapa.setCollisionByProperty({ pared: true });
-                this.matter.world.setBounds(0, 0, width, height);
-                this.matter.world.convertTilemapLayer(subcapa);
-            }
+        variableName = mapa.addTilesetImage(tileImage, tileSet);
+        
+        if (variableName !== null) {
+            layerNames.forEach((layerName: string | number) => {
+                const layer = mapa.createLayer(layerName, variableName);
+                if (layer) {
+                    layer.setCollisionByProperty({ pared: true });
+                    this.matter.world.setBounds(0, 0, width, height);
+                    this.matter.world.convertTilemapLayer(layer);
+                }
+            });
         }
     }
+    
 
-    create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
+   protected create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
         const newPositionX = position_x + Object.keys(this.otherSprites).length * 30;        
         this.player = this.matter.add.sprite(newPositionX, position_y, spray);
         this.player.setDisplaySize(70, 90);
@@ -120,7 +119,7 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    create_remote_players() {
+    protected create_remote_players() {
         this.socket.on('updatePlayers', (data) => {
             data.forEach((player: { id: string, posx: number, posy: number, velocityx: number, velocityy: number, animation: string, key: string }) => {
                 if (player.id !== this.playerId) { 
@@ -129,6 +128,7 @@ export class MainScene extends Phaser.Scene {
                         existingSprite.setVelocity(player.velocityx, player.velocityy);
                         if (player.animation) {
                             if(player.key === undefined || player.key === 'dead'){
+                                existingSprite.setStatic(true)
                                 existingSprite.anims.play('laying');
                                 existingSprite.anims.stopAfterRepeat(0);
                                 return;
@@ -369,7 +369,10 @@ export class MainScene extends Phaser.Scene {
         document.body.appendChild(startButton); 
     
         startButton.addEventListener('click', () => {
-            this.socket.emit('goToDesert');
+            this.socket.off('updatePlayers');
+            this.socket.emit('goToDesert', {
+                mapaActual: 'DesertScene'
+            });
         });
     }
 } 
