@@ -10,14 +10,24 @@ import { AuthenticationResult } from '@azure/msal-browser';
   styleUrls: ['./loggin.component.css']
 })
 export class LogginComponent {
-  constructor( private msalService: MsalService){
+  title = 'msal-angular-tutorial';
+  isIframe = false;
+  loginDisplay = false;
 
+  constructor(private msalService: MsalService) { }
+
+  ngOnInit() {
+    this.isIframe = window !== window.parent && !window.opener;
   }
 
-  login(){
-    this.msalService.loginPopup().subscribe((response : AuthenticationResult) =>{
-      this.msalService.instance.setActiveAccount(response.account);
-    })
+  login() {
+    this.msalService.loginPopup()
+      .subscribe({
+        next: (result) => {
+          console.log(result);
+        },
+        error: (error) => console.log(error)
+      });
   }
   
   logut(){

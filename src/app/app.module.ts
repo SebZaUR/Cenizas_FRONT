@@ -19,10 +19,16 @@ const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigato
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
-      // 'Application (client) ID' of app registration in the Microsoft Entra admin center - this value is a GUID
       clientId: "c6a90014-e04a-4490-a744-60a1cf8e32ff",
-      // Must be the same redirectUri as what was provided in your app registration.
+      authority: "http://login.microsoftonline.com/9c3dde60-b813-4c66-870f-04e975f8171f",
       redirectUri: "http://localhost:4200",
+      navigateToLoginRequestUrl: true,
+    },
+    cache: {
+      cacheLocation: "localStorage",
+      storeAuthStateInCookie: isIE, // Set to true for Internet Explorer 11
+    }, system: {
+      allowNativeBroker: false, // Disables native brokering support
     }
   });
 }
@@ -64,11 +70,27 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MatDialogModule,
     MsalModule
   ],
-  providers: [{
-    provide: MSAL_INSTANCE,
-    useFactory: MSALInstanceFactory
-  },
-    MsalService
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MsalInterceptor,
+      multi: true
+    },
+    {
+      provide: MSAL_INSTANCE,
+      useFactory: MSALInstanceFactory
+    },
+    {
+      provide: MSAL_GUARD_CONFIG,
+      useFactory: MSALGuardConfigFactory
+    },
+    {
+      provide: MSAL_INTERCEPTOR_CONFIG,
+      useFactory: MSALInterceptorConfigFactory
+    },
+    MsalService,
+    MsalGuard,
+    MsalBroadcastService
   ],
   bootstrap: [AppComponent]
 })
