@@ -21,7 +21,6 @@ export class DesertScene extends MainScene {
             if (this.socket.id) {
                 this.playerId = this.socket.id;
                 this.getTurn(this.myNumber); 
-                console.log(this.myNumber);
             } 
         });
         this.socket.on('playerDisconnected', (playerId: string) => {
