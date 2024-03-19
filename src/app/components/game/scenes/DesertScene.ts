@@ -44,10 +44,6 @@ export class DesertScene extends MainScene {
     override create() {
         const music = this.sound.add('desertMusic', { loop: true });
         const { width, height } = this.sys.game.canvas;
-        const startButton = document.getElementById('startButton');
-        if (startButton) {
-            startButton.style.display = 'none';
-        }
         var desert;
         music.play();
         super.create_mapa(width, height + 380, 'first', 'desert', 'desert', ['suelo','objetos','solidos'],desert);
@@ -71,9 +67,16 @@ export class DesertScene extends MainScene {
             animation: this.player.anims.currentAnim,
             key: this.player.anims.currentAnim?.key
         });
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        await new Promise(resolve => setTimeout(resolve, 250));
         super.create_remote_players()
+    }
+
+    override  update() {
+        super.update()
+        const startButton = document.getElementById('startButton');
+        if (startButton && startButton.parentNode) {
+            startButton.parentNode.removeChild(startButton);
+        }
     }
 
     private getTurn(myNumber: number) {

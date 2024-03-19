@@ -361,8 +361,8 @@ export class MainScene extends Phaser.Scene {
         startButton.id = 'startButton'; 
         startButton.innerHTML = 'Todo listo?';
         startButton.style.position = 'absolute';
-        startButton.style.left = (canvasLeft + canvas.width - startButton.offsetWidth - 220) + 'px'; // Ajuste adicional hacia la izquierda
-        startButton.style.top = (canvasTop + canvas.height - startButton.offsetHeight -100) + 'px'; // Ajuste adicional hacia arriba
+        startButton.style.left = (canvasLeft + canvas.width - startButton.offsetWidth - 220) + 'px';
+        startButton.style.top = (canvasTop + canvas.height - startButton.offsetHeight -100) + 'px';
         startButton.style.zIndex = '1'; 
         startButton.style.padding = '20px 40px'; 
         startButton.style.backgroundColor = '#192841'; 
