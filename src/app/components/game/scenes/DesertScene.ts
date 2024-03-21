@@ -1,44 +1,53 @@
-import Phaser from 'phaser';
-import { Socket } from 'socket.io-client';
 import { MainScene } from './MainScene';
 
 export class DesertScene extends MainScene {
-    protected override startx: number = 160;
-    protected override starty: number = 250;
-    protected override otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
-    protected override playerVelocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
-    protected override socket!: Socket;
 
-    constructor(socket: any) {
-        super('DesertScene', socket);
+    protected override startx!: number;
+    protected override starty: number = 270;
+
+    constructor(key: string, socket: any) {
+        super(key, socket);
     }
 
     override init(data: any) {
-        this.otherSprites = data.otherSprites;
-        super.init(data);
+        this.socket.connect();
+        this.socket.off('initialCoordinates');
+        this.socket.off('firstPlayer');
+        this.socket.off('playerNumber');
+        this.socket.off('goToDesert');
+        this.socket.id = data.socketId;
+        this.myNumber = data.myNumber;
+        this.socket.on('connect', () => {
+            if (this.socket.id) {
+                this.playerId = this.socket.id;
+                this.getTurn(this.myNumber); 
+            } 
+        });
+        this.socket.on('playerDisconnected', (playerId: string) => {
+            const disconnectedPlayerSprite = this.otherSprites[playerId];
+            if (disconnectedPlayerSprite) {
+                disconnectedPlayerSprite.destroy(); 
+                delete this.otherSprites[playerId]; 
+            }
+        });
+        
     }
 
     override preload() {
-        this.load.spritesheet("player", "assets/characters/player.png", {
-            frameWidth: 48,
-            frameHeight: 48
-        });
+        super.preload();
         this.load.tilemapTiledJSON('first', 'assets/backgrounds/desert.json');
         this.load.image('desert', 'assets/backgrounds/desert.png');
         this.load.audio('desertMusic', 'assets/music/desertMusic.ogg');
     }
 
     override create() {
-        const { width, height } = this.sys.game.canvas;
         const music = this.sound.add('desertMusic', { loop: true });
+        const { width, height } = this.sys.game.canvas;
+        var desert;
         music.play();
-        this.create_mapa(width, height + 380, 'first', 'desert', 'desert');
+        super.create_mapa(width, height + 380, 'first', 'desert', 'desert', ['suelo','objetos','solidos'],desert);
         super.create_player(width, height + 380, this.startx, this.starty, 'player');
-        super.create_remote_players();
-        const startButton = document.getElementById('startButton');
-        if (startButton) {
-            startButton.style.display = 'none';
-        }
+        this.create_remote_players();
         this.cameras.main.setAlpha(0);
         this.tweens.add({
             targets: this.cameras.main,
@@ -48,21 +57,44 @@ export class DesertScene extends MainScene {
         });
     }
 
-    override create_mapa(width: number, height: number, key: string, tileImage: string, tileSet: string) {
-        const mapa = this.make.tilemap({ key: key });
-        const desert = mapa.addTilesetImage(tileImage, tileSet);
-        if (desert !== null) {
-            mapa.createLayer('suelo', desert);
-            const objetos = mapa.createLayer('objetos', desert);
-            const solidos = mapa.createLayer('solidos', desert);
-            if (solidos) {
-                solidos.setCollisionByProperty({ pared: true });
-                this.matter.world.convertTilemapLayer(solidos);
-            }
-            if (objetos) {
-                objetos.setCollisionByProperty({ pared: true });
-                this.matter.world.convertTilemapLayer(objetos);
-            }
+    protected override async create_remote_players() {
+        this.socket.emit('updatePlayers', {
+            posx: this.player.x, 
+            posy: this.player.y, 
+            velocityx: this.playerVelocity.x, 
+            velocityy: this.playerVelocity.y, 
+            animation: this.player.anims.currentAnim,
+            key: this.player.anims.currentAnim?.key
+        });
+        await new Promise(resolve => setTimeout(resolve, 250));
+        super.create_remote_players()
+    }
+
+    override  update() {
+        super.update()
+        const startButton = document.getElementById('startButton');
+        if (startButton && startButton.parentNode) {
+            startButton.parentNode.removeChild(startButton);
+        }
+    }
+
+    private getTurn(myNumber: number) {
+        switch (myNumber) {
+            case 1:
+                this.startx = 170;
+                break;
+            case 2:
+                this.startx = 200;
+                break;
+            case 3:
+                this.startx = 230;
+                break;
+            case 4:
+                this.startx = 260;
+                break;
+            default:
+                this.startx = 170; 
+                break;
         }
     }
 }

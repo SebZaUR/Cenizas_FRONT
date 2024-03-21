@@ -1,4 +1,6 @@
 var players = [];
+const MAX_PLAYERS = 4; 
+let connectedPlayers = {};
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
@@ -10,9 +12,16 @@ const io = require('socket.io')(http, {
 
   io.on('connection', (socket) => {
     
-    const isFirstPlayer = players.length === 0;
-
-    socket.emit('firstPlayer', isFirstPlayer);
+    if (Object.keys(connectedPlayers).length < MAX_PLAYERS) {
+        const myNumber = Object.keys(connectedPlayers).length + 1; 
+        connectedPlayers[socket.id] = myNumber; 
+        socket.emit('firstPlayer', myNumber === 1); 
+        socket.emit('playerNumber', myNumber); 
+    } else {
+        socket.emit('lobbyFull');
+        socket.disconnect(true);
+        return; 
+    }
 
     const initialCoordinates = {x: 370 + players.length * 30, y: 270};  
     players.push({ id: socket.id, posx: initialCoordinates.x, posy: initialCoordinates.y, velocityx: 0, velocityy: 0, animation: null });
@@ -32,13 +41,14 @@ const io = require('socket.io')(http, {
         io.emit('updatePlayers', players); 
     });
 
-    socket.on('goToDesert', () => {
-        io.emit('goToDesert');
+    socket.on('goToDesert', (data) => {
+        io.emit('goToDesert', data);
     });
 
 
     socket.on('disconnect', () => {     
     const index = players.findIndex(player => player.id === socket.id);
+    delete connectedPlayers[socket.id]; 
         if (index !== -1) {
             players.splice(index, 1); 
             io.emit('playerDisconnected', socket.id);

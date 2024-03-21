@@ -14,26 +14,44 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { IPublicClientApplication, PublicClientApplication, InteractionType, BrowserCacheLocation, LogLevel } from '@azure/msal-browser';
 import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalGuardConfiguration, MsalRedirectComponent } from '@azure/msal-angular';
 
-const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1;
+const GRAPH_ENDPOINT = 'Enter_the_Graph_Endpoint_Herev1.0/me';
+
+const isIE =
+  window.navigator.userAgent.indexOf('MSIE ') > -1 ||
+  window.navigator.userAgent.indexOf('Trident/') > -1;
+
+export function loggerCallback(logLevel: LogLevel, message: string) {
+  console.log(message);
+}
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
-      // 'Application (client) ID' of app registration in the Microsoft Entra admin center - this value is a GUID
       clientId: "c6a90014-e04a-4490-a744-60a1cf8e32ff",
-      // Must be the same redirectUri as what was provided in your app registration.
+      authority: "https://login.microsoftonline.com/9c3dde60-b813-4c66-870f-04e975f8171f",
       redirectUri: "http://localhost:4200",
-    }
+    },
+    cache: {
+      cacheLocation: BrowserCacheLocation.LocalStorage,
+      storeAuthStateInCookie: isIE, // set to true for IE 11
+    },
+    system: {
+      loggerOptions: {
+        loggerCallback,
+        logLevel: LogLevel.Info,
+        piiLoggingEnabled: false,
+      },
+    },
   });
 }
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
-  protectedResourceMap.set('https://graph.microsoft.com/v1.0/me', ['user.read']);
+  protectedResourceMap.set(GRAPH_ENDPOINT, ['user.read']);
 
   return {
     interactionType: InteractionType.Redirect,
-    protectedResourceMap
+    protectedResourceMap,
   };
 }
 
@@ -41,8 +59,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
   return {
     interactionType: InteractionType.Redirect,
     authRequest: {
-      scopes: ['user.read']
-    }
+      scopes: ['user.read'],
+    },
   };
 }
 
@@ -64,12 +82,28 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MatDialogModule,
     MsalModule
   ],
-  providers: [{
-    provide: MSAL_INSTANCE,
-    useFactory: MSALInstanceFactory
-  },
-    MsalService
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MsalInterceptor,
+      multi: true,
+    },
+    {
+      provide: MSAL_INSTANCE,
+      useFactory: MSALInstanceFactory,
+    },
+    {
+      provide: MSAL_GUARD_CONFIG,
+      useFactory: MSALGuardConfigFactory,
+    },
+    {
+      provide: MSAL_INTERCEPTOR_CONFIG,
+      useFactory: MSALInterceptorConfigFactory,
+    },
+    MsalService,
+    MsalGuard,
+    MsalBroadcastService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent,  MsalRedirectComponent]
 })
 export class AppModule { }

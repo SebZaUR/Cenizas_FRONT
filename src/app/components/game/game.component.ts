@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import Phaser from 'phaser'; //import Phaser
+import Phaser from 'phaser'; 
 import { MainScene } from './scenes/MainScene';
 import { DesertScene } from './scenes/DesertScene';
 import { io } from 'socket.io-client';
@@ -19,7 +19,7 @@ export class GameComponent implements OnInit {
   constructor() {
     this.config = {
       type: Phaser.AUTO,
-      scene: [ new MainScene('MainScene', this.socket), new DesertScene(this.socket) ],
+      scene: [ new MainScene('MainScene', this.socket), new DesertScene('DesertScene', this.socket) ],
       width: 900,
       height: 630,
       parent: 'gameContainer',
@@ -27,7 +27,7 @@ export class GameComponent implements OnInit {
       physics: {
         default: 'matter',
         matter: {
-           debug:false,
+           debug:true,
            gravity: { x: 0, y: 0 }
           }
       },
