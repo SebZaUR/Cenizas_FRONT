@@ -1,21 +1,31 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { RoomJson } from 'src/app/schemas/RoomJson';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoomsService {
 
-  private roomApiUrl = "http://localhost:8080/room";
+  private roomApiUrl = "http://localhost:8080/v1/rooms";
 
   constructor(private http: HttpClient) { }
 
-  createRoom(): Observable<any>{
-    return this.http.post<any>(this.roomApiUrl+"/create",{});
+  getRoom(codigo:string):Observable<RoomJson> {
+    return this.http.get<RoomJson>(this.roomApiUrl+"/"+codigo);
   }
 
-  getRoom(codigo:string):Observable<any> {
-    return this.http.get<any>(`${this.roomApiUrl}/getRoom?codigo=${codigo}`);
+  getRooms(): Observable<RoomJson[]> { 
+    return this.http.get<RoomJson[]>(this.roomApiUrl); 
+  }
+
+  getRoomUsers(codigo:string): Observable<string[]> { 
+    return this.http.get<string[]>(this.roomApiUrl+"/"+codigo+"/users-in-room"); 
+  }
+
+  createRoom(serverName:string): Observable<any>{
+    const params = new HttpParams().set('server_name', serverName);
+    return this.http.post<any>(this.roomApiUrl+"/create",null, { params: params });
   }
 }
