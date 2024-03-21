@@ -15,17 +15,17 @@ export class HomeComponent implements OnInit{
     this.popup.openPopUp();
   }
 
-  crearSala(){
-    this.roomService.createRoom().subscribe((response) => {
-      const codigo = response[0].code;
-      console.log("Codigo de la sala:" +codigo);
-      this.router.navigate(['/sala-espera'], {queryParams:{code: codigo}});
-    },
-    (error) =>{
-      alert("Ocurrio un error al intentar crear la sala");
-      }
-    );
-  }
+  // crearSala(){
+  //   this.roomService.createRoom().subscribe((response) => {
+  //     const codigo = response[0].code;
+  //     console.log("Codigo de la sala:" +codigo);
+  //     this.router.navigate(['/sala-espera'], {queryParams:{code: codigo}});
+  //   },
+  //   (error) =>{
+  //     alert("Ocurrio un error al intentar crear la sala");
+  //     }
+  //   );
+  // }
 
   escribirCodigo(){
     this.router.navigate(['/buscar-sala']);

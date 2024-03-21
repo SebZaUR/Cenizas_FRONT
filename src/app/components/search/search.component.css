@@ -1,11 +1,5 @@
-.principal {
-    font-family: minecraft;
-    position: relative;
-    display: flex;
-    vertical-align: middle;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 150px;
-    width: 100%; 
-    height: auto; 
+.list-group-item.interactive:hover {
+    cursor: pointer;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.3s ease-in-out;
 }
