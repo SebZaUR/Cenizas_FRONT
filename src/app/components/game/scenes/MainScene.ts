@@ -9,9 +9,10 @@ export class MainScene extends Phaser.Scene {
     protected isAttacking: boolean = false;
     protected lastDirection: string = "down";
     protected playerVelocity = new Phaser.Math.Vector2();
-    protected startx: number = 370;
-    protected starty: number = 300;
+    protected startx!: number;
+    protected starty!: number;
     protected playerId!: string;
+    protected myNumber!: number;
     protected socket!: Socket;
     protected otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
 
@@ -35,9 +36,13 @@ export class MainScene extends Phaser.Scene {
                     }
                 });
 
+                this.socket.on('playerNumber', (myNumber) => {
+                    this.myNumber = myNumber;
+                });
+
                 this.socket.on('goToDesert', (data) => {
                     data.socketId = this.socket.id;
-                    this.socket.disconnect();
+                    data.myNumber = this.myNumber;
                     this.socket.off('updatePlayers');
                     this.tweens.add({
                         targets: this.cameras.main,
@@ -45,7 +50,8 @@ export class MainScene extends Phaser.Scene {
                         duration: 2000,
                         onComplete: () => {
                             this.scene.start('DesertScene',  data);
-                            this.scene.stop('MainScene');                            
+                            this.socket.disconnect()
+                            this.scene.stop('MainScene');
                         }
                     });
                 });
@@ -355,8 +361,8 @@ export class MainScene extends Phaser.Scene {
         startButton.id = 'startButton'; 
         startButton.innerHTML = 'Todo listo?';
         startButton.style.position = 'absolute';
-        startButton.style.left = (canvasLeft + canvas.width - startButton.offsetWidth - 220) + 'px'; // Ajuste adicional hacia la izquierda
-        startButton.style.top = (canvasTop + canvas.height - startButton.offsetHeight -100) + 'px'; // Ajuste adicional hacia arriba
+        startButton.style.left = (canvasLeft + canvas.width - startButton.offsetWidth - 220) + 'px';
+        startButton.style.top = (canvasTop + canvas.height - startButton.offsetHeight -100) + 'px';
         startButton.style.zIndex = '1'; 
         startButton.style.padding = '20px 40px'; 
         startButton.style.backgroundColor = '#192841'; 
@@ -369,7 +375,6 @@ export class MainScene extends Phaser.Scene {
         document.body.appendChild(startButton); 
     
         startButton.addEventListener('click', () => {
-            this.socket.off('updatePlayers');
             this.socket.emit('goToDesert', {
                 mapaActual: 'DesertScene'
             });

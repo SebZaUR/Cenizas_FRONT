@@ -1,6 +1,6 @@
 var players = [];
-var mapaActual = 'MainScene';
-var posic_x;
+const MAX_PLAYERS = 4; 
+let connectedPlayers = {};
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
@@ -11,23 +11,20 @@ const io = require('socket.io')(http, {
   });
 
   io.on('connection', (socket) => {
-
-    const isFirstPlayer = players.length === 0;
-
-    socket.emit('firstPlayer', isFirstPlayer);
-
-    if (mapaActual === 'MainScene'){
-        posic_x = 370;
-    }else{
-        posic_x = 170;
+    
+    if (Object.keys(connectedPlayers).length < MAX_PLAYERS) {
+        const myNumber = Object.keys(connectedPlayers).length + 1; 
+        connectedPlayers[socket.id] = myNumber; 
+        socket.emit('firstPlayer', myNumber === 1); 
+        socket.emit('playerNumber', myNumber); 
+    } else {
+        socket.emit('lobbyFull');
+        socket.disconnect(true);
+        return; 
     }
 
-
-    var initialCoordinates = {x: posic_x + players.length * 30, y: 270};
-
+    const initialCoordinates = {x: 370 + players.length * 30, y: 270};  
     players.push({ id: socket.id, posx: initialCoordinates.x, posy: initialCoordinates.y, velocityx: 0, velocityy: 0, animation: null });
-
-
     socket.emit('initialCoordinates', initialCoordinates);
 
     socket.on('updatePlayers', (data) => {
@@ -41,24 +38,17 @@ const io = require('socket.io')(http, {
             players[index].key = data.key;
 
         }
-        io.emit('updatePlayers', players, initialCoordinates); 
+        io.emit('updatePlayers', players); 
     });
 
     socket.on('goToDesert', (data) => {
-        mapaActual = data.mapaActual;
-        const index = players.findIndex(player => player.id === socket.id);
-    
-        players.forEach((player, index) => {
-            player.posx = 170 + 30 * index;
-            player.posy = 270;
-        });
-    
-        io.emit('goToDesert', players);
+        io.emit('goToDesert', data);
     });
 
 
     socket.on('disconnect', () => {     
     const index = players.findIndex(player => player.id === socket.id);
+    delete connectedPlayers[socket.id]; 
         if (index !== -1) {
             players.splice(index, 1); 
             io.emit('playerDisconnected', socket.id);
