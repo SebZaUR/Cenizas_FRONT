@@ -47,6 +47,7 @@ export class DesertScene extends MainScene {
         music.play();
         super.create_mapa(width, height + 380, 'first', 'desert', 'desert', ['suelo','objetos','solidos'],desert);
         super.create_player(width, height + 380, this.startx, this.starty, 'player');
+        this.barraVida = this.add.image(330, 210, 'vida').setScrollFactor(0);
         this.create_remote_players();
         this.cameras.main.setAlpha(0);
         this.tweens.add({
@@ -71,11 +72,11 @@ export class DesertScene extends MainScene {
     }
 
     override  update() {
-        super.update()
         const startButton = document.getElementById('startButton');
         if (startButton && startButton.parentNode) {
             startButton.parentNode.removeChild(startButton);
         }
+        super.update();
     }
 
     private getTurn(myNumber: number) {
@@ -96,5 +97,7 @@ export class DesertScene extends MainScene {
                 this.startx = 170; 
                 break;
         }
-    }
+    }    
+
+
 }
