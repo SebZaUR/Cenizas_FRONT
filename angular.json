@@ -66,10 +66,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "my-game:build:production"
+              "buildTarget": "my-game:build:production"
             },
             "development": {
-              "browserTarget": "my-game:build:development"
+              "buildTarget": "my-game:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -77,7 +77,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "my-game:build"
+            "buildTarget": "my-game:build"
           }
         },
         "test": {
