@@ -5,6 +5,7 @@ export class MainScene extends Phaser.Scene {
     keys!: any;
     solidos!: any;
     protected player!: Phaser.Physics.Matter.Sprite;
+
     protected isKnockedDown: boolean = false;
     protected isAttacking: boolean = false;
     protected lastDirection: string = "down";
@@ -15,6 +16,10 @@ export class MainScene extends Phaser.Scene {
     protected myNumber!: number;
     protected socket!: Socket;
     protected otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
+    protected barraVida!: Phaser.GameObjects.GameObject;
+
+
+
 
     constructor(key: string, socket: any) {
         super({ key: key });
@@ -72,17 +77,22 @@ export class MainScene extends Phaser.Scene {
             frameWidth: 48,
             frameHeight: 48
         });
+
+      
         this.load.tilemapTiledJSON('lobby', 'assets/backgrounds/mapa.json');
         this.load.image('space', 'assets/backgrounds/spaceShip.png');
+        this.load.image('vida', 'assets/icons/barraVida.png');
     }
 
     create() {
+   
         const { width, height } = this.sys.game.canvas;
         var spaceShip;
         this.create_mapa(width, height, 'lobby', 'spaceShip', 'space', ['negro','subcapa','solidos'], spaceShip);
         this.create_animation();
         this.create_player(width, height, this.startx, this.starty, 'player');      
         this.create_remote_players();
+    
     }
 
     protected create_mapa(width : number, height: number, key: string, tileImage: any, tileSet: any, layerNames: any, variableName: any) {
