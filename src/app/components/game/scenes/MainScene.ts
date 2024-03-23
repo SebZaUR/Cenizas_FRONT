@@ -93,8 +93,6 @@ export class MainScene extends Phaser.Scene {
         this.create_player(width, height, this.startx, this.starty, 'player');      
         this.create_remote_players();
     
-
-
     }
 
     protected create_mapa(width : number, height: number, key: string, tileImage: any, tileSet: any, layerNames: any, variableName: any) {

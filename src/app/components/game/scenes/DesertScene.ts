@@ -37,12 +37,11 @@ export class DesertScene extends MainScene {
                 delete this.otherSprites[playerId]; 
             }
         });
-        
+     
     }
 
     override preload() {
         super.preload();
-  
         this.load.tilemapTiledJSON('first', 'assets/backgrounds/desert.json');
         this.load.image('desert', 'assets/backgrounds/desert.png');
         this.load.audio('desertMusic', 'assets/music/desertMusic.ogg');
@@ -63,35 +62,28 @@ export class DesertScene extends MainScene {
         this.barraVida = this.add.image(330, 210, 'vida').setScrollFactor(0);
         this.create_remote_players();
         this.cameras.main.setAlpha(0);
+        this.create_animationSkeleton();
+        this.create_skeleton(400, 400, 'Skeleton');
+        this.skeleton.anims.play('caminar');
+        this.matter.world.on('collisionstart', (event: any) => {
+            event.pairs.forEach((pair: any) => {
+                const bodyA = pair.bodyA;
+                const bodyB = pair.bodyB;
+        
+                if (bodyA === this.skeleton.body || bodyB === this.skeleton.body) {
+                    this.changeSkeletonDirection();
+                }
+            });
+        });
+
         this.tweens.add({
             targets: this.cameras.main,
             alpha: 1,
             duration: 2000,
             onComplete: () => {}
         });
-       
-
-
-        this.create_skeleton(80,40,'Skeleton');   
-        this.create_animationSkeleton();
-
-        this.matter.world.on('collisionstart', (event: any) => {
-            event.pairs.forEach((pair: any) => {
-                const bodyA = pair.bodyA;
-                const bodyB = pair.bodyB;
-        
-                // Verifica si el esqueleto colisiona
-                if (bodyA === this.skeleton.body || bodyB === this.skeleton.body) {
-                    // si es asi cambia de dirreción
-                    this.changeSkeletonDirection();
-                }
-            });
-        });
-    
-
     }
 
-//direcciones aleatorias
 private changeSkeletonDirection() {
     const randomDirection = Phaser.Math.Between(0, 3);
 
@@ -113,19 +105,14 @@ private changeSkeletonDirection() {
     }
 }
 
-    //crear esqueleto 
     protected create_skeleton ( position_x: number, position_y: number, spray: string) {
         this.skeleton = this.matter.add.sprite(position_x, position_y, spray);
         this.skeleton.setDisplaySize(90, 90);
         this.skeleton.setRectangle(35, 50);
         this.skeleton.setOrigin(0.50, 0.50);
-        this.skeleton.setPosition(400, 400);
         this.skeleton.setFixedRotation();
-        //const frameNumber = 39; // El número del fotograma que deseas establecer
-        //this.skeleton.setFrame(frameNumber);
     }
 
-    //animacion del esqueleto 
     create_animationSkeleton() {
         this.anims.create({
             key: 'caminar',
@@ -139,8 +126,6 @@ private changeSkeletonDirection() {
             frameRate: 5,
             repeat: -1
         });
-        this.skeleton.anims.play('caminar');
-
     }
 
 
@@ -154,9 +139,8 @@ private changeSkeletonDirection() {
             key: this.player.anims.currentAnim?.key
         });
        
-        
         await new Promise(resolve => setTimeout(resolve, 250));
-        super.create_remote_players()
+        super.create_remote_players();
     }
 
     override  update() {
@@ -165,9 +149,10 @@ private changeSkeletonDirection() {
             startButton.parentNode.removeChild(startButton);
         }
         super.update();
+        this.socket.on('updateSkeleton', (skeletonData) => {
+            this.updateSkeleton(skeletonData);
+        });
 
-
-        //Velocidad del esqueleto 
         const speed = 0.7;
         switch(this.directionskeleton){
             case Direction.UP:  
@@ -177,20 +162,28 @@ private changeSkeletonDirection() {
                 this.skeleton.setVelocity(0,speed)
                 break
             case Direction.LEFT:
+                this.skeleton.setFlipX(true);
                 this.skeleton.setVelocity(-speed,0)
                 break
             case Direction.RIGHT:
                 this.skeleton.setVelocity(speed,0)
+                this.skeleton.setFlipX(false);
+
                 break
         }
         
         if (this.isAttacking) {
-            this.skeleton.setTint(0xff0000); // Cambiar el color a rojo
+            this.skeleton.setTint(0xff0000); 
         } else {
-            this.skeleton.clearTint(); // Quitar el color rojo
+            this.skeleton.clearTint();
         }
-   
 
+        this.socket.emit('updateSkeleton',{
+            x: this.skeleton.x,
+            y: this.skeleton.y,
+            animation: this.skeleton.anims.currentAnim,
+            key: this.skeleton.anims.currentAnim?.key
+        })
     }
 
     private getTurn(myNumber: number) {
@@ -211,7 +204,10 @@ private changeSkeletonDirection() {
                 this.startx = 170; 
                 break;
         }
-    }    
-
-
+    } 
+    
+    private updateSkeleton(data: any){
+        this.skeleton.x = data.x;
+        this.skeleton.y = data.y;
+    }
 }

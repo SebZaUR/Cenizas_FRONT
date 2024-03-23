@@ -1,6 +1,10 @@
 var players = [];
 const MAX_PLAYERS = 4; 
 let connectedPlayers = {};
+let skeletonState = {
+    x: 400,
+    y: 400,
+};
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
@@ -11,11 +15,6 @@ const io = require('socket.io')(http, {
   });
 
   io.on('connection', (socket) => {
-    socket.on('updateSkeleton', (skeletonData) => {
-        // Emitir los datos del esqueleto a todos los clientes conectados
-        io.emit('updateSkeleton', skeletonData);
-    });
-
     if (Object.keys(connectedPlayers).length < MAX_PLAYERS) {
         const myNumber = Object.keys(connectedPlayers).length + 1; 
         connectedPlayers[socket.id] = myNumber; 
@@ -50,6 +49,10 @@ const io = require('socket.io')(http, {
         io.emit('goToDesert', data);
     });
 
+    socket.on('updateSkeleton', (skeletonData) => {
+        skeletonState = skeletonData;
+        io.emit('updateSkeleton', skeletonData);
+    });
 
     socket.on('disconnect', () => {     
     const index = players.findIndex(player => player.id === socket.id);

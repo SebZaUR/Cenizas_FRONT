@@ -66,10 +66,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "my-game:build:production"
+              "browserTarget": "my-game:build:production"
             },
             "development": {
-              "buildTarget": "my-game:build:development"
+              "browserTarget": "my-game:build:development"
             }
           },
           "defaultConfiguration": "development"
