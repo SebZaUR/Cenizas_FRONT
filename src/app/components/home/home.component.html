@@ -1,10 +1,19 @@
-<h1 type="titulo">Cenisas del Pasado</h1>
-<div class="div_boton">
-    <button  class="btn btn-primary" (click)="crearSala()">Iniciar Sala</button>
+<div class="principal center-container">
+  <h1 class="titulo text-center">CENIZAS DEL PASADO</h1>
+  <div class="d-flex justify-content-center align-items-center flex-column">
+    <div class="div_boton my-2" (click)="routeHost()">
+      <button class="btn btn-primary">Iniciar como Anfitrión</button>
+    </div>
+    <div class="div_boton my-2">
+      <button type="button" class="btn btn-primary" (click)="escribirCodigo()">Unirse a Sala</button>
+    </div>
+    <div class="div_boton my-2">
+      <button type="button" class="btn btn-primary">Ajustes</button>
+    </div>
+    <div class="div_boton my-2">
+      <button type="button" class="btn btn-primary">Salir</button>
+    </div>
   </div>
-  <div class="div_boton">
-    <button type="button" class="btn btn-primary" (click)="escribirCodigo()">Unirse a Sala</button>
-  </div>
-  <div class="div_boton">
-    <button type="button" class="btn btn-primary">Salir</button>
-  </div>
+</div>
+
+
