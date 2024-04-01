@@ -11,6 +11,7 @@ label{
     color: #ced4dd;
 }
 
+
 h1{
     color: #AD7757;
     font-family: minecraft;
@@ -47,7 +48,6 @@ p{
 }
 
 button {
-    font-family: minecraft;
     background-color: #3C5E8B; /* Color de fondo */
     border: none; /* Sin borde */
     color: white; /* Color del texto */

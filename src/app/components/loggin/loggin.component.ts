@@ -2,7 +2,7 @@ import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
 import { EventMessage, EventType, AuthenticationResult, InteractionStatus,RedirectRequest } from '@azure/msal-browser';
 import { Subject, filter, takeUntil } from 'rxjs';
-import { user } from 'src/app/JsonType/user';
+
 import { UserService } from 'src/app/services/user/user.service';
 
 
@@ -18,7 +18,7 @@ export class LogginComponent implements OnInit, OnDestroy{
   loginDisplay = false;
   mail : string = "";
   nickname : string = "";
-  usuario : user | undefined;
+  
   tokenExpiration: string = '';
   private readonly _destroying$ = new Subject<void>();
   constructor(
@@ -29,34 +29,13 @@ export class LogginComponent implements OnInit, OnDestroy{
   ) { }
 
   ngOnInit(): void {
-    this.isIframe = window !== window.parent && !window.opener;
-
-    this.msalBroadcastService.inProgress$
-      .pipe(
-        filter((status: InteractionStatus) => status === InteractionStatus.None),
-        takeUntil(this._destroying$)
-      )
-      .subscribe(() => {
-        this.setLoginDisplay();
-      });
-    // Used for storing and displaying token expiration
-    this.msalBroadcastService.msalSubject$.pipe(filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS)).subscribe(msg => {
-      this.tokenExpiration=  (msg.payload as any).expiresOn;
-      localStorage.setItem('tokenExpiration', this.tokenExpiration);
-    });
+    
   }
 
-  setLoginDisplay() {
-    this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
+  ngOnDestroy(): void {
+    
   }
 
-  login() {
-    if (this.msalGuardConfig.authRequest) {
-      this.authService.loginRedirect({ ...this.msalGuardConfig.authRequest } as RedirectRequest);
-    } else {
-      this.authService.loginRedirect();
-    }
-  }
 
   createCount(){
     this.authService.loginPopup()
@@ -74,16 +53,4 @@ export class LogginComponent implements OnInit, OnDestroy{
       });
   }
   
-  logut(){
-    this.authService.logoutRedirect();
-  }
-
-  isLog(): boolean{
-    return this.authService.instance.getActiveAccount() != null;
-  }
-
-  ngOnDestroy(): void {
-    this._destroying$.next(undefined);
-    this._destroying$.complete();
-  }
 }
