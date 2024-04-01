@@ -16,9 +16,8 @@ import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfig
 
 const GRAPH_ENDPOINT = 'https://graph.microsoft.com/v1.0/me';
 
-const isIE =
-  window.navigator.userAgent.indexOf('MSIE ') > -1 ||
-  window.navigator.userAgent.indexOf('Trident/') > -1;
+const isIE =window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1;
+
 
 export function loggerCallback(logLevel: LogLevel, message: string) {
   console.log(message);
