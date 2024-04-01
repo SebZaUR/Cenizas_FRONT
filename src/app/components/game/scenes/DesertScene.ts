@@ -168,22 +168,29 @@ private changeSkeletonDirection() {
             case Direction.RIGHT:
                 this.skeleton.setVelocity(speed,0)
                 this.skeleton.setFlipX(false);
-
                 break
         }
-        
-        if (this.isAttacking) {
-            this.skeleton.setTint(0xff0000); 
-        } else {
-            this.skeleton.clearTint();
+        if (this.isAttacking && this.checkDistance(this.player, this.skeleton)) {
+            this.skeleton.setTint(0xff0000);
+
+        }
+
+        if (this.isAttacking === false && this.checkDistance(this.player, this.skeleton) ){
+            this.skeleton.clearTint()
         }
 
         this.socket.emit('updateSkeleton',{
             x: this.skeleton.x,
             y: this.skeleton.y,
             animation: this.skeleton.anims.currentAnim,
-            key: this.skeleton.anims.currentAnim?.key
+            key: this.skeleton.anims.currentAnim?.key,
+            color: this.skeleton.tint,
         })
+    }
+
+    private checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
+        const distance = Phaser.Math.Distance.Between(bodyA.x, bodyA.y, bodyB.x, bodyB.y);
+        return distance < 50;
     }
 
     private getTurn(myNumber: number) {
@@ -209,5 +216,6 @@ private changeSkeletonDirection() {
     private updateSkeleton(data: any){
         this.skeleton.x = data.x;
         this.skeleton.y = data.y;
+        this.skeleton.setTint(data.color);
     }
 }
