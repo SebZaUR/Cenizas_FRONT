@@ -31,10 +31,6 @@ export class RoomsService {
 
   addUserToRoom(user:string,code:string):Observable<any>{
     const params = new HttpParams().set('code',code).set('user',user);
-    const codigo  = code
-
-    console.log(typeof codigo);
-    alert(this.roomApiUrl+"/"+code+"/update-users")
     return this.http.put<any>(this.roomApiUrl+"/"+code+"/update-users",null, { params: params });
   }
 }
