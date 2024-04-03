@@ -20,8 +20,8 @@ export class UserService {
     return this.http.post<any>(this.userUrlApi + "/create", null, {params:params});
   }
   
-  getUser(correo:string):Observable<any>{
-    return  this.http.get<any>(this.userUrlApi+"/"+correo);
+  getUser(correo:string):Observable<UserJson>{
+    return  this.http.get<UserJson>(this.userUrlApi+"/"+correo);
   }
 
 }
