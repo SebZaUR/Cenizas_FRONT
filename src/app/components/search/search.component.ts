@@ -24,32 +24,35 @@ export class SearchComponent {
   constructor(private roomService: RoomsService, private router: Router, private http: HttpClient, private userService: UserService) {}
 
   ngOnInit(): void {
-    this.listRooms(); 
-  }
-
-  joinRoom(codigoSala: string) {
     this.http.get('https://graph.microsoft.com/v1.0/me')
     .subscribe(profile => {
         this.profile = profile;
+        this.mail = this.profile.mail;
         if (this.profile && this.profile.mail) {
             this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {});;
         }
     });
-    this.roomService.getRoom(this.codigoSala).subscribe((room: RoomJson) => {
+  }
+
+  joinRoom(codigoSala: string) {
+    this.roomService.getRoom(codigoSala).subscribe((room: RoomJson) => {
       this.room = room;
       this.mail =this.profile?.mail 
-      this.roomService.addUserToRoom(this.mail,this.codigoSala).subscribe(()=>{});
-    },(error) => {
-        alert(error.message);
-      }
+      this.roomService.addUserToRoom(this.mail,codigoSala).subscribe(()=>{});
+      this.router.navigate(['/lobby'],{queryParams : {code : codigoSala}})
+    }
     );
   }
 
   listRooms() {
+    this.rooms.splice(0, this.rooms.length);
     this.roomService.getRooms().subscribe(
       (response) => {
-        console.log(response);
-        this.rooms = response; // Almacenar las habitaciones en la variable de componente
+        for(let i =0; response.length;i++){
+          if(response[i].public){
+            this.rooms.push(response[i]);
+          }
+        }
       },
       (error) => {
         console.log(error);
@@ -57,18 +60,8 @@ export class SearchComponent {
     );
   }
 
-  createRoom(server_name:string){
-    this.roomService.createRoom(server_name).subscribe(
-      (response) => {
-        console.log(response);
-        response.toString()
-        this.router.navigate(['/sala-espera'],{ queryParams: { code: response.toString() } });
-      },
-      (error) => {
-        console.log(error);
-        // Aquí puedes manejar el error, como mostrar un mensaje al usuario
-      }
-    );
+  loadFriendRoom(){
+
   }
 }
 

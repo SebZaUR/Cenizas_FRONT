@@ -14,23 +14,10 @@ export class HomeComponent implements OnInit{
 
 
   ngOnInit(): void {
-    this.popup.openPopUp();
   }
 
   crearSala(){
-    let roomName = prompt("Por favor, ingrese el nombre del nuevo plano:");
-    while(roomName == null){
-      alert('El campo no puede estar vacío');
-      roomName = prompt("Por favor, ingrese el nombre del nuevo plano:");
-    }
-    this.roomService.createRoom(roomName).subscribe((response) => {
-      const codigo=response[0]
-      this.router.navigate(['/lobby'], {queryParams:{code: codigo}});
-     },
-     (error) =>{
-       alert("Ocurrio un error al intentar crear la sala");
-       }
-     );
+    this.router.navigate(["/configure"]);
    }
 
   escribirCodigo(){

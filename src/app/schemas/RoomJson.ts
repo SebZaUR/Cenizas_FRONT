@@ -7,5 +7,6 @@ export interface RoomJson{
     users_in_room: [string],
     roomStats:	RoomStats,
     levels:	[number],
-    id:	number
+    id:	number,
+    public: boolean
 }

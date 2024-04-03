@@ -96,8 +96,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   createCount(userInfo: any) {
-    console.log(userInfo.name)
-    console.log(userInfo.preferred_username)
     this.userService.createUser(userInfo.name,userInfo.preferred_username).subscribe((resultado => {
       console.log("Se inicio sesion");
     }));

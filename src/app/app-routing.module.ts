@@ -10,10 +10,11 @@ import { HostComponent } from './components/host/host.component';
 
 // MsalGuard is required to protect routes and require authentication before accessing protected routes
 import { MsalGuard } from '@azure/msal-angular';
+import { ConfigureRoomComponent } from './components/configure_room/configure-room/configure-room.component';
 
 //colocar aqui las routas de navegación
 const routes: Routes = [
-  { path: "", component: HomeComponent, pathMatch: 'full' },
+  { path: "", component: HomeComponent, pathMatch: 'full', canActivate:[MsalGuard] },
   {
     path: "host", component: HostComponent,
     canActivate: [
@@ -33,7 +34,9 @@ const routes: Routes = [
     ]
   },
   { path: "lobby", component: GameComponent },
+  { path: "configure", component: ConfigureRoomComponent, canActivate: [MsalGuard]},
   { path: "**", component: PagenotfoundComponent }
+  
 ];
 
 @NgModule({
