@@ -22,7 +22,7 @@ export class SearchComponent {
   joinRoom(codigoSala: string) {
     this.roomService.getRoom(codigoSala).subscribe(
       (response) => {
-        this.router.navigate(['/sala-espera'],{ queryParams: { code: codigoSala} })
+        this.router.navigate(['/lobby'],{ queryParams: { code: codigoSala} })
       },
       (error) => {
         console.log(error);

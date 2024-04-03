@@ -10,6 +10,9 @@ import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
 import { UserService } from './services/user/user.service';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { ProfileType } from './schemas/ProfileTypeJson';
 
 
 @Component({
@@ -22,14 +25,15 @@ export class AppComponent implements OnInit, OnDestroy {
   loginDisplay = false;
   tokenExpiration: string = '';
   private readonly _destroying$ = new Subject<void>();
-  mail: any;
-  nickname: any;
+  profile!: ProfileType;
+  user: any;
 
   constructor(
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
     private msalBroadcastService: MsalBroadcastService,
-    private userService: UserService
+    private userService: UserService,private router: Router,
+     private http: HttpClient
   ) { }
 
   // On initialization of the page, display the page elements based on the user state
@@ -78,6 +82,14 @@ export class AppComponent implements OnInit, OnDestroy {
   login() {
     if (this.msalGuardConfig.authRequest) {
       this.authService.loginRedirect({ ...this.msalGuardConfig.authRequest } as RedirectRequest);
+      this.http.get('https://graph.microsoft.com/v1.0/me')
+            .subscribe(profile => {
+                this.profile = profile;
+                if (this.profile && this.profile.mail) {
+                    this.user = this.userService.getUser(this.profile.mail);
+                }
+            });
+      console.log(this.profile?.mail)
     } else {
       this.authService.loginRedirect();
     }
@@ -99,5 +111,9 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._destroying$.next(undefined);
     this._destroying$.complete();
+  }
+
+  routeHost(){
+    this.router.navigate(['/host']);
   }
 }
