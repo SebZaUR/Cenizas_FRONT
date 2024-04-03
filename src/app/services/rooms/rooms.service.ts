@@ -24,8 +24,13 @@ export class RoomsService {
     return this.http.get<string[]>(this.roomApiUrl+"/"+codigo+"/users-in-room"); 
   }
 
-  createRoom(serverName:string): Observable<any>{
-    const params = new HttpParams().set('server_name', serverName);
+  createRoom(serverName:string, isPublic:boolean,user:string): Observable<any>{
+    const params = new HttpParams().set('server_name', serverName).set("isPublic" ,isPublic).set( 'user_creator', user );
     return this.http.post<any>(this.roomApiUrl+"/create",null, { params: params });
+  }
+
+  addUserToRoom(user:string,code:string):Observable<any>{
+    const params = new HttpParams().set('code',code).set('user',user);
+    return this.http.put<any>(this.roomApiUrl+"/"+code+"/update-users",null, { params: params });
   }
 }

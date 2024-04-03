@@ -1,5 +1,8 @@
-.list-group-item.interactive:hover {
-    cursor: pointer;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    transition: box-shadow 0.3s ease-in-out;
+#grilla{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+#menu{
+    align-self: center;
 }

@@ -2,33 +2,28 @@ import { Component, OnInit } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { RoomsService } from '../../services/rooms/rooms.service';
 import { PopupService } from 'src/app/services/popup/popup.service';
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['../../../assets/style/main.css']
 })
 export class HomeComponent implements OnInit{
 
-  constructor(private router: Router, private roomService:RoomsService,private popup: PopupService){}
+  constructor(private router: Router, private roomService:RoomsService,private popup: PopupService, private http: HttpClient){}
+
 
   ngOnInit(): void {
-    this.popup.openPopUp();
   }
 
-  // crearSala(){
-  //   this.roomService.createRoom().subscribe((response) => {
-  //     const codigo = response[0].code;
-  //     console.log("Codigo de la sala:" +codigo);
-  //     this.router.navigate(['/sala-espera'], {queryParams:{code: codigo}});
-  //   },
-  //   (error) =>{
-  //     alert("Ocurrio un error al intentar crear la sala");
-  //     }
-  //   );
-  // }
+  crearSala(){
+    this.router.navigate(["/configure"]);
+   }
 
   escribirCodigo(){
     this.router.navigate(['/buscar-sala']);
   }
+
+  
 
 }
