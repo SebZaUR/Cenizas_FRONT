@@ -13,6 +13,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { IPublicClientApplication, PublicClientApplication, InteractionType, BrowserCacheLocation, LogLevel } from '@azure/msal-browser';
 import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalGuardConfiguration, MsalRedirectComponent } from '@azure/msal-angular';
+import { HostComponent } from './components/host/host.component';
 import { ConfigureRoomComponent } from './components/configure_room/configure-room/configure-room.component';
 
 const GRAPH_ENDPOINT = 'https://graph.microsoft.com/v1.0/me';
@@ -73,7 +74,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     WaitRoomComponent,
     PagenotfoundComponent,
     LogginComponent,
+    HostComponent,
     ConfigureRoomComponent
+    
   ],
   imports: [
     HttpClientModule,

@@ -1,29 +1,56 @@
 <div class="principal center-container">
     <div class="container">
-        <!-- <form class="form-group mb-3" (ngSubmit)="createRoom(server_name)" #form="ngForm">
-            <label class="form-label display-4" for="server_name">Nombre del Servidor</label>
-            <input class="form-control" type="text" id="server_name" name="server_name" [(ngModel)]="server_name" required>
-            <button class="btn btn-primary mt-3" type="submit">Crear Sala</button>
-        </form> -->
-    </div>
-    <div class="container">
-        <h1>Salas Creadas:</h1>
-        <div class="profile">
-            <p><strong>Business Phones:</strong> {{profile?.businessPhones}}</p>
-            <p><strong>Display Name:</strong> {{profile?.displayName}}</p>
-            <p><strong>Given Name:</strong> {{profile?.givenName}}</p>
-            <p><strong>Job Title:</strong> {{profile?.jobTitle}}</p>
-            <p><strong>Mail:</strong> {{profile?.mail}}</p>
-            <p><strong>Mobile Phone:</strong> {{profile?.mobilePhone}}</p>
-            <p><strong>Office Location:</strong> {{profile?.officeLocation}}</p>
-            <p><strong>Preferred Language:</strong> {{profile?.preferredLanguage}}</p>
-            <p><strong>Surname:</strong> {{profile?.surname}}</p>
-            <p><strong>User Principal Name:</strong> {{profile?.userPrincipalName}}</p>
-            <p><strong>Profile Id:</strong> {{profile?.id}}</p>
-            <br><br>
-            <p><strong>Token Expiration:</strong> {{tokenExpiration}}</p>
-            <br><br>
-            <p>Refreshing this page will continue to use the cached access token until it nears expiration, at which point a new access token will be requested.</p>
+        <h1>{{nickname}} Rooms</h1>
+        <div class="container">
+            <form class="mb-3" (ngSubmit)="createRoom(server_name)" #form="ngForm">
+                <label class="form-label display-6 text-center" for="server_name">Nombre del Servidor</label>
+                <input class="form-control" type="text" id="server_name" name="server_name" [(ngModel)]="server_name"
+                    required>
+                <div class="d-flex flex-row mt-2">
+                    <div class="form-check mx-2">
+                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1"
+                            checked [(ngModel)]="roomType">
+                        <label class="form-check-label" for="gridRadios1">
+                            Pública
+                        </label>
+                    </div>
+                    <div class="form-check mx-2">
+                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2"
+                            [(ngModel)]="roomType">
+                        <label class="form-check-label" for="gridRadios2">
+                            Privada
+                        </label>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-2" type="submit">Crear Sala</button>
+            </form>
+        </div>
+        <div class="container mt-5">
+            <div class="proyect-grid">
+                <a *ngFor="let room of roomsInfo; let i = index" class="col text-center file-{{i+1}} proyect-tile"
+                    [ngClass]="{'order-12': i === 1, 'order-1': i === 2}" (click)="startGame(room.code)">
+                    <!-- Contenido centrado verticalmente -->
+                    <div class="content-wrapper">
+                        <h2>File {{ i + 1 }}</h2>
+                        <h2>{{ room.server_name }}</h2>
+                        <h4>{{ room.code }}</h4>
+                        <h2 *ngIf="room.public">Public</h2>
+                        <h2 *ngIf="!room.public">Private</h2>
+                    </div>
+                </a>
+                <!-- La primera habitación permanecerá en su posición predeterminada -->
+                <a *ngIf="roomsInfo.length < 1" class="col text-center file-1 proyect-tile">
+                    <h2>File 1</h2>
+                </a>
+                <!-- La segunda habitación se mueve a la última posición (order-12) -->
+                <a *ngIf="roomsInfo.length < 2" class="col text-center file-2 proyect-tile order-12">
+                    <h2>File 2</h2>
+                </a>
+                <!-- La tercera habitación se mueve a la primera posición (order-1) -->
+                <a *ngIf="roomsInfo.length < 3" class="col text-center file-3 proyect-tile order-1">
+                    <h2>File 3</h2>
+                </a>
+            </div>
         </div>
     </div>
 </div>

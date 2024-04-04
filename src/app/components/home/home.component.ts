@@ -19,11 +19,4 @@ export class HomeComponent implements OnInit{
   crearSala(){
     this.router.navigate(["/configure"]);
    }
-
-  escribirCodigo(){
-    this.router.navigate(['/buscar-sala']);
-  }
-
-  
-
 }
