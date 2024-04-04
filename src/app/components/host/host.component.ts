@@ -7,7 +7,6 @@ import { UserJson } from "src/app/schemas/UserJson";
 
 import { HttpClient } from '@angular/common/http';
 import { RoomJson } from "src/app/schemas/RoomJson";
-import { forkJoin } from "rxjs";
 import { __values } from "tslib";
 
 
@@ -19,13 +18,14 @@ import { __values } from "tslib";
     providers: [UserService, RoomsService]
 })
 export class HostComponent implements OnInit {
-    profileGame!: UserJson;
     tokenExpiration!: string;
     profile!: ProfileType;
     user!: UserJson;
     server_name: string = '';
     rooms!: [string];
     roomsInfo: RoomJson[] = [];
+    roomType: string = 'public';
+    nickname!: string;
 
     constructor(private userService: UserService, private roomService: RoomsService, private router: Router, private http: HttpClient) {
     }
@@ -33,8 +33,9 @@ export class HostComponent implements OnInit {
         this.http.get('https://graph.microsoft.com/v1.0/me')
             .subscribe(profile => {
                 this.profile = profile;
-                if (this.profile && this.profile.mail) {
+                if (this.profile && this.profile.mail && this.profile.displayName) {
                     console.log(this.profile.mail)
+                    this.nickname = this.profile.displayName;
                     this.bringUserInfo(this.profile.mail)
                     this.bringUserRooms(this.profile.mail)
                 }
@@ -43,18 +44,19 @@ export class HostComponent implements OnInit {
     }
 
     createRoom(server_name: string) {
-        this.roomService.createRoom(server_name).subscribe({
+        const type = this.roomType === "public" ? true : false;
+        const user = this.user.mail;
+        this.roomService.createRoom(server_name, type, user).subscribe({
             next: (response) => {
-                this.userService.addUserNewRoom(this.user.mail, response.toString()).subscribe({
-                    next: (response) => console.log(response),
-                    error: (error) => console.log(error),
-                    complete: () => console.info('complete')
-                })
                 this.router.navigate(['/sala-espera'], { queryParams: { code: response.toString() } })
             },
             error: (error) => console.log(error),
             complete: () => console.info('complete')
         });
+    }
+
+    startGame(code:string){
+        this.router.navigate(['/lobby'], { queryParams: { code: code } });
     }
 
     bringUserInfo(mail: string) {
@@ -73,10 +75,10 @@ export class HostComponent implements OnInit {
             next: (response) => {
                 this.rooms = response;
                 console.log(this.rooms);
-    
+
                 // Inicializa el array roomsInfo para almacenar la información detallada de las habitaciones
                 this.roomsInfo = [];
-    
+
                 // Por cada ID de habitación, obtener la información detallada
                 this.rooms.forEach(roomId => {
                     this.roomService.getRoom(roomId).subscribe({
@@ -93,9 +95,9 @@ export class HostComponent implements OnInit {
             complete: () => console.info('Obtención de habitaciones del usuario completa')
         });
     }
-    
-    
-    
+
+
+
 
 
 
