@@ -18,7 +18,7 @@ import { ProfileType } from './schemas/ProfileTypeJson';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls:['../assets/style/main.css']
+  styleUrls: ['../assets/style/main.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'Angular 12 - MSAL Example';
@@ -32,8 +32,8 @@ export class AppComponent implements OnInit, OnDestroy {
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
     private msalBroadcastService: MsalBroadcastService,
-    private userService: UserService,private router: Router,
-     private http: HttpClient
+    private userService: UserService, private router: Router,
+    private http: HttpClient
   ) { }
 
   // On initialization of the page, display the page elements based on the user state
@@ -63,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
             // Lógica para crear un perfil en la base de datos
             if (userInfo) {
-              this.createCount(userInfo);
+              this.getCount(userInfo);
             }
           }
         },
@@ -82,25 +82,25 @@ export class AppComponent implements OnInit, OnDestroy {
   login() {
     if (this.msalGuardConfig.authRequest) {
       this.authService.loginRedirect({ ...this.msalGuardConfig.authRequest } as RedirectRequest);
-      this.http.get('https://graph.microsoft.com/v1.0/me')
-            .subscribe(profile => {
-                this.profile = profile;
-                if (this.profile && this.profile.mail) {
-                    this.user = this.userService.getUser(this.profile.mail);
-                }
-            });
-      console.log(this.profile?.mail)
     } else {
       this.authService.loginRedirect();
     }
   }
 
   createCount(userInfo: any) {
-    console.log(userInfo.name)
-    console.log(userInfo.preferred_username)
-    this.userService.createUser(userInfo.name,userInfo.preferred_username).subscribe((resultado => {
-      console.log("Se inicio sesion");
-    }));
+    this.userService.createUser(userInfo.name, userInfo.preferred_username).subscribe({
+      next: (r) => console.log("Cuenta creada en DB"),
+      error: (error) => console.log(error),
+      complete: () => console.info('Cuenta creada, sesion iniciada')
+    });
+  }
+
+  getCount(userInfo: any) {
+    this.userService.getUser(userInfo.preferred_username).subscribe({
+      next: () => console.log("Cuenta Existente en DB"),
+      error: () => this.createCount(userInfo),
+      complete: () => console.info('Cuenta obtenida, sesion iniciada')
+    });
   }
 
   // Log the user out
@@ -111,9 +111,5 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._destroying$.next(undefined);
     this._destroying$.complete();
-  }
-
-  routeHost(){
-    this.router.navigate(['/host']);
   }
 }

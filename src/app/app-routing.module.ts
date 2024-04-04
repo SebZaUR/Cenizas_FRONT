@@ -7,12 +7,14 @@ import { PagenotfoundComponent } from './components/pagenotfound/pagenotfound.co
 import { GameComponent } from './components/game/game.component';
 import { BrowserUtils } from '@azure/msal-browser';
 import { HostComponent } from './components/host/host.component';
+import { LogginComponent } from 'src/app/components/loggin/loggin.component';
 
 // MsalGuard is required to protect routes and require authentication before accessing protected routes
 import { MsalGuard } from '@azure/msal-angular';
 
 //colocar aqui las routas de navegación
 const routes: Routes = [
+  { path: "loggin", component: LogginComponent},
   { path: "", component: HomeComponent, pathMatch: 'full' },
   {
     path: "host", component: HostComponent,

@@ -43,11 +43,4 @@ export class HomeComponent implements OnInit{
        }
      );
    }
-
-  escribirCodigo(){
-    this.router.navigate(['/buscar-sala']);
-  }
-
-  
-
 }
