@@ -1,28 +1,33 @@
-<div id="grilla" class="principal center-container">
-    <div id="menu">
-        <p class="mb-0"><strong>SERVIDORES:</strong> </p>
-        <br/><br/>
-        <button class="btn btn-primary" (click)="listRooms()">Salas Publicas</button>
-        <button class="btn btn-primary" (click)="loadFriendRoom()">Salas Amigos</button>
-    </div>
-    <div >
-        <form class="container mt-5">
-            <ul class="list-group mb-5">
-                <li *ngFor="let room of rooms" class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="mb-0"><strong>Nombre del Servidor:</strong> {{ room.server_name }}</p>
-                            <p class="mb-0"><strong>Código:</strong> {{ room.code }}</p>
-                            <p class="mb-o" *ngIf="room.public"><strong>Publica</strong></p>
-                            <p class="mb-o" *ngIf="!room.public"><strong>Privada</strong></p>
+<div class="principal">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col text-center">
+                <button class="btn btn-primary me-2" (click)="listRooms()">Salas Públicas</button>
+                <button class="btn btn-primary" (click)="loadFriendRoom()">Salas de Amigos</button>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <ul class="list-group">
+                    <li *ngFor="let room of rooms" class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-0"><strong>Nombre del Servidor:</strong> {{ room.server_name }}</p>
+                                <p class="mb-0"><strong>Código:</strong> {{ room.code }}</p>
+                                <p class="mb-0" *ngIf="room.public"><strong>Publica</strong></p>
+                                <p class="mb-0" *ngIf="!room.public"><strong>Privada</strong></p>
+                            </div>
+                            <button class="btn btn-primary" (click)="joinRoom(room.code)">Unirse</button>
                         </div>
-                        <button class="btn btn-primary" (click)="joinRoom(room.code)">Unirse</button>
-                    </div>
-                </li>
-            </ul>
-        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
+
+
+
 
 
 
