@@ -9,6 +9,7 @@ import { RoomJson } from 'src/app/schemas/RoomJson';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from 'src/app/services/user/user.service';
 import { ProfileType } from 'src/app/schemas/ProfileTypeJson';
+import { UserJson } from 'src/app/schemas/UserJson';
 
 
 @Component({
@@ -26,6 +27,7 @@ export class GameComponent implements OnInit {
   room: RoomJson | null = null;
   profile!: ProfileType;
   user: any;
+  mail: any;
   
   constructor(private roomService: RoomsService, private route: ActivatedRoute,private http: HttpClient,private userService: UserService) {
     this.config = {
@@ -50,7 +52,12 @@ export class GameComponent implements OnInit {
             .subscribe(profile => {
                 this.profile = profile;
                 if (this.profile && this.profile.mail) {
-                  this.user = this.userService.getUser(this.profile.mail);
+                    console.log(this.profile.mail)
+                    this.mail =  this.profile.mail;
+                    this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
+                        this.user = room;
+                        console.log(this.user);
+                      });;
                 }
             });
     this.route.queryParams.subscribe(params => {
@@ -58,9 +65,7 @@ export class GameComponent implements OnInit {
     });
     this.roomService.getRoom(this.code).subscribe((room: RoomJson) => {
       this.room = room;
-      console.log(this.profile?.mail);
-      this.roomService.addUserToRoom("millossebas@hotmail.",this.code).subscribe(()=>{});
-      console.log(this.room);
+      console.log(this.mail);
     });
   }
 }
