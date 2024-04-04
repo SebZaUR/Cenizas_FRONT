@@ -11,7 +11,7 @@ import { LogginComponent } from 'src/app/components/loggin/loggin.component';
 
 // MsalGuard is required to protect routes and require authentication before accessing protected routes
 import { MsalGuard } from '@azure/msal-angular';
-import { ConfigureRoomComponent } from './components/configure_room/configure-room/configure-room.component';
+
 
 //colocar aqui las routas de navegación
 const routes: Routes = [
@@ -36,7 +36,6 @@ const routes: Routes = [
     ]
   },
   { path: "lobby", component: GameComponent },
-  { path: "configure", component: ConfigureRoomComponent, canActivate: [MsalGuard]},
   { path: "**", component: PagenotfoundComponent }
   
 ];

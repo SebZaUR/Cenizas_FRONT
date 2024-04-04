@@ -5,6 +5,7 @@ import { UserService } from "src/app/services/user/user.service";
 import { HttpClient } from '@angular/common/http';
 import { UserJson } from "src/app/schemas/UserJson";
 import { ProfileType } from "src/app/schemas/ProfileTypeJson";
+import { use } from "matter";
 
 @Component({
   selector: 'app-host',
@@ -16,7 +17,7 @@ export class LogginComponent implements OnInit{
   profileGame!: UserJson;
   tokenExpiration!: string;
   profile!: ProfileType;
-  user: any;
+  user!: UserJson;
   constructor(private userService: UserService, private route: ActivatedRoute, private http: HttpClient) {
   }
   ngOnInit() {
@@ -25,9 +26,8 @@ export class LogginComponent implements OnInit{
         this.profile = profile;
         if (this.profile && this.profile.mail) {
           console.log(this.profile.mail)
-          this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
-            this.user = room;
-            console.log(this.user);
+          this.userService.getUser(this.profile.mail).subscribe((user: UserJson) => {
+            this.user = user;
           });;
         }
       });

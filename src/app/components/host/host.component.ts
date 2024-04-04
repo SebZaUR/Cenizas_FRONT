@@ -26,6 +26,9 @@ export class HostComponent implements OnInit {
     roomsInfo: RoomJson[] = [];
     roomType: string = 'public';
     nickname!: string;
+    MAX_ROOM: number = 3;
+    full: boolean = false;
+    onDelete: boolean = false;
 
     constructor(private userService: UserService, private roomService: RoomsService, private router: Router, private http: HttpClient) {
     }
@@ -44,6 +47,7 @@ export class HostComponent implements OnInit {
     }
 
     createRoom(server_name: string) {
+        console.log(this.roomType)
         const type = this.roomType === "public" ? true : false;
         const user = this.user.mail;
         this.roomService.createRoom(server_name, type, user).subscribe({
@@ -55,8 +59,28 @@ export class HostComponent implements OnInit {
         });
     }
 
-    startGame(code:string){
-        this.router.navigate(['/lobby'], { queryParams: { code: code } });
+    startGame(code: string) {
+        if(!this.onDelete){
+            this.router.navigate(['/lobby'], { queryParams: { code: code } });
+        }
+    }
+
+    editMode() {
+        this.onDelete = !this.onDelete;
+    }
+
+    
+    deleteUserRoom(code:string){
+        this.roomService.deleteRoom(code).subscribe({
+            next:() => console.log("Eliminar Sala"),
+            error: (error) => console.log(error),
+            complete: () => console.info('Eliminacion de sala completa')
+        })
+        this.userService.deleteUserRoom(this.user.mail,code).subscribe({
+            next:() => this.bringUserRooms(this.user.mail),
+            error: (error) => console.log(error),
+            complete: () => console.info('Eliminacion de sala en usuario completa')
+        })
     }
 
     bringUserInfo(mail: string) {
@@ -83,8 +107,13 @@ export class HostComponent implements OnInit {
                 this.rooms.forEach(roomId => {
                     this.roomService.getRoom(roomId).subscribe({
                         next: (room) => {
-                            console.log(room);
+                            console.log(this.roomsInfo);
                             this.roomsInfo.push(room); // Agrega la información de la habitación al array roomsInfo
+                            if (this.roomsInfo.length >= this.MAX_ROOM) {
+                                this.full = true;
+                            }else{
+                                this.full = false;
+                            }
                         },
                         error: (error) => console.error('Error al obtener la información de la habitación:', error),
                         complete: () => console.info('Obtención de información de la habitación completa')

@@ -43,4 +43,8 @@ export class RoomsService {
     const params = new HttpParams().set('code',code).set('user',user);
     return this.http.put<any>(this.roomApiUrl+"/"+code+"/update-users",null, { params: params });
   }
+
+  deleteRoom(code:string):Observable<any>{
+    return this.http.delete<any>(this.roomApiUrl+"/"+code+"/delete");
+  }
 }
