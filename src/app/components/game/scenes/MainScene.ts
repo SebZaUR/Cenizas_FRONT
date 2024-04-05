@@ -4,8 +4,8 @@ import { Socket } from 'socket.io-client';
 export class MainScene extends Phaser.Scene {
     keys!: any;
     solidos!: any;
+    protected code!: string;
     protected player!: Phaser.Physics.Matter.Sprite;
-
     protected isKnockedDown: boolean = false;
     protected isAttacking: boolean = false;
     protected lastDirection: string = "down";
@@ -18,12 +18,10 @@ export class MainScene extends Phaser.Scene {
     protected otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
     protected barraVida!: Phaser.GameObjects.GameObject;
 
-
-
-
-    constructor(key: string, socket: any) {
+    constructor(key: string, socket: any, code: string) {
         super({ key: key });
         this.socket = socket
+        this.code = code;
     }
 
     init(data: any) {
@@ -41,13 +39,15 @@ export class MainScene extends Phaser.Scene {
                     }
                 });
 
-                this.socket.on('playerNumber', (myNumber) => {
+                this.socket.on('playerNumber', (myNumber, code) => {
                     this.myNumber = myNumber;
+                    this.code = code;
                 });
 
                 this.socket.on('goToDesert', (data) => {
                     data.socketId = this.socket.id;
                     data.myNumber = this.myNumber;
+                    data.code = this.code;
                     this.socket.off('updatePlayers');
                     this.tweens.add({
                         targets: this.cameras.main,
@@ -297,7 +297,8 @@ export class MainScene extends Phaser.Scene {
                     velocityx: 0, 
                     velocityy: 0,
                     animation: this.player.anims.currentAnim, 
-                    key: undefined
+                    key: undefined,
+                    code: this.code
                 });
                 return;
             }
@@ -354,7 +355,8 @@ export class MainScene extends Phaser.Scene {
                     velocityx: this.playerVelocity.x, 
                     velocityy: this.playerVelocity.y, 
                     animation: this.player.anims.currentAnim,
-                    key: this.player.anims.currentAnim?.key
+                    key: this.player.anims.currentAnim?.key,
+                    code: this.code
                     });
             }
         }
