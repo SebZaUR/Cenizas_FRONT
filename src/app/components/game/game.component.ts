@@ -65,6 +65,7 @@ export class GameComponent implements OnInit {
     });
     this.roomService.getRoom(this.code).subscribe((room: RoomJson) => {
       this.room = room;
+      this.socket.emit('joinRoom',  this.code )
       console.log(this.mail);
     });
   }
