@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { RoomJson } from 'src/app/schemas/RoomJson';
 
 @Injectable({
@@ -14,6 +14,16 @@ export class RoomsService {
 
   getRoom(codigo:string):Observable<RoomJson> {
     return this.http.get<RoomJson>(this.roomApiUrl+"/"+codigo);
+  }
+  async getRoomAsync(codigo: string): Promise<RoomJson> {
+    try {
+      const room = await firstValueFrom(this.http.get<RoomJson>(`${this.roomApiUrl}/${codigo}`));
+      return room;
+    } catch (error) {
+      // Manejo de errores
+      console.error('Error al obtener la sala:', error);
+      throw error;
+    }
   }
 
   getRooms(): Observable<RoomJson[]> { 
@@ -32,5 +42,9 @@ export class RoomsService {
   addUserToRoom(user:string,code:string):Observable<any>{
     const params = new HttpParams().set('code',code).set('user',user);
     return this.http.put<any>(this.roomApiUrl+"/"+code+"/update-users",null, { params: params });
+  }
+
+  deleteRoom(code:string):Observable<any>{
+    return this.http.delete<any>(this.roomApiUrl+"/"+code+"/delete");
   }
 }

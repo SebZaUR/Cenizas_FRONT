@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { mergeMap, Observable, switchMap } from 'rxjs';
 import { UserJson } from 'src/app/schemas/UserJson';
 
 
@@ -24,4 +24,25 @@ export class UserService {
     return  this.http.get<UserJson>(this.userUrlApi+"/"+correo);
   }
 
+  getUserRooms(correo:string):Observable<[string]>{
+    return this.http.get<[string]>(this.userUrlApi+"/"+correo+"/rooms")
+  }
+
+  addUserNewRoom(correo:string,code:string):Observable<any>{
+    return this.getUserRooms(correo).pipe(
+      mergeMap((rooms: string[]) => {
+        rooms.push(code); // Agregar el nuevo código a la lista de salas
+        return this.http.put<any>(`${this.userUrlApi}/${correo}/update-rooms`, rooms);
+      })
+    );
+  }
+
+  deleteUserRoom(correo: string, code: string): Observable<any> {
+    return this.getUserRooms(correo).pipe(
+      switchMap((rooms: string[]) => {
+        const updatedRooms = rooms.filter(roomCode => roomCode !== code); // Filtrar el código a eliminar
+        return this.http.put<any>(`${this.userUrlApi}/${correo}/update-rooms`, updatedRooms);
+      })
+    );
+  }
 }

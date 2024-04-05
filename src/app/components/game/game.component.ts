@@ -15,7 +15,7 @@ import { UserJson } from 'src/app/schemas/UserJson';
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css']
+  styleUrls: ['./game.component.css','../../../assets/style/main.css']
 })
 
 export class GameComponent implements OnInit {

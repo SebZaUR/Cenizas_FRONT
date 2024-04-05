@@ -1,6 +1,20 @@
-<div id="box">
-    <h1>Login</h1><br/>
-    <button class="btn btn-primary" ><img id="image" src="../../../assets/icons/tinywow_png-transparent-microsoft-windows-microsoft-outlook-microsoft-office-microsoft-logo-s-text-rectangle-triangle-thumbnail_50498053.jpg"> Iniciar con Microsoft</button>
-    <br/>
-    <button class="btn btn-primary" ><img id="image" src="../../../assets/icons/tinywow_png-transparent-microsoft-windows-microsoft-outlook-microsoft-office-microsoft-logo-s-text-rectangle-triangle-thumbnail_50498053.jpg"> Crear cuenta con Microsoft</button>
+<div class="principal">
+    <div class="container mt-5">
+        <h1 class="text-center">Perfil de Usuario</h1>
+        <div class="mt-3">
+
+            <div *ngIf="user" class="profile-details">
+                <p class="list-group"><strong>ID:</strong> {{ user.id }}</p>
+                <p class="list-group"><strong>Nickname:</strong> {{ user.nickname }}</p>
+                <p class="list-group"><strong>Correo Electrónico:</strong> {{ user.mail }}</p>
+            </div>
+            <p *ngIf="!user" class="text-center">No se encontró información del usuario.</p>
+
+        </div>
+        <div class="mt-3">
+            <p class="card-text">El token de acceso expirará el: {{ tokenExpiration }}</p>
+            <p class="card-text">Actualizar esta página continuará utilizando el token en caché hasta que esté cerca de
+                la expiración, momento en el cual se solicitará un nuevo token de acceso.</p>
+        </div>
+    </div>
 </div>

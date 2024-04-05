@@ -1,10 +1,10 @@
 <div class="principal center-container">
   <div class="d-flex justify-content-center align-items-center flex-column">
     <div class="div_boton my-2">
-      <button class="btn btn-primary" (click)="crearSala()">Iniciar como Anfitrión</button>
+      <button class="btn btn-primary" [routerLink]="['host']">Iniciar como Anfitrión</button>
     </div>
     <div class="div_boton my-2">
-      <button type="button" class="btn btn-primary" (click)="escribirCodigo()">Unirse a Sala</button>
+      <button type="button" class="btn btn-primary" [routerLink]="['buscar-sala']">Unirse a Sala</button>
     </div>
     <div class="div_boton my-2">
       <button type="button" class="btn btn-primary">Ajustes</button>
