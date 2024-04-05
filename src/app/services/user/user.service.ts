@@ -45,4 +45,9 @@ export class UserService {
       })
     );
   }
+
+  senFriendRequest(correoAmigo: string, correo:string): Observable<any> {
+    const params = new HttpParams().set('friendMail',correo).set('user',correoAmigo)
+    return this.http.post<any>(this.userUrlApi+"/sendFriendRequest",null, {params:params});
+  }
 }

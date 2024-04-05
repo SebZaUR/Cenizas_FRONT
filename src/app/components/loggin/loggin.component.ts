@@ -5,7 +5,6 @@ import { UserService } from "src/app/services/user/user.service";
 import { HttpClient } from '@angular/common/http';
 import { UserJson } from "src/app/schemas/UserJson";
 import { ProfileType } from "src/app/schemas/ProfileTypeJson";
-import { use } from "matter";
 
 @Component({
   selector: 'app-host',
@@ -13,11 +12,15 @@ import { use } from "matter";
   styleUrls: ['./loggin.component.css', '../../../assets/style/main.css'],
   providers: [UserService]
 })
-export class LogginComponent implements OnInit{
+export class LogginComponent implements OnInit {
   profileGame!: UserJson;
   tokenExpiration!: string;
   profile!: ProfileType;
   user!: UserJson;
+  friendMail: string = "";
+  firendRequest: string[] = [];
+  friends: string[] = [];
+  rooms: number[] = [];
   constructor(private userService: UserService, private route: ActivatedRoute, private http: HttpClient) {
   }
   ngOnInit() {
@@ -28,9 +31,19 @@ export class LogginComponent implements OnInit{
           console.log(this.profile.mail)
           this.userService.getUser(this.profile.mail).subscribe((user: UserJson) => {
             this.user = user;
-          });;
+            this.tokenExpiration = localStorage.getItem('tokenExpiration')!;
+            this.firendRequest = this.user.friendRequest;
+            this.friends = this.user.friends;
+            this.rooms = this.user.rooms;
+          });
         }
       });
-    this.tokenExpiration = localStorage.getItem('tokenExpiration')!;
+  }
+
+
+  sendFriendRequest(correo: string) {
+    this.userService.senFriendRequest(this.user.mail!, correo).subscribe(() => {
+      this.firendRequest.push(correo);
+    });
   }
 }

@@ -6,5 +6,6 @@ export interface UserJson {
     mail: string;
     game_stats: gameStats,
     friends : [string],
-    rooms : [number]
+    rooms : [number],
+    friendRequest:[string]
 }
