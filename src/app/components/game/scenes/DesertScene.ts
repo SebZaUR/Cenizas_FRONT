@@ -12,12 +12,14 @@ export class DesertScene extends MainScene {
     protected override starty: number = 270;
     protected skeleton!: Phaser.Physics.Matter.Sprite;
     
-    constructor(key: string, socket: any) {
-        super(key, socket);
+    constructor(key: string, socket: any, code: string) {
+        super(key, socket, code);
     }
 
-    override init(data: any) {
+     override init(data: any) {
         this.socket.connect();
+        this.code = data.code;
+        this.socket.emit('joinRoom', this.code);
         this.socket.off('initialCoordinates');
         this.socket.off('firstPlayer');
         this.socket.off('playerNumber');
@@ -136,7 +138,8 @@ private changeSkeletonDirection() {
             velocityx: this.playerVelocity.x, 
             velocityy: this.playerVelocity.y, 
             animation: this.player.anims.currentAnim,
-            key: this.player.anims.currentAnim?.key
+            key: this.player.anims.currentAnim?.key,
+            code: this.code
         });
        
         await new Promise(resolve => setTimeout(resolve, 250));

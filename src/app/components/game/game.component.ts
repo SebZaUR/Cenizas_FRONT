@@ -32,7 +32,7 @@ export class GameComponent implements OnInit {
   constructor(private roomService: RoomsService, private route: ActivatedRoute,private http: HttpClient,private userService: UserService) {
     this.config = {
       type: Phaser.AUTO,
-      scene: [ new MainScene('MainScene', this.socket), new DesertScene('DesertScene', this.socket) ],
+      scene: [ new MainScene('MainScene', this.socket, this.code), new DesertScene('DesertScene', this.socket, this.code) ],
       width: 900,
       height: 630,
       parent: 'gameContainer',
@@ -62,6 +62,7 @@ export class GameComponent implements OnInit {
             });
     this.route.queryParams.subscribe(params => {
       this.code = params['code'];
+      this.socket.emit('joinRoom',  this.code )
     });
     this.roomService.getRoom(this.code).subscribe((room: RoomJson) => {
       this.room = room;
