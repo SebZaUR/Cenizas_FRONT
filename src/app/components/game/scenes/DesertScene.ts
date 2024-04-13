@@ -157,7 +157,7 @@ private changeSkeletonDirection() {
             code: this.code
         });
        
-        await new Promise(resolve => setTimeout(resolve, 250));
+        await new Promise(resolve => setTimeout(resolve, 500));
         super.create_remote_players();
     }
 
@@ -278,7 +278,6 @@ private changeSkeletonDirection() {
 
     private updateLifeBar() {
         const heartsToShow = Math.ceil(this.cantidadVida / this.golpePorCorazon);
-
         this.heartsGroup.children.each((heart: Phaser.GameObjects.GameObject, index: number) => {
             if (heart instanceof Phaser.GameObjects.Image) {
                 if (index >= heartsToShow) {
