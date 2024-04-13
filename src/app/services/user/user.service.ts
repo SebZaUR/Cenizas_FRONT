@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { mergeMap, Observable, switchMap } from 'rxjs';
 import { UserJson } from 'src/app/schemas/UserJson';
+import { enviroment } from 'src/enviroment/enviroment';
 
 
 
@@ -10,7 +11,7 @@ import { UserJson } from 'src/app/schemas/UserJson';
 })
 export class UserService {
 
-  public userUrlApi: string ="http://localhost:8080/v1/users";
+  public userUrlApi: string = enviroment.backLink + "/v1/users";
   
 
   constructor(private http: HttpClient) { }
