@@ -82,6 +82,8 @@ export class MainScene extends Phaser.Scene {
         this.load.tilemapTiledJSON('lobby', 'assets/backgrounds/mapa.json');
         this.load.image('space', 'assets/backgrounds/spaceShip.png');
         this.load.image('vida', 'assets/icons/barraVida.png');
+        this.load.image('corazon', 'assets/icons/corazon.png');
+
     }
 
     create() {
@@ -284,25 +286,6 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (!this.isKnockedDown) {
-            if (this.keys.s1.isDown) {
-                this.player.setVelocity(0, 0);
-                this.isKnockedDown = true;
-                this.player.anims.play('dead');
-                this.player.anims.stopAfterRepeat(0);
-                this.player.setStatic(true); 
-
-                this.socket.emit('updatePlayers', {
-                    posx: this.player.x, 
-                    posy: this.player.y, 
-                    velocityx: 0, 
-                    velocityy: 0,
-                    animation: this.player.anims.currentAnim, 
-                    key: undefined,
-                    code: this.code
-                });
-                return;
-            }
-
             if (this.isAttacking) {
                 this.playerVelocity.x = 0;
                 this.playerVelocity.y = 0;

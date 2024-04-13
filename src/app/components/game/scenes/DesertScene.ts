@@ -11,6 +11,12 @@ export class DesertScene extends MainScene {
     protected override startx!: number;
     protected override starty: number = 270;
     protected skeleton!: Phaser.Physics.Matter.Sprite;
+
+    private heartsGroup!: Phaser.GameObjects.Group;
+    private cantidadVida: number = 100;
+    private golpePorCorazon: number = 20;
+    private isHit: boolean = false;
+    private hitTimer!: Phaser.Time.TimerEvent;
     
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
@@ -61,7 +67,7 @@ export class DesertScene extends MainScene {
         music.play();
         super.create_mapa(width, height + 380, 'first', 'desert', 'desert', ['suelo','objetos','solidos'],desert);
         super.create_player(width, height + 380, this.startx, this.starty, 'player');
-        this.barraVida = this.add.image(330, 210, 'vida').setScrollFactor(0);
+        this.createLifeBar();
         this.create_remote_players();
         this.cameras.main.setAlpha(0);
         this.create_animationSkeleton();
@@ -110,9 +116,18 @@ private changeSkeletonDirection() {
     protected create_skeleton ( position_x: number, position_y: number, spray: string) {
         this.skeleton = this.matter.add.sprite(position_x, position_y, spray);
         this.skeleton.setDisplaySize(90, 90);
-        this.skeleton.setRectangle(35, 50);
-        this.skeleton.setOrigin(0.50, 0.50);
+        this.skeleton.setRectangle(15, 25);
+        this.skeleton.setOrigin(0.50, 0.55);
         this.skeleton.setFixedRotation();
+    }
+
+    protected createLifeBar() {
+        this.heartsGroup = this.add.group();
+        for (let i = 0; i < 5; i++) {
+            const heart = this.add.image(300 + i * 20, 210, 'corazon').setScrollFactor(0);
+            this.heartsGroup.add(heart);
+        }
+     
     }
 
     create_animationSkeleton() {
@@ -142,7 +157,7 @@ private changeSkeletonDirection() {
             code: this.code
         });
        
-        await new Promise(resolve => setTimeout(resolve, 250));
+        await new Promise(resolve => setTimeout(resolve, 500));
         super.create_remote_players();
     }
 
@@ -175,7 +190,6 @@ private changeSkeletonDirection() {
         }
         if (this.isAttacking && this.checkDistance(this.player, this.skeleton)) {
             this.skeleton.setTint(0xff0000);
-
         }
 
         if (this.isAttacking === false && this.checkDistance(this.player, this.skeleton) ){
@@ -188,7 +202,41 @@ private changeSkeletonDirection() {
             animation: this.skeleton.anims.currentAnim,
             key: this.skeleton.anims.currentAnim?.key,
             color: this.skeleton.tint,
+            code: this.code
         })
+
+        const distanceThreshold = 20; 
+        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.skeleton.x, this.skeleton.y);
+    
+        if (distance < distanceThreshold && this.isHit == false) {
+            this.reduceLife();
+            this.updateLifeBar();
+            this.isHit = true;
+            this.hitTimer = this.time.delayedCall(3000, () => {
+                this.isHit = false;
+            });
+
+
+            if (this.cantidadVida == 0) {
+                this.player.setVelocity(0, 0);
+                this.isKnockedDown = true;
+                this.player.anims.play('dead');
+                this.player.anims.stopAfterRepeat(0);
+                this.player.setStatic(true); 
+
+                this.socket.emit('updatePlayers', {
+                    posx: this.player.x, 
+                    posy: this.player.y, 
+                    velocityx: 0, 
+                    velocityy: 0,
+                    animation: this.player.anims.currentAnim, 
+                    key: undefined,
+                    code: this.code
+                });
+                return;
+            }
+        }
+
     }
 
     private checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
@@ -221,4 +269,27 @@ private changeSkeletonDirection() {
         this.skeleton.y = data.y;
         this.skeleton.setTint(data.color);
     }
-}
+
+    private reduceLife() {
+        if (this.cantidadVida > 0) {
+            this.cantidadVida -= this.golpePorCorazon;
+        }
+    }
+
+    private updateLifeBar() {
+        const heartsToShow = Math.ceil(this.cantidadVida / this.golpePorCorazon);
+        this.heartsGroup.children.each((heart: Phaser.GameObjects.GameObject, index: number) => {
+            if (heart instanceof Phaser.GameObjects.Image) {
+                if (index >= heartsToShow) {
+                    heart.visible = false;
+                } else {
+                    heart.visible = true;
+                }
+                return true;
+            }
+            return null;
+        });
+    }
+    
+
+}   
