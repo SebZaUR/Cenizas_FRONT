@@ -25,7 +25,7 @@
       "ScriptHost"
     ],
     "allowSyntheticDefaultImports": true,
-    "allowJs": true
+    "allowJs": false
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
