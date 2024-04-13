@@ -30,7 +30,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     auth: {
       clientId: "c6a90014-e04a-4490-a744-60a1cf8e32ff",
       authority: "https://login.microsoftonline.com/9c3dde60-b813-4c66-870f-04e975f8171f",
-      redirectUri: "http://localhost:4200",
+      redirectUri: "http://cenizasdelpasadofront.azurewebsites.net",
     },
     cache: {
       cacheLocation: BrowserCacheLocation.LocalStorage,
