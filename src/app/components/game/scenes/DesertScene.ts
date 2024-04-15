@@ -77,7 +77,6 @@ export class DesertScene extends MainScene {
             event.pairs.forEach((pair: any) => {
                 const bodyA = pair.bodyA;
                 const bodyB = pair.bodyB;
-        
                 if (bodyA === this.skeleton.body || bodyB === this.skeleton.body) {
                     this.changeSkeletonDirection();
                 }
@@ -171,6 +170,12 @@ private changeSkeletonDirection() {
             this.updateSkeleton(skeletonData);
         });
 
+        this.socket.on('imHitted', (playerId: string) => {
+            const existingSprite = this.otherSprites[playerId];
+            this.tweenTint(existingSprite, 0xff0000, 500, () => {
+            });
+        });
+
         const speed = 0.7;
         switch(this.directionskeleton){
             case Direction.UP:  
@@ -205,38 +210,16 @@ private changeSkeletonDirection() {
             code: this.code
         })
 
-        const distanceThreshold = 20; 
-        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.skeleton.x, this.skeleton.y);
-    
-        if (distance < distanceThreshold && this.isHit == false) {
-            this.reduceLife();
-            this.updateLifeBar();
-            this.isHit = true;
-            this.hitTimer = this.time.delayedCall(3000, () => {
-                this.isHit = false;
+        this.matter.world.on('collisionstart', (event: any) => {
+            event.pairs.forEach((pair: any) => {
+                const bodyA = pair.bodyA;
+                const bodyB = pair.bodyB;
+        
+                if (bodyA === this.player.body && bodyB === this.skeleton.body) {
+                    this.reduceLife();
+                }
             });
-
-
-            if (this.cantidadVida == 0) {
-                this.player.setVelocity(0, 0);
-                this.isKnockedDown = true;
-                this.player.anims.play('dead');
-                this.player.anims.stopAfterRepeat(0);
-                this.player.setStatic(true); 
-
-                this.socket.emit('updatePlayers', {
-                    posx: this.player.x, 
-                    posy: this.player.y, 
-                    velocityx: 0, 
-                    velocityy: 0,
-                    animation: this.player.anims.currentAnim, 
-                    key: undefined,
-                    code: this.code
-                });
-                return;
-            }
-        }
-
+        });
     }
 
     private checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
@@ -271,13 +254,41 @@ private changeSkeletonDirection() {
     }
 
     private reduceLife() {
-        if (this.cantidadVida > 0) {
+        if (this.cantidadVida > 0 && this.isHit == false) {
             this.cantidadVida -= this.golpePorCorazon;
+            this.tweenTint(this.player, 0xff0000, 500, () => {
+
+            });
+            this.socket.emit('imHitted');
+            this.updateLifeBar()
+        }
+
+        if (this.cantidadVida == 0) {
+            this.player.setVelocity(0, 0);
+            this.isKnockedDown = true;
+            this.player.anims.play('dead');
+            this.player.anims.stopAfterRepeat(0);
+            this.player.setStatic(true); 
+
+            this.socket.emit('updatePlayers', {
+                posx: this.player.x, 
+                posy: this.player.y, 
+                velocityx: 0, 
+                velocityy: 0,
+                animation: this.player.anims.currentAnim, 
+                key: undefined,
+                code: this.code,
+            });
+            return;
         }
     }
 
     private updateLifeBar() {
         const heartsToShow = Math.ceil(this.cantidadVida / this.golpePorCorazon);
+        this.isHit = true;
+        this.hitTimer = this.time.delayedCall(1000, () => {
+            this.isHit = false;
+        });
         this.heartsGroup.children.each((heart: Phaser.GameObjects.GameObject, index: number) => {
             if (heart instanceof Phaser.GameObjects.Image) {
                 if (index >= heartsToShow) {
@@ -289,7 +300,16 @@ private changeSkeletonDirection() {
             }
             return null;
         });
+        
     }
-    
-
+    private tweenTint(sprite: Phaser.GameObjects.Sprite, endColor: number, time: number, callback?: () => void) {
+        this.tweens.add({
+            targets: sprite,
+            duration: time/2,
+            tint: endColor,
+            yoyo: true,
+            repeat: 1,
+            onComplete: callback 
+        });
+    }    
 }   
