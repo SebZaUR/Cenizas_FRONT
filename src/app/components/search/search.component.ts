@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ProfileType } from 'src/app/schemas/ProfileTypeJson';
 import { UserJson } from 'src/app/schemas/UserJson';
 import { UserService } from 'src/app/services/user/user.service';
-import { NgxInfiniteScrollService } from 'ngx-infinite-scroll';
+
 
 @Component({
   selector: 'app-search',
