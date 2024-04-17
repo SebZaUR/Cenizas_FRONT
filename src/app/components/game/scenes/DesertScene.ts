@@ -16,7 +16,11 @@ export class DesertScene extends MainScene {
     private cantidadVida: number = 100;
     private golpePorCorazon: number = 20;
     private isHit: boolean = false;
+    private skeletonHitted: boolean =false;
     private hitTimer!: Phaser.Time.TimerEvent;
+
+    private cantidadVidaEnemigo: number = 500;
+    private golpePorespada: number = 30;
     
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
@@ -193,8 +197,21 @@ private changeSkeletonDirection() {
                 this.skeleton.setFlipX(false);
                 break
         }
-        if (this.isAttacking && this.checkDistance(this.player, this.skeleton)) {
+
+        if (this.isAttacking && this.checkDistance(this.player, this.skeleton) 
+            && this.skeletonHitted == false && this.cantidadVidaEnemigo > 0 ) {
             this.skeleton.setTint(0xff0000);
+            this.skeletonHitted = true
+            this.hitTimer = this.time.delayedCall(350, () => {
+                this.skeletonHitted = false;
+            });
+            this.cantidadVidaEnemigo -= this.golpePorespada;
+            if (this.cantidadVidaEnemigo == 0) {
+                console.log("Mueltoooo");
+
+            }else{
+                console.log(this.cantidadVidaEnemigo);
+            }
         }
 
         if (this.isAttacking === false && this.checkDistance(this.player, this.skeleton) ){
@@ -224,7 +241,7 @@ private changeSkeletonDirection() {
 
     private checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
         const distance = Phaser.Math.Distance.Between(bodyA.x, bodyA.y, bodyB.x, bodyB.y);
-        return distance < 50;
+        return distance < 50 ;
     }
 
     private getTurn(myNumber: number) {
