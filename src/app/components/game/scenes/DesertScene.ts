@@ -23,6 +23,7 @@ export class DesertScene extends MainScene {
     private skeletonSpeed = 0.7; 
     private cantidadVidaEnemigo: number = 500;
     private golpePorespada: number = 30;
+    private  count: number[] = [];
     
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
@@ -146,6 +147,7 @@ export class DesertScene extends MainScene {
             const posY = Phaser.Math.Between(100, 500); 
             const skeleton = this.create_skeleton(posX, posY, 'Skeleton');
             this.skeletonsGroup.push(skeleton);
+            this.count.push(0);
         }
         this.skeletonsGroup.forEach(skeleton => {
             const direction =  Direction.LEFT ;
@@ -176,6 +178,20 @@ export class DesertScene extends MainScene {
             frameRate: 5,
             repeat: -1
         });
+
+        this.anims.create({
+            key: 'morido',
+            frames: this.anims.generateFrameNumbers('Skeleton', { start: 14, end:25 }),
+            frameRate: 5,
+            repeat: 0
+        });
+        this.anims.create({
+            key: 'apuyalado',
+            frames: this.anims.generateFrameNumbers('Skeleton', { start: 4, end:10 }),
+            frameRate: 5,
+            repeat: -1
+        });
+
     }
 
 
@@ -231,7 +247,7 @@ export class DesertScene extends MainScene {
         this.skeletonsGroup.forEach((skeleton: Phaser.Physics.Matter.Sprite, index: number) => {
             const life = this.skeletosnLife[index];
             const hit = this.skeletonsHitted[index];
-        
+            
             if (this.isAttacking && this.checkDistance(this.player, skeleton) && !hit && life > 0) {
                 skeleton.setTint(0xff0000);
                 this.skeletonsHitted[index] = true;
@@ -240,11 +256,27 @@ export class DesertScene extends MainScene {
                 });
                 this.skeletosnLife[index] -= this.golpePorespada;
             }
+
     
             if (this.isAttacking === false && this.checkDistance(this.player, skeleton)) {
                 skeleton.clearTint();
+               
             }
-    
+            if (this.skeletosnLife[index]<= 0 && this.count[index]==0){
+                this.count[index]+=1;
+              
+               skeleton.setVelocity(0, 0);
+               skeleton.anims.play('morido');
+               skeleton.anims.stopAfterRepeat(0);
+               skeleton.setStatic(true);
+        
+                this.time.delayedCall(1700, function() {
+                 
+                   skeleton.setVisible(false);
+                   skeleton.setSensor(true);
+                }, [], this);
+            }
+
             this.socket.emit('updateSkeleton', {
                 x: skeleton.x,
                 y: skeleton.y,
@@ -260,9 +292,12 @@ export class DesertScene extends MainScene {
                 const bodyA = pair.bodyA;
                 const bodyB = pair.bodyB;
     
-                this.skeletonsGroup.forEach(skeleton => {
-                    if (this.cantidadVidaEnemigo >= 0 && bodyA === this.player.body && bodyB === skeleton.body) {
+                this.skeletonsGroup.forEach((skeleton,index) => {
+                    if (this.skeletosnLife[index] >= 0 && bodyA === this.player.body && bodyB === skeleton.body) {
                         this.reduceLife();
+                        skeleton.anims.play('apuyalado');
+                    }else{
+                        skeleton.anims.play('caminar');
                     }
                 });
             });
