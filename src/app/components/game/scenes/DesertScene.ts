@@ -15,10 +15,12 @@ export class DesertScene extends MainScene {
     private cantidadVida: number = 100;
     private golpePorCorazon: number = 20;
     private isHit: boolean = false;
+
+    private posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
     private skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
     private skeletonDirections: { skeleton: Phaser.Physics.Matter.Sprite, direction: Direction }[] = [];
-    private skeletosnLife: number[] = []; // Array para almacenar la vida de cada esqueleto
-    private skeletonsHitted: boolean[] = []; // Array para rastrear si cada esqueleto ha sido golpeado recientemente
+    private skeletosnLife: number[] = []; 
+    private skeletonsHitted: boolean[] = []; 
     private skeletonHitted: boolean =false;
     private skeletonSpeed = 0.7; 
     private cantidadVidaEnemigo: number = 500;
@@ -39,6 +41,7 @@ export class DesertScene extends MainScene {
         this.socket.off('goToDesert');
         this.socket.id = data.socketId;
         this.myNumber = data.myNumber;
+        this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
         this.socket.on('connect', () => {
             if (this.socket.id) {
                 this.playerId = this.socket.id;
@@ -102,7 +105,6 @@ export class DesertScene extends MainScene {
 
     private changeSkeletonDirection(skeleton: Phaser.Physics.Matter.Sprite) {
         const index = this.skeletonDirections.findIndex(item => item.skeleton === skeleton);
-        console.log(this.skeletonDirections);
         if (index !== -1) {
             const randomDirection = Phaser.Math.Between(0, 3);
     
@@ -122,13 +124,12 @@ export class DesertScene extends MainScene {
                 default:
                     break;
             }
-        }else{
-            console.log("Arreglo mal");
         }
     }
 
     protected create_skeleton ( position_x: number, position_y: number, spray: string) {
         const skeleton = this.matter.add.sprite(position_x, position_y, spray);
+        const velocity = new Phaser.Math.Vector2();
         skeleton.setDisplaySize(90, 90);
         skeleton.setRectangle(15, 25);
         skeleton.setOrigin(0.50, 0.55);
@@ -141,10 +142,9 @@ export class DesertScene extends MainScene {
 
     private createSkeletons() {
         const numSkeletons = 7; 
-        console.log(this.skeletonsGroup);
         for (let i = 0; i < numSkeletons; i++) {
-            const posX = Phaser.Math.Between(100, 700); 
-            const posY = Phaser.Math.Between(100, 500); 
+            const posX = this.posicionesInicialesEsqueletos[i].x;
+            const posY = this.posicionesInicialesEsqueletos[i].y;            
             const skeleton = this.create_skeleton(posX, posY, 'Skeleton');
             this.skeletonsGroup.push(skeleton);
             this.count.push(0);
@@ -162,7 +162,6 @@ export class DesertScene extends MainScene {
             const heart = this.add.image(300 + i * 20, 210, 'corazon').setScrollFactor(0);
             this.heartsGroup.add(heart);
         }
-     
     }
 
     create_animationSkeleton() {
@@ -277,9 +276,32 @@ export class DesertScene extends MainScene {
                 }, [], this);
             }
 
+            let velocityX = 0;
+            let velocityY = 0;
+
+            switch (this.skeletonDirections[index].direction) {
+                case Direction.UP:
+                    velocityY = -this.skeletonSpeed;
+                    velocityX = 0;
+                    break;
+                case Direction.DOWN:
+                    velocityY = this.skeletonSpeed;
+                    velocityX = 0;
+                    break;
+                case Direction.LEFT:
+                    velocityX = -this.skeletonSpeed;
+                    velocityY = 0
+                    break;
+                case Direction.RIGHT:
+                    velocityX = this.skeletonSpeed;
+                    velocityY = 0;
+                    break;
+            }
+
             this.socket.emit('updateSkeleton', {
-                x: skeleton.x,
-                y: skeleton.y,
+                index: this.skeletonsGroup.indexOf(skeleton),
+                velocityX: velocityX,
+                velocityY: velocityY,
                 animation: skeleton.anims.currentAnim,
                 key: skeleton.anims.currentAnim?.key,
                 color: skeleton.tint,
@@ -329,10 +351,14 @@ export class DesertScene extends MainScene {
         }
     } 
     
-    private updateSkeleton(data: any){
-        //this.skeleton.x = data.x;
-        //this.skeleton.y = data.y;
-        //this.skeleton.setTint(data.color);
+    private updateSkeleton(data: any) {
+        const skeletonToUpdate = this.skeletonsGroup[data.index];
+        if (skeletonToUpdate) {
+            skeletonToUpdate.setVelocityX(data.velocityX)
+            skeletonToUpdate.setVelocityY(data.velocityY)
+            skeletonToUpdate.setTint(data.color);
+            skeletonToUpdate.anims.play(data.animation, true);
+        }
     }
 
     private reduceLife() {

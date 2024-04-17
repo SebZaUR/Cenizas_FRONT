@@ -10,7 +10,7 @@ export class MainScene extends Phaser.Scene {
     protected isAttacking: boolean = false;
     protected lastDirection: string = "down";
     protected playerVelocity = new Phaser.Math.Vector2();
-    protected startx!: number;
+    protected startx!: number; 
     protected starty!: number;
     protected playerId!: string;
     protected myNumber!: number;
@@ -340,7 +340,7 @@ export class MainScene extends Phaser.Scene {
                     animation: this.player.anims.currentAnim,
                     key: this.player.anims.currentAnim?.key,
                     code: this.code
-                    });
+                });
             }
         }
     }

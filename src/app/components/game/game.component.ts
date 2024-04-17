@@ -53,11 +53,9 @@ export class GameComponent implements OnInit {
             .subscribe(profile => {
                 this.profile = profile;
                 if (this.profile && this.profile.mail) {
-                    console.log(this.profile.mail)
                     this.mail =  this.profile.mail;
                     this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
                         this.user = room;
-                        console.log(this.user);
                       });;
                 }
             });
@@ -67,7 +65,6 @@ export class GameComponent implements OnInit {
     });
     this.roomService.getRoom(this.code).subscribe((room: RoomJson) => {
       this.room = room;
-      console.log(this.mail);
     });
   }
 }
