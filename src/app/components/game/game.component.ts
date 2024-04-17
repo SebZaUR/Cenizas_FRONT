@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { UserService } from 'src/app/services/user/user.service';
 import { ProfileType } from 'src/app/schemas/ProfileTypeJson';
 import { UserJson } from 'src/app/schemas/UserJson';
+import { enviroment } from 'src/enviroment/enviroment';
 
 
 @Component({
@@ -19,7 +20,7 @@ import { UserJson } from 'src/app/schemas/UserJson';
 })
 
 export class GameComponent implements OnInit {
-  socket = io('http://localhost:2525/');
+  socket = io(enviroment.socketLink);
   phaserGame!: Phaser.Game; 
   config: Phaser.Types.Core.GameConfig;
   code : string = '';
