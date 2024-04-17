@@ -7,18 +7,20 @@ import { MainScene } from './MainScene';
     RIGHT
  };
 export class DesertScene extends MainScene {
-    private directionskeleton = Direction.LEFT ;
     protected override startx!: number;
     protected override starty: number = 270;
-    protected skeleton!: Phaser.Physics.Matter.Sprite;
+    private hitTimer!: Phaser.Time.TimerEvent;
 
     private heartsGroup!: Phaser.GameObjects.Group;
     private cantidadVida: number = 100;
     private golpePorCorazon: number = 20;
     private isHit: boolean = false;
+    private skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
+    private skeletonDirections: { skeleton: Phaser.Physics.Matter.Sprite, direction: Direction }[] = [];
+    private skeletosnLife: number[] = []; // Array para almacenar la vida de cada esqueleto
+    private skeletonsHitted: boolean[] = []; // Array para rastrear si cada esqueleto ha sido golpeado recientemente
     private skeletonHitted: boolean =false;
-    private hitTimer!: Phaser.Time.TimerEvent;
-
+    private skeletonSpeed = 0.7; 
     private cantidadVidaEnemigo: number = 500;
     private golpePorespada: number = 30;
     
@@ -75,15 +77,17 @@ export class DesertScene extends MainScene {
         this.create_remote_players();
         this.cameras.main.setAlpha(0);
         this.create_animationSkeleton();
-        this.create_skeleton(400, 400, 'Skeleton');
-        this.skeleton.anims.play('caminar');
+        this.createSkeletons();
         this.matter.world.on('collisionstart', (event: any) => {
             event.pairs.forEach((pair: any) => {
                 const bodyA = pair.bodyA;
                 const bodyB = pair.bodyB;
-                if (bodyA === this.skeleton.body || bodyB === this.skeleton.body) {
-                    this.changeSkeletonDirection();
-                }
+        
+                this.skeletonsGroup.forEach((skeleton) => {
+                    if (bodyA === skeleton.body || bodyB === skeleton.body) {
+                        this.changeSkeletonDirection(skeleton);
+                    }
+                });
             });
         });
 
@@ -95,35 +99,61 @@ export class DesertScene extends MainScene {
         });
     }
 
-private changeSkeletonDirection() {
-    const randomDirection = Phaser.Math.Between(0, 3);
-
-    switch(randomDirection) {
-        case 0:
-            this.directionskeleton = Direction.UP;
-            break;
-        case 1:
-            this.directionskeleton = Direction.DOWN;
-            break;
-        case 2:
-            this.directionskeleton = Direction.LEFT;
-            break;
-        case 3:
-            this.directionskeleton = Direction.RIGHT;
-            break;
-        default:
-            break;
+    private changeSkeletonDirection(skeleton: Phaser.Physics.Matter.Sprite) {
+        const index = this.skeletonDirections.findIndex(item => item.skeleton === skeleton);
+        console.log(this.skeletonDirections);
+        if (index !== -1) {
+            const randomDirection = Phaser.Math.Between(0, 3);
+    
+            switch(randomDirection) {
+                case 0:
+                    this.skeletonDirections[index].direction = Direction.UP;
+                    break;
+                case 1:
+                    this.skeletonDirections[index].direction = Direction.DOWN;
+                    break;
+                case 2:
+                    this.skeletonDirections[index].direction = Direction.LEFT;
+                    break;
+                case 3:
+                    this.skeletonDirections[index].direction = Direction.RIGHT;
+                    break;
+                default:
+                    break;
+            }
+        }else{
+            console.log("Arreglo mal");
+        }
     }
-}
 
     protected create_skeleton ( position_x: number, position_y: number, spray: string) {
-        this.skeleton = this.matter.add.sprite(position_x, position_y, spray);
-        this.skeleton.setDisplaySize(90, 90);
-        this.skeleton.setRectangle(15, 25);
-        this.skeleton.setOrigin(0.50, 0.55);
-        this.skeleton.setFixedRotation();
+        const skeleton = this.matter.add.sprite(position_x, position_y, spray);
+        skeleton.setDisplaySize(90, 90);
+        skeleton.setRectangle(15, 25);
+        skeleton.setOrigin(0.50, 0.55);
+        skeleton.setFixedRotation();
+        skeleton.anims.play('caminar');
+        this.skeletosnLife.push(this.cantidadVidaEnemigo); 
+        this.skeletonsHitted.push(this.skeletonHitted); 
+        return skeleton;
     }
 
+    private createSkeletons() {
+        const numSkeletons = 7; 
+        console.log(this.skeletonsGroup);
+        for (let i = 0; i < numSkeletons; i++) {
+            const posX = Phaser.Math.Between(100, 700); 
+            const posY = Phaser.Math.Between(100, 500); 
+            const skeleton = this.create_skeleton(posX, posY, 'Skeleton');
+            this.skeletonsGroup.push(skeleton);
+        }
+        this.skeletonsGroup.forEach(skeleton => {
+            const direction =  Direction.LEFT ;
+            this.skeletonDirections.push({ skeleton, direction });
+        });
+    }
+
+    
     protected createLifeBar() {
         this.heartsGroup = this.add.group();
         for (let i = 0; i < 5; i++) {
@@ -164,81 +194,81 @@ private changeSkeletonDirection() {
         super.create_remote_players();
     }
 
-    override  update() {
+    override update() {
         const startButton = document.getElementById('startButton');
         if (startButton && startButton.parentNode) {
             startButton.parentNode.removeChild(startButton);
         }
         super.update();
+
         this.socket.on('updateSkeleton', (skeletonData) => {
             this.updateSkeleton(skeletonData);
         });
+    
+        this.skeletonDirections.forEach(skeletonObj  => {
+            const skeleton = skeletonObj.skeleton;
+            const direction = skeletonObj.direction;
+            const speed = this.skeletonSpeed;
 
-        this.socket.on('imHitted', (playerId: string) => {
-            const existingSprite = this.otherSprites[playerId];
-            this.tweenTint(existingSprite, 0xff0000, 500, () => {
-            });
+            switch (direction) {
+                case Direction.UP:
+                    skeleton.setVelocity(0, -speed);
+                    break;
+                case Direction.DOWN: 
+                    skeleton.setVelocity(0, speed);
+                    break;
+                case Direction.LEFT:
+                    skeleton.setFlipX(true);
+                    skeleton.setVelocity(-speed, 0);
+                    break;
+                case Direction.RIGHT:
+                    skeleton.setVelocity(speed, 0);
+                    skeleton.setFlipX(false);
+                    break;
+            }
         });
 
-        const speed = 0.7;
-        switch(this.directionskeleton){
-            case Direction.UP:  
-                this.skeleton.setVelocity(0,-speed)
-                break
-            case Direction.DOWN:
-                this.skeleton.setVelocity(0,speed)
-                break
-            case Direction.LEFT:
-                this.skeleton.setFlipX(true);
-                this.skeleton.setVelocity(-speed,0)
-                break
-            case Direction.RIGHT:
-                this.skeleton.setVelocity(speed,0)
-                this.skeleton.setFlipX(false);
-                break
-        }
-
-        if (this.isAttacking && this.checkDistance(this.player, this.skeleton) 
-            && this.skeletonHitted == false && this.cantidadVidaEnemigo > 0 ) {
-            this.skeleton.setTint(0xff0000);
-            this.skeletonHitted = true
-            this.hitTimer = this.time.delayedCall(350, () => {
-                this.skeletonHitted = false;
-            });
-            this.cantidadVidaEnemigo -= this.golpePorespada;
-            if (this.cantidadVidaEnemigo == 0) {
-                console.log("Mueltoooo");
-
-            }else{
-                console.log(this.cantidadVidaEnemigo);
+        this.skeletonsGroup.forEach((skeleton: Phaser.Physics.Matter.Sprite, index: number) => {
+            const life = this.skeletosnLife[index];
+            const hit = this.skeletonsHitted[index];
+        
+            if (this.isAttacking && this.checkDistance(this.player, skeleton) && !hit && life > 0) {
+                skeleton.setTint(0xff0000);
+                this.skeletonsHitted[index] = true;
+                this.hitTimer = this.time.delayedCall(350, () => {
+                    this.skeletonsHitted[index] = false;
+                });
+                this.skeletosnLife[index] -= this.golpePorespada;
             }
-        }
-
-        if (this.isAttacking === false && this.checkDistance(this.player, this.skeleton) ){
-            this.skeleton.clearTint()
-        }
-
-        this.socket.emit('updateSkeleton',{
-            x: this.skeleton.x,
-            y: this.skeleton.y,
-            animation: this.skeleton.anims.currentAnim,
-            key: this.skeleton.anims.currentAnim?.key,
-            color: this.skeleton.tint,
-            code: this.code
-        })
-
+    
+            if (this.isAttacking === false && this.checkDistance(this.player, skeleton)) {
+                skeleton.clearTint();
+            }
+    
+            this.socket.emit('updateSkeleton', {
+                x: skeleton.x,
+                y: skeleton.y,
+                animation: skeleton.anims.currentAnim,
+                key: skeleton.anims.currentAnim?.key,
+                color: skeleton.tint,
+                code: this.code
+            });
+        });
+    
         this.matter.world.on('collisionstart', (event: any) => {
             event.pairs.forEach((pair: any) => {
                 const bodyA = pair.bodyA;
                 const bodyB = pair.bodyB;
-        
-                if (bodyA === this.player.body && bodyB === this.skeleton.body) {
-                    this.reduceLife();
-                }
+    
+                this.skeletonsGroup.forEach(skeleton => {
+                    if (this.cantidadVidaEnemigo >= 0 && bodyA === this.player.body && bodyB === skeleton.body) {
+                        this.reduceLife();
+                    }
+                });
             });
         });
     }
-
+    
     private checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
         const distance = Phaser.Math.Distance.Between(bodyA.x, bodyA.y, bodyB.x, bodyB.y);
         return distance < 50 ;
@@ -265,9 +295,9 @@ private changeSkeletonDirection() {
     } 
     
     private updateSkeleton(data: any){
-        this.skeleton.x = data.x;
-        this.skeleton.y = data.y;
-        this.skeleton.setTint(data.color);
+        //this.skeleton.x = data.x;
+        //this.skeleton.y = data.y;
+        //this.skeleton.setTint(data.color);
     }
 
     private reduceLife() {
