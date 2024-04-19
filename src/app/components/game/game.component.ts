@@ -52,16 +52,15 @@ export class GameComponent implements OnInit {
   ngOnInit() {
     this.phaserGame = new Phaser.Game(this.config);
     this.http.get('https://graph.microsoft.com/v1.0/me')
-      .subscribe(profile => {
-        this.profile = profile;
-        if (this.profile && this.profile.mail) {
-          console.log(this.profile.mail)
-          this.mail = this.profile.mail;
-          this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
-            this.user = room;
-          });;
-        }
-      });
+            .subscribe(profile => {
+                this.profile = profile;
+                if (this.profile && this.profile.mail) {
+                    this.mail =  this.profile.mail;
+                    this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
+                        this.user = room;
+                      });;
+                }
+            });
     this.route.queryParams.subscribe(params => {
       this.code = params['code'];
       this.socket.emit('joinRoom', this.code)
