@@ -15,6 +15,7 @@ import { IPublicClientApplication, PublicClientApplication, InteractionType, Bro
 import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalGuardConfiguration, MsalRedirectComponent } from '@azure/msal-angular';
 import { HostComponent } from './components/host/host.component';
 import { enviroment } from 'src/enviroment/enviroment';
+import { FriendsComponent } from './components/friends/friends.component';
 
 
 const GRAPH_ENDPOINT = 'https://graph.microsoft.com/v1.0/me';
@@ -76,7 +77,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     WaitRoomComponent,
     PagenotfoundComponent,
     LogginComponent,
-    HostComponent
+    HostComponent,
+    FriendsComponent
   ],
   imports: [
     HttpClientModule,
