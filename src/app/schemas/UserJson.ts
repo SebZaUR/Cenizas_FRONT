@@ -1,4 +1,5 @@
 import { gameStats } from 'src/app/schemas/gameStats' 
+import { FriendRequest } from './FriendRequest';
 
 export interface UserJson {
     id : number;
@@ -7,5 +8,5 @@ export interface UserJson {
     game_stats: gameStats,
     friends : [string],
     rooms : [number],
-    friendRequest:[string]
+    friendRequest:FriendRequest
 }

@@ -18,7 +18,6 @@ export class LogginComponent implements OnInit {
   profile!: ProfileType;
   user!: UserJson;
   friendMail: string = "";
-  firendRequest: string[] = [];
   friends: string[] = [];
   rooms: number[] = [];
   constructor(private userService: UserService, private route: ActivatedRoute, private http: HttpClient) {
@@ -32,18 +31,10 @@ export class LogginComponent implements OnInit {
           this.userService.getUser(this.profile.mail).subscribe((user: UserJson) => {
             this.user = user;
             this.tokenExpiration = localStorage.getItem('tokenExpiration')!;
-            this.firendRequest = this.user.friendRequest;
             this.friends = this.user.friends;
             this.rooms = this.user.rooms;
           });
         }
       });
-  }
-
-
-  sendFriendRequest(correo: string) {
-    this.userService.senFriendRequest(this.user.mail!, correo).subscribe(() => {
-      this.firendRequest.push(correo);
-    });
   }
 }

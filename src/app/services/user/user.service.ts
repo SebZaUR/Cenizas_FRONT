@@ -1,7 +1,9 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { mergeMap, Observable, switchMap } from 'rxjs';
+import { FriendRequest } from 'src/app/schemas/FriendRequest';
 import { UserJson } from 'src/app/schemas/UserJson';
+import { enviroment } from 'src/enviroment/enviroment';
 
 
 
@@ -10,7 +12,7 @@ import { UserJson } from 'src/app/schemas/UserJson';
 })
 export class UserService {
 
-  public userUrlApi: string ="http://localhost:8080/v1/users";
+  public userUrlApi: string = enviroment.backLink + "/v1/users";
   
 
   constructor(private http: HttpClient) { }
@@ -22,6 +24,10 @@ export class UserService {
   
   getUser(correo:string):Observable<UserJson>{
     return  this.http.get<UserJson>(this.userUrlApi+"/"+correo);
+  }
+
+  getUserFriends(correo:string):Observable<[string]>{
+    return  this.http.get<[string]>(this.userUrlApi+"/"+correo+"/friends");
   }
 
   getUserRooms(correo:string):Observable<[string]>{
@@ -46,8 +52,21 @@ export class UserService {
     );
   }
 
-  senFriendRequest(correoAmigo: string, correo:string): Observable<any> {
-    const params = new HttpParams().set('friendMail',correo).set('user',correoAmigo)
-    return this.http.post<any>(this.userUrlApi+"/sendFriendRequest",null, {params:params});
+  sendFriendRequest(correo: string, correoAmigo:string): Observable<any> {
+    const params = new HttpParams().set('friendMail',correoAmigo)
+    return this.http.put<any>(this.userUrlApi+"/"+correo+"/sendFriendRequest",null, {params:params});
+  }
+
+  getFriendRequestRecieved(correo:string):Observable<[FriendRequest]> {
+    return this.http.get<[FriendRequest]>(this.userUrlApi+"/"+correo+"/ReceivedFriendRequestPending");
+  }
+
+  getFriendRequestSent(correo:string):Observable<[FriendRequest]> {
+    return this.http.get<[FriendRequest]>(this.userUrlApi+"/"+correo+"/SendFriendRequestPending");
+  }
+
+  respondFriendReques(correo: string, correoAmigo:string,respuesta:string):Observable<any> {
+    const params = new HttpParams().set('friendMail',correoAmigo).set('response',respuesta)
+    return this.http.put<any>(this.userUrlApi+"/"+correo+"/ResponseFriendRequest",null, {params:params});
   }
 }

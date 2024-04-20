@@ -14,6 +14,8 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { IPublicClientApplication, PublicClientApplication, InteractionType, BrowserCacheLocation, LogLevel } from '@azure/msal-browser';
 import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalGuardConfiguration, MsalRedirectComponent } from '@azure/msal-angular';
 import { HostComponent } from './components/host/host.component';
+import { enviroment } from 'src/enviroment/enviroment';
+import { FriendsComponent } from './components/friends/friends.component';
 
 
 const GRAPH_ENDPOINT = 'https://graph.microsoft.com/v1.0/me';
@@ -30,10 +32,11 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     auth: {
       clientId: "c6a90014-e04a-4490-a744-60a1cf8e32ff",
       authority: "https://login.microsoftonline.com/9c3dde60-b813-4c66-870f-04e975f8171f",
-      redirectUri: "http://localhost:4200",
+      redirectUri: enviroment.homeLink,
+      postLogoutRedirectUri: enviroment.homeLink
     },
     cache: {
-      cacheLocation: BrowserCacheLocation.LocalStorage,
+      cacheLocation: "localStorage",
       storeAuthStateInCookie: isIE, // set to true for IE 11
     },
     system: {
@@ -74,7 +77,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     WaitRoomComponent,
     PagenotfoundComponent,
     LogginComponent,
-    HostComponent
+    HostComponent,
+    FriendsComponent
   ],
   imports: [
     HttpClientModule,

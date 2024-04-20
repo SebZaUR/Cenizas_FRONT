@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
+import { GameComponent } from '../game.component';
 
 export class MainScene extends Phaser.Scene {
     keys!: any;
@@ -10,13 +11,14 @@ export class MainScene extends Phaser.Scene {
     protected isAttacking: boolean = false;
     protected lastDirection: string = "down";
     protected playerVelocity = new Phaser.Math.Vector2();
-    protected startx!: number;
+    protected startx!: number; 
     protected starty!: number;
     protected playerId!: string;
     protected myNumber!: number;
     protected socket!: Socket;
     protected otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
     protected barraVida!: Phaser.GameObjects.GameObject;
+    
 
     constructor(key: string, socket: any, code: string) {
         super({ key: key });
@@ -340,7 +342,7 @@ export class MainScene extends Phaser.Scene {
                     animation: this.player.anims.currentAnim,
                     key: this.player.anims.currentAnim?.key,
                     code: this.code
-                    });
+                });
             }
         }
     }
@@ -371,7 +373,8 @@ export class MainScene extends Phaser.Scene {
     
         startButton.addEventListener('click', () => {
             this.socket.emit('goToDesert', {
-                mapaActual: 'DesertScene'
+                mapaActual: 'DesertScene',
+                idOwner:this.socket.id
             });
         });
     }
