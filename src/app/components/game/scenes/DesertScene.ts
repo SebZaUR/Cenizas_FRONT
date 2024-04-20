@@ -1,22 +1,23 @@
 import { right } from '@popperjs/core';
 import { MainScene } from './MainScene';
- enum Direction {
+import {objectCoollectible} from './objectCoollectible';
+enum Direction {
     UP,
     DOWN,
     LEFT,
     RIGHT
- };
+};
 export class DesertScene extends MainScene {
     protected override startx!: number;
     protected override starty: number = 270;
     private hitTimer!: Phaser.Time.TimerEvent;
-
+    protected skeleton!: Phaser.Physics.Matter.Sprite;
     private heartsGroup!: Phaser.GameObjects.Group;
     private cantidadVida: number = 100;
     private golpePorCorazon: number = 20;
     private isHit: boolean = false;
-
     private posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
+    private posicionesItems: { x: number, y: number }[] = [];
     private skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
     private skeletonDirections: { skeleton: Phaser.Physics.Matter.Sprite, direction: Direction }[] = [];
     private skeletosnLife: number[] = []; 
@@ -26,12 +27,14 @@ export class DesertScene extends MainScene {
     private cantidadVidaEnemigo: number = 500;
     private golpePorespada: number = 30;
     private  count: number[] = [];
+    private itemsType:  string[]= ["Llave","Herramienta","Metal"];
+    private items: objectCoollectible[] = [];
     
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
     }
 
-     override init(data: any) {
+    override init(data: any) {
         this.socket.connect();
         this.code = data.code;
         this.socket.emit('joinRoom', this.code);
@@ -42,6 +45,7 @@ export class DesertScene extends MainScene {
         this.socket.id = data.socketId;
         this.myNumber = data.myNumber;
         this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
+        this.posicionesItems = data.posicionesItems;
         this.socket.on('connect', () => {
             if (this.socket.id) {
                 this.playerId = this.socket.id;
@@ -55,7 +59,6 @@ export class DesertScene extends MainScene {
                 delete this.otherSprites[playerId]; 
             }
         });
-     
     }
 
     override preload() {
@@ -67,7 +70,6 @@ export class DesertScene extends MainScene {
             frameWidth: 64,
             frameHeight: 64
         });
-      
     }
 
     override create() {
@@ -82,14 +84,21 @@ export class DesertScene extends MainScene {
         this.cameras.main.setAlpha(0);
         this.create_animationSkeleton();
         this.createSkeletons();
+        this.createItems();
         this.matter.world.on('collisionstart', (event: any) => {
             event.pairs.forEach((pair: any) => {
                 const bodyA = pair.bodyA;
                 const bodyB = pair.bodyB;
-        
                 this.skeletonsGroup.forEach((skeleton) => {
                     if (bodyA === skeleton.body || bodyB === skeleton.body) {
                         this.changeSkeletonDirection(skeleton);
+                    }
+                });
+                this.items.forEach((item) => {
+                    if (bodyA === item.body && bodyB === this.player.body) {
+                        item.collectItem(bodyA)
+                    }else if(bodyB === item.body && bodyA === this.player.body){
+                        item.collectItem(bodyB);
                     }
                 });
             });
@@ -141,7 +150,7 @@ export class DesertScene extends MainScene {
     }
 
     private createSkeletons() {
-        const numSkeletons = 7; 
+        const numSkeletons = 6; 
         for (let i = 0; i < numSkeletons; i++) {
             const posX = this.posicionesInicialesEsqueletos[i].x;
             const posY = this.posicionesInicialesEsqueletos[i].y;            
@@ -204,7 +213,6 @@ export class DesertScene extends MainScene {
             key: this.player.anims.currentAnim?.key,
             code: this.code
         });
-       
         await new Promise(resolve => setTimeout(resolve, 500));
         super.create_remote_players();
     }
@@ -259,20 +267,17 @@ export class DesertScene extends MainScene {
     
             if (this.isAttacking === false && this.checkDistance(this.player, skeleton)) {
                 skeleton.clearTint();
-               
             }
             if (this.skeletosnLife[index]<= 0 && this.count[index]==0){
                 this.count[index]+=1;
-              
-               skeleton.setVelocity(0, 0);
-               skeleton.anims.play('morido');
-               skeleton.anims.stopAfterRepeat(0);
-               skeleton.setStatic(true);
+            skeleton.setVelocity(0, 0);
+            skeleton.anims.play('morido');
+            skeleton.anims.stopAfterRepeat(0);
+            skeleton.setStatic(true);
         
                 this.time.delayedCall(1700, function() {
-                 
-                   skeleton.setVisible(false);
-                   skeleton.setSensor(true);
+                skeleton.setVisible(false);
+                skeleton.setSensor(true);
                 }, [], this);
             }
 
@@ -419,5 +424,15 @@ export class DesertScene extends MainScene {
             repeat: 1,
             onComplete: callback 
         });
-    }    
+    }
+
+    private createItems(){
+        for (let index = 0; index < 6; index++) {
+            for (let num = 0;num < 3; num++) {
+                const element = new objectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[num]);
+                this.add.existing(element);
+                this.items.push(element);
+            }
+        }
+    }
 }   
