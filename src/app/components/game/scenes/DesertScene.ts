@@ -23,7 +23,7 @@ export class DesertScene extends MainScene {
     private skeletonsHitted: boolean[] = []; 
     private skeletonHitted: boolean =false;
     private skeletonSpeed = 0.7; 
-    private cantidadVidaEnemigo: number = 500;
+    private cantidadVidaEnemigo: number = 100;
     private golpePorespada: number = 30;
     private  count: number[] = [];
     
@@ -88,8 +88,12 @@ export class DesertScene extends MainScene {
                 const bodyB = pair.bodyB;
         
                 this.skeletonsGroup.forEach((skeleton) => {
-                    if (bodyA === skeleton.body || bodyB === skeleton.body) {
+                    if ((bodyA === skeleton.body || bodyB === skeleton.body) && this.myNumber == 1) {
                         this.changeSkeletonDirection(skeleton);
+                    } else{
+                        this.socket.on('directionsEnemys', (data) => {
+                            this.skeletonDirections[data.index].direction = data.direction;
+                        });
                     }
                 });
             });
@@ -124,6 +128,12 @@ export class DesertScene extends MainScene {
                 default:
                     break;
             }
+
+            this.socket.emit('directionsEnemys', {
+                code: this.code,
+                index: index,
+                direction: this.skeletonDirections[index].direction
+            });   
         }
     }
 
@@ -219,30 +229,17 @@ export class DesertScene extends MainScene {
         this.socket.on('updateSkeleton', (skeletonData) => {
             this.updateSkeleton(skeletonData);
         });
-    
-        this.skeletonDirections.forEach(skeletonObj  => {
-            const skeleton = skeletonObj.skeleton;
-            const direction = skeletonObj.direction;
-            const speed = this.skeletonSpeed;
 
-            switch (direction) {
-                case Direction.UP:
-                    skeleton.setVelocity(0, -speed);
-                    break;
-                case Direction.DOWN: 
-                    skeleton.setVelocity(0, speed);
-                    break;
-                case Direction.LEFT:
-                    skeleton.setFlipX(true);
-                    skeleton.setVelocity(-speed, 0);
-                    break;
-                case Direction.RIGHT:
-                    skeleton.setVelocity(speed, 0);
-                    skeleton.setFlipX(false);
-                    break;
-            }
+        this.socket.on('deadSkeleton', (data) => {
+            this.matarEsqueleto(data.index);
         });
 
+        this.socket.on('imHitted', (playerId: string) => {
+            const existingSprite = this.otherSprites[playerId];
+            this.tweenTint(existingSprite, 0xff0000, 500, () => {
+            });
+        });
+    
         this.skeletonsGroup.forEach((skeleton: Phaser.Physics.Matter.Sprite, index: number) => {
             const life = this.skeletosnLife[index];
             const hit = this.skeletonsHitted[index];
@@ -261,19 +258,12 @@ export class DesertScene extends MainScene {
                 skeleton.clearTint();
                
             }
-            if (this.skeletosnLife[index]<= 0 && this.count[index]==0){
-                this.count[index]+=1;
-              
-               skeleton.setVelocity(0, 0);
-               skeleton.anims.play('morido');
-               skeleton.anims.stopAfterRepeat(0);
-               skeleton.setStatic(true);
-        
-                this.time.delayedCall(1700, function() {
-                 
-                   skeleton.setVisible(false);
-                   skeleton.setSensor(true);
-                }, [], this);
+            if (this.skeletosnLife[index]< 0 && this.count[index]==0){
+                this.matarEsqueleto(index);
+                this.socket.emit('deadSkeleton', {
+                    code: this.code,
+                    index: index,
+                });
             }
 
             let velocityX = 0;
@@ -281,11 +271,11 @@ export class DesertScene extends MainScene {
 
             switch (this.skeletonDirections[index].direction) {
                 case Direction.UP:
-                    velocityY = -this.skeletonSpeed;
+                    velocityY = this.skeletonSpeed;
                     velocityX = 0;
                     break;
                 case Direction.DOWN:
-                    velocityY = this.skeletonSpeed;
+                    velocityY = -this.skeletonSpeed;
                     velocityX = 0;
                     break;
                 case Direction.LEFT:
@@ -302,7 +292,6 @@ export class DesertScene extends MainScene {
                 index: this.skeletonsGroup.indexOf(skeleton),
                 velocityX: velocityX,
                 velocityY: velocityY,
-                animation: skeleton.anims.currentAnim,
                 key: skeleton.anims.currentAnim?.key,
                 color: skeleton.tint,
                 code: this.code
@@ -315,11 +304,17 @@ export class DesertScene extends MainScene {
                 const bodyB = pair.bodyB;
     
                 this.skeletonsGroup.forEach((skeleton,index) => {
-                    if (this.skeletosnLife[index] >= 0 && bodyA === this.player.body && bodyB === skeleton.body) {
-                        this.reduceLife();
-                        skeleton.anims.play('apuyalado');
-                    }else{
-                        skeleton.anims.play('caminar');
+                    if (this.skeletosnLife[index] > 0  ) {
+                        if(bodyA === this.player.body && bodyB === skeleton.body){
+                            this.reduceLife();
+                            skeleton.anims.play('apuyalado');
+                        } else if(this.chequearColisionRemota(skeleton, bodyA, bodyB)){
+                            // Le estan cascando a mi pana <---- 
+                            skeleton.anims.play('apuyalado');
+
+                        } else{
+                            skeleton.anims.play('caminar');
+                        }
                     }
                 });
             });
@@ -329,6 +324,37 @@ export class DesertScene extends MainScene {
     private checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
         const distance = Phaser.Math.Distance.Between(bodyA.x, bodyA.y, bodyB.x, bodyB.y);
         return distance < 50 ;
+    }
+
+    private chequearColisionRemota(skeleton: Phaser.Physics.Matter.Sprite, bodyA: MatterJS.BodyType, bodyB: MatterJS.BodyType): boolean {
+        const skeletonBody = skeleton.body as MatterJS.BodyType;
+    
+        for (const spriteId in this.otherSprites) {
+            if (Object.prototype.hasOwnProperty.call(this.otherSprites, spriteId)) {
+                const sprite = this.otherSprites[spriteId] as Phaser.Physics.Matter.Sprite;
+                if ((sprite.body === bodyA && bodyB === skeletonBody) ||
+                    (sprite.body === bodyB && bodyA === skeletonBody)) {
+                    return true;
+                }
+            }
+        }
+    
+        return false;
+    }
+    
+    private matarEsqueleto( index: number) {
+        const skeletonToUpdate = this.skeletonsGroup[index];
+        this.count[index]+=1;      
+        skeletonToUpdate.setVelocity(0, 0);
+        skeletonToUpdate.anims.stop();
+        skeletonToUpdate.anims.play('morido');
+        skeletonToUpdate.anims.stopAfterRepeat(0);
+        skeletonToUpdate.setStatic(true);
+        this.time.delayedCall(1400, function() {
+            skeletonToUpdate.setVisible(false);
+            skeletonToUpdate.setSensor(true);
+            skeletonToUpdate.setCollisionCategory(0);
+        }, [], this);
     }
 
     private getTurn(myNumber: number) {
@@ -357,7 +383,6 @@ export class DesertScene extends MainScene {
             skeletonToUpdate.setVelocityX(data.velocityX)
             skeletonToUpdate.setVelocityY(data.velocityY)
             skeletonToUpdate.setTint(data.color);
-            skeletonToUpdate.anims.play(data.animation, true);
         }
     }
 
