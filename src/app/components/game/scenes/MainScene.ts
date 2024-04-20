@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
 import { objectCoollectible } from './objectCoollectible';
+import { GameComponent } from '../game.component';
 
 export class MainScene extends Phaser.Scene {
     keys!: any;
@@ -18,6 +19,7 @@ export class MainScene extends Phaser.Scene {
     protected socket!: Socket;
     protected otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
     protected barraVida!: Phaser.GameObjects.GameObject;
+    
 
     constructor(key: string, socket: any, code: string) {
         super({ key: key });
@@ -380,7 +382,8 @@ export class MainScene extends Phaser.Scene {
     
         startButton.addEventListener('click', () => {
             this.socket.emit('goToDesert', {
-                mapaActual: 'DesertScene'
+                mapaActual: 'DesertScene',
+                idOwner:this.socket.id
             });
         });
     }

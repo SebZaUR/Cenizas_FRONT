@@ -8,9 +8,10 @@ import { GameComponent } from './components/game/game.component';
 import { BrowserUtils } from '@azure/msal-browser';
 import { HostComponent } from './components/host/host.component';
 import { LogginComponent } from 'src/app/components/loggin/loggin.component';
-
+import { FriendsComponent } from './components/friends/friends.component';
 // MsalGuard is required to protect routes and require authentication before accessing protected routes
 import { MsalGuard } from '@azure/msal-angular';
+
 
 
 //colocar aqui las routas de navegación
@@ -31,6 +32,12 @@ const routes: Routes = [
   },
   {
     path: "sala-espera", component: WaitRoomComponent,
+    canActivate: [
+      MsalGuard
+    ]
+  },
+  {
+    path: "amigos", component: FriendsComponent,
     canActivate: [
       MsalGuard
     ]

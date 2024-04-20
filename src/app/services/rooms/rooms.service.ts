@@ -16,19 +16,9 @@ export class RoomsService {
   getRoom(codigo:string):Observable<RoomJson> {
     return this.http.get<RoomJson>(this.roomApiUrl+"/"+codigo);
   }
-  async getRoomAsync(codigo: string): Promise<RoomJson> {
-    try {
-      const room = await firstValueFrom(this.http.get<RoomJson>(`${this.roomApiUrl}/${codigo}`));
-      return room;
-    } catch (error) {
-      // Manejo de errores
-      console.error('Error al obtener la sala:', error);
-      throw error;
-    }
-  }
-
+  
   getRooms(): Observable<RoomJson[]> { 
-    return this.http.get<RoomJson[]>(this.roomApiUrl); 
+    return this.http.get<RoomJson[]>(this.roomApiUrl+"/publicRooms"); 
   }
 
   getRoomUsers(codigo:string): Observable<string[]> { 
@@ -47,5 +37,13 @@ export class RoomsService {
 
   deleteRoom(code:string):Observable<any>{
     return this.http.delete<any>(this.roomApiUrl+"/"+code+"/delete");
+  }
+
+  updateRoomOn(code:string):Observable<any>{
+    return this.http.put<any>(this.roomApiUrl+"/"+code+"/RoomOn",null);
+  }
+
+  updateRoomOff(code:string):Observable<any>{
+    return this.http.put<any>(this.roomApiUrl+"/"+code+"/RoomOff",null);
   }
 }

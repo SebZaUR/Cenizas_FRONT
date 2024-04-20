@@ -1,0 +1,71 @@
+<div class="principal">
+    <div class="container center-container mt-5">
+        <div class="text-center">
+            <h1>Enviar Solicitud de Amistad</h1>
+            <div *ngIf="showError" class="text-danger">Error al enviar la solicitud de amistad. Verifique entradas.
+            </div>
+            <div class="input-group mb-5">
+                <input [(ngModel)]="friendMail" class="form-control" type="email"
+                    placeholder="Ingresa el correo del amigo" required>
+                <button *ngIf="friendMail" class="btn btn-primary" type="button"
+                    (click)="sendFriendRequest(friendMail);">Enviar Solicitud</button>
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-body">
+                <p>Amigos</p>
+                <ul class="list-group">
+                    <li *ngFor="let friend of friends" class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-0"><strong>Nombre:</strong> {{ friend }}</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mb-3">
+            <div class="card-body">
+                <h3 class="card-title">Solicitudes de Amistad Enviadas</h3>
+                <ul *ngIf="sentList.length > 0; else noSentRequests" class="list-group" id="sentRequests">
+                    <li *ngFor="let friendRequest of sentList" class="list-group-item">
+                        <div 
+                            class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-0"><strong>Jugador:</strong> {{ friendRequest.receiver }}</p>
+                                <p class="mb-0"><strong>Estado:</strong> {{ friendRequest.state }}</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ng-template #noSentRequests>
+                    <p class="text-muted">No tienes solicitudes de amistad enviadas.</p>
+                </ng-template>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">Solicitudes de Amistad Recibidas</h3>
+                <ul *ngIf="receivedList.length > 0; else noReceivedRequests" class="list-group" id="receivedRequests">
+                    <li *ngFor="let friendRequest of receivedList" class="list-group-item">
+                        <div *ngIf="friendRequest.state=='PENDING'" class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-0"><strong>Jugador:</strong> {{ friendRequest.sender }}</p>
+                                <p class="mb-0"><strong>Estado:</strong> {{ friendRequest.state }}</p>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary" style="margin-right: 10px;" (click)="respondToFriendRequest(friendRequest.sender,'accepted')">Aceptar</button>
+                                <button class="btn btn-secondary" (click)="respondToFriendRequest(friendRequest.sender,'refused')">Rechazar</button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ng-template #noReceivedRequests>
+                    <p class="text-muted">No tienes solicitudes de amistad recibidas.</p>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>

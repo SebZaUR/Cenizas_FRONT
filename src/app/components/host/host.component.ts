@@ -87,10 +87,9 @@ export class HostComponent implements OnInit {
         this.userService.getUser(mail).subscribe({
             next: (response) => {
                 this.user = response
-                console.log(this.user);
             },
             error: (error) => console.log(error),
-            complete: () => console.info('complete')
+            complete: () => console.info('Traer al usuario exitoso')
         })
     }
 
