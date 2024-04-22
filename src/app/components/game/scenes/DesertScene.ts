@@ -28,6 +28,8 @@ export class DesertScene extends MainScene {
     private cantidadVidaEnemigo: number = 100;
     private golpePorespada: number = 30;
     private  count: number[] = [];
+    private gameOverScreen!: HTMLElement; 
+
     
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
@@ -79,6 +81,7 @@ export class DesertScene extends MainScene {
         super.create_mapa(width, height + 380, 'first', 'desert', 'desert', ['suelo','objetos','solidos'],desert);
         super.create_player(width, height + 380, this.startx, this.starty, 'player');
         this.createLifeBar();
+        this.createGameOver();
         this.create_remote_players();
         this.cameras.main.setAlpha(0);
         this.create_animationSkeleton();
@@ -153,8 +156,9 @@ export class DesertScene extends MainScene {
     }
 
     private createSkeletons() {
-        const numSkeletons = 7; 
+        const numSkeletons = 6; 
         for (let i = 0; i < numSkeletons; i++) {
+            console.log(this.posicionesInicialesEsqueletos);
             const posX = this.posicionesInicialesEsqueletos[i].x;
             const posY = this.posicionesInicialesEsqueletos[i].y;            
             const skeleton = this.create_skeleton(posX, posY, 'Skeleton');
@@ -402,7 +406,7 @@ export class DesertScene extends MainScene {
             this.player.anims.play('dead');
             this.player.anims.stopAfterRepeat(0);
             this.player.setStatic(true); 
-
+            this.gameOver();
             this.socket.emit('updatePlayers', {
                 posx: this.player.x, 
                 posy: this.player.y, 
@@ -454,5 +458,57 @@ export class DesertScene extends MainScene {
                 this.items.push(element);
             }
         }
+    }
+
+    private createGameOver() {
+        this.gameOverScreen = document.createElement('div');
+        this.gameOverScreen.id = 'gameOverScreen';
+        this.gameOverScreen.style.position = 'absolute';
+        this.gameOverScreen.style.top = '124px';
+        this.gameOverScreen.style.left = '296px';
+        this.gameOverScreen.style.width = '900px';
+        this.gameOverScreen.style.height = '630px';
+        this.gameOverScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        this.gameOverScreen.style.color = '#fff';
+        this.gameOverScreen.style.display = 'flex';
+        this.gameOverScreen.style.justifyContent = 'center';
+        this.gameOverScreen.style.alignItems = 'center';
+
+        const content = document.createElement('div');
+        content.style.textAlign = 'center';
+
+        const gameOverText = document.createElement('h1');
+        gameOverText.textContent = 'Game Over';
+        gameOverText.style.fontSize = '3em';
+        gameOverText.style.marginBottom = '20px';
+
+        const backButton = document.createElement('button');
+        backButton.textContent = 'Volver al Menú Principal';
+        backButton.style.padding = '10px 20px';
+        backButton.style.fontSize = '1.2em';
+        backButton.style.backgroundColor = '#333';
+        backButton.style.color = '#fff';
+        backButton.style.border = 'none';
+        backButton.style.borderRadius = '5px';
+        backButton.style.cursor = 'pointer';
+        backButton.addEventListener('click', () => {
+            console.log('Volver al menú principal');
+            this.socket.disconnect();
+            window.location.href = '/';
+        });
+
+        content.appendChild(gameOverText);
+        content.appendChild(backButton);
+        this.gameOverScreen.appendChild(content);
+    }
+
+    private gameOver() {
+        document.body.appendChild(this.gameOverScreen);
+        this.player.setVelocity(0, 0);
+        this.isKnockedDown = true;
+        this.player.anims.play('dead');
+        this.player.anims.stopAfterRepeat(0);
+        this.player.setStatic(true);
+        this.gameOverScreen.style.display = 'flex'; 
     }
 }   
