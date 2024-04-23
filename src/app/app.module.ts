@@ -10,7 +10,7 @@ import { PagenotfoundComponent } from './components/pagenotfound/pagenotfound.co
 import { FormsModule } from '@angular/forms';
 import { LogginComponent } from './components/loggin/loggin.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { IPublicClientApplication, PublicClientApplication, InteractionType, BrowserCacheLocation, LogLevel } from '@azure/msal-browser';
 import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalGuardConfiguration, MsalRedirectComponent } from '@azure/msal-angular';
 import { HostComponent } from './components/host/host.component';
@@ -30,7 +30,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     auth: {
       clientId: "c6a90014-e04a-4490-a744-60a1cf8e32ff",
       authority: "https://login.microsoftonline.com/9c3dde60-b813-4c66-870f-04e975f8171f",
-      redirectUri: "http://cenizasdelpasadofront.azurewebsites.net",
+      redirectUri: "http://localhost:4200",
     },
     cache: {
       cacheLocation: BrowserCacheLocation.LocalStorage,
@@ -96,7 +96,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     },
     {
       provide: MSAL_GUARD_CONFIG,
-      useFactory: MSALGuardConfigFactory,
+      useValue: {
+        interactionType: 'redirect',
+      } as MsalGuardConfiguration,
     },
     {
       provide: MSAL_INTERCEPTOR_CONFIG,

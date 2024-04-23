@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { mergeMap, Observable, switchMap } from 'rxjs';
 import { UserJson } from 'src/app/schemas/UserJson';
