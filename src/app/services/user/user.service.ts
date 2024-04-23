@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { mergeMap, Observable, switchMap } from 'rxjs';
 import { FriendRequest } from 'src/app/schemas/FriendRequest';
 import { UserJson } from 'src/app/schemas/UserJson';
-import { enviroment } from 'src/enviroment/enviroment';
+import { enviroment } from 'src/enviroments/enviroment';
 
 
 

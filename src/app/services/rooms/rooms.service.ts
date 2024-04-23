@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, firstValueFrom, map } from 'rxjs';
 import { RoomJson } from 'src/app/schemas/RoomJson';
-import { enviroment } from 'src/enviroment/enviroment';
+import { enviroment } from 'src/enviroments/enviroment';
 
 @Injectable({
   providedIn: 'root'
