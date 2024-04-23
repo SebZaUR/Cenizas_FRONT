@@ -1,15 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, firstValueFrom, map } from 'rxjs';
+import { Observable} from 'rxjs';
 import { RoomJson } from 'src/app/schemas/RoomJson';
-import { enviroment } from 'src/environments/environment';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoomsService {
 
-  private roomApiUrl = enviroment.backLink +"/v1/rooms";
+  private roomApiUrl = environment.backLink +"/v1/rooms";
 
   constructor(private http: HttpClient) { }
 

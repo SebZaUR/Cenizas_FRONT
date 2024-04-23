@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ProfileType } from "src/app/schemas/ProfileTypeJson";
 import { UserJson } from "src/app/schemas/UserJson";
 import { io } from 'socket.io-client';
-import { enviroment } from 'src/environments/environment';
+import { environment } from 'src/environments/environment';
 import { FriendRequest } from "src/app/schemas/FriendRequest";
 
 @Component({
@@ -14,7 +14,7 @@ import { FriendRequest } from "src/app/schemas/FriendRequest";
     styleUrls: ['../../../assets/style/main.css']
 })
 export class FriendsComponent implements OnInit {
-    socket = io(enviroment.socketLink);
+    socket = io(environment.socketLink);
     profile!: ProfileType;
     user!: UserJson;
     nickname!: string;

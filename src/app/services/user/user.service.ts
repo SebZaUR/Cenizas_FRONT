@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { mergeMap, Observable, switchMap } from 'rxjs';
 import { FriendRequest } from 'src/app/schemas/FriendRequest';
 import { UserJson } from 'src/app/schemas/UserJson';
-import { enviroment } from 'src/environments/environment';
+import { environment } from 'src/environments/environment';
 
 
 
@@ -12,7 +12,7 @@ import { enviroment } from 'src/environments/environment';
 })
 export class UserService {
 
-  public userUrlApi: string = enviroment.backLink + "/v1/users";
+  public userUrlApi: string = environment.backLink + "/v1/users";
   
 
   constructor(private http: HttpClient) { }
