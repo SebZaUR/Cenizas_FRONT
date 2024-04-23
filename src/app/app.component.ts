@@ -13,6 +13,7 @@ import { UserService } from './services/user/user.service';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ProfileType } from './schemas/ProfileTypeJson';
+import { UserJson } from './schemas/UserJson';
 
 
 @Component({
@@ -26,7 +27,8 @@ export class AppComponent implements OnInit, OnDestroy {
   tokenExpiration: string = '';
   private readonly _destroying$ = new Subject<void>();
   profile!: ProfileType;
-  user: any;
+  user!: UserJson;
+  mail: string | undefined;
 
   constructor(
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
@@ -89,15 +91,19 @@ export class AppComponent implements OnInit, OnDestroy {
 
   createCount(userInfo: any) {
     this.userService.createUser(userInfo.name, userInfo.preferred_username).subscribe({
-      next: (r) => console.log("Cuenta creada en DB"),
+      next: () => console.log("Cuenta creada en DB"),
       error: (error) => console.log(error),
       complete: () => console.info('Cuenta creada, sesion iniciada')
     });
   }
 
+  
+
   getCount(userInfo: any) {
     this.userService.getUser(userInfo.preferred_username).subscribe({
-      next: () => console.log("Cuenta Existente en DB"),
+      next: () => {
+        console.log("Cuenta Existente en DB")
+      },
       error: () => this.createCount(userInfo),
       complete: () => console.info('Cuenta obtenida, sesion iniciada')
     });

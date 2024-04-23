@@ -11,6 +11,17 @@ label {
     color: #ced4dd;
 }
 
+.card{
+    color: white;
+    background-color: #8B3C5E;
+    width: 75%;
+}
+
+.card-title{
+    color: #ced4dd;
+    font-family: minecraft;
+}
+
 
 h1 {
     color: #AD7757;

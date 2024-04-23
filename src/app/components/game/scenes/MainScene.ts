@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
+import { objectCoollectible } from './objectCoollectible';
+import { GameComponent } from '../game.component';
 
 export class MainScene extends Phaser.Scene {
     keys!: any;
@@ -10,13 +12,14 @@ export class MainScene extends Phaser.Scene {
     protected isAttacking: boolean = false;
     protected lastDirection: string = "down";
     protected playerVelocity = new Phaser.Math.Vector2();
-    protected startx!: number;
+    protected startx!: number; 
     protected starty!: number;
     protected playerId!: string;
     protected myNumber!: number;
     protected socket!: Socket;
     protected otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
     protected barraVida!: Phaser.GameObjects.GameObject;
+    
 
     constructor(key: string, socket: any, code: string) {
         super({ key: key });
@@ -77,24 +80,32 @@ export class MainScene extends Phaser.Scene {
             frameWidth: 48,
             frameHeight: 48
         });
-
-      
         this.load.tilemapTiledJSON('lobby', 'assets/backgrounds/mapa.json');
         this.load.image('space', 'assets/backgrounds/spaceShip.png');
         this.load.image('vida', 'assets/icons/barraVida.png');
         this.load.image('corazon', 'assets/icons/corazon.png');
+        this.load.spritesheet("Llave" ,'assets/items/llave.png',{
+            frameWidth: 32,
+            frameHeight: 32
+        });
+        this.load.spritesheet("Herramienta" ,'assets/items/herramienta.png',{
+            frameWidth: 32,
+            frameHeight: 32
+        });
+        this.load.spritesheet("Metal" ,'assets/items/metal.png',{
+            frameWidth: 32,
+            frameHeight: 32
+        });
 
     }
 
     create() {
-   
         const { width, height } = this.sys.game.canvas;
         var spaceShip;
         this.create_mapa(width, height, 'lobby', 'spaceShip', 'space', ['negro','subcapa','solidos'], spaceShip);
         this.create_animation();
         this.create_player(width, height, this.startx, this.starty, 'player');      
         this.create_remote_players();
-    
     }
 
     protected create_mapa(width : number, height: number, key: string, tileImage: any, tileSet: any, layerNames: any, variableName: any) {
@@ -114,7 +125,7 @@ export class MainScene extends Phaser.Scene {
     }
     
 
-   protected create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
+    protected create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
         const newPositionX = position_x + Object.keys(this.otherSprites).length * 30;        
         this.player = this.matter.add.sprite(newPositionX, position_y, spray);
         this.player.setDisplaySize(70, 90);
@@ -340,7 +351,7 @@ export class MainScene extends Phaser.Scene {
                     animation: this.player.anims.currentAnim,
                     key: this.player.anims.currentAnim?.key,
                     code: this.code
-                    });
+                });
             }
         }
     }
@@ -371,7 +382,8 @@ export class MainScene extends Phaser.Scene {
     
         startButton.addEventListener('click', () => {
             this.socket.emit('goToDesert', {
-                mapaActual: 'DesertScene'
+                mapaActual: 'DesertScene',
+                idOwner:this.socket.id
             });
         });
     }

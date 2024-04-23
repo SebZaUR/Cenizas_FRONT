@@ -9,4 +9,8 @@ export interface RoomJson{
     levels:	[number],
     id:	number,
     public: boolean
+    online: boolean
 }
+
+
+  

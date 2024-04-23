@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { UserService } from 'src/app/services/user/user.service';
 import { ProfileType } from 'src/app/schemas/ProfileTypeJson';
 import { UserJson } from 'src/app/schemas/UserJson';
+import { enviroment } from 'src/enviroment/enviroment';
 
 
 @Component({
@@ -19,12 +20,12 @@ import { UserJson } from 'src/app/schemas/UserJson';
 })
 
 export class GameComponent implements OnInit {
-  socket = io('http://localhost:2525/');
+  socket = io(enviroment.socketLink);
   phaserGame!: Phaser.Game;
   config: Phaser.Types.Core.GameConfig;
   code: string = '';
   users: string[] = [];
-  room: RoomJson | null = null;
+  room!: RoomJson;
   profile!: ProfileType;
   user: any;
   mail: any;
@@ -72,5 +73,26 @@ export class GameComponent implements OnInit {
       error: (error) => console.error('Error al obtener código de sala:', error),
       complete: () => console.info('Obtención de código de sala completa')
     });
+    this.socket.on('turnOffRoom', (data) => {
+      // Lógica para manejar la solicitud de amistad recibida
+      console.log(`Apagame esta monda Room : ${data}`);
+      this.switchRoom(false)
+    })
+  }
+
+  switchRoom(state: boolean) {
+    if (state) {
+      this.roomService.updateRoomOn(this.room.code).subscribe({
+        next: () => console.info('online'),
+        error: (error) => console.log(error),
+        complete: () => console.info('Room on completo')
+      })
+    } else {
+      this.roomService.updateRoomOff(this.room.code).subscribe({
+        next: () => console.info('offline'),
+        error: (error) => console.log(error),
+        complete: () => console.info('Room off completo')
+      })
+    }
   }
 }

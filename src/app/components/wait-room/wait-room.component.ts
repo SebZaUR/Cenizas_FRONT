@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
+import { AppComponent } from 'src/app/app.component';
 import { RoomJson } from 'src/app/schemas/RoomJson';
 import { RoomsService } from 'src/app/services/rooms/rooms.service';
 
@@ -16,9 +17,10 @@ export class WaitRoomComponent implements OnInit {
   room: RoomJson | null = null;
   users: string[] = [];
 
-  constructor(private roomService: RoomsService, private route: ActivatedRoute, private router: Router) {
+  constructor(private roomService: RoomsService, private route: ActivatedRoute, private router: Router,private appComponent: AppComponent) {
   }
   ngOnInit(): void {
+    console.log(this.appComponent.user)
     this.route.queryParams.subscribe(params => {
       this.code = params['code'];
     });

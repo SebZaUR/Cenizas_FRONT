@@ -1,15 +1,11 @@
-<div class="principal" >
+<div class="principal">
+    <div *ngIf="showError" class="text-danger text-center mt-5">Error al enviar la solicitud de amistad. Verifique entradas.</div>
     <div class="container mt-5">
-        <div class="row" >
-            <div class="col text-center">
-                <button class="btn btn-primary me-2" (click)="listRooms()">Salas Públicas</button>
-                <button class="btn btn-primary" (click)="loadFriendRoom()">Salas de Amigos</button>
-            </div>
-        </div>
         <div class="row mt-3">
             <div class="col">
+                <h4 class="mb-3">Salas Públicas</h4>
                 <ul class="list-group">
-                    <li *ngFor="let room of rooms" class="list-group-item">
+                    <li *ngFor="let room of roomsPublic" class="list-group-item">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="mb-0"><strong>Nombre del Servidor:</strong> {{ room.server_name }}</p>
@@ -20,22 +16,29 @@
                             <button class="btn btn-primary" (click)="joinRoom(room.code)">Unirse</button>
                         </div>
                     </li>
+                    <li *ngIf="roomsPublic.length === 0" class="list-group-item">No hay salas publicas disponibles
+                    </li>
+                </ul>
+            </div>
+            <div class="col">
+                <h3 class="mb-3">Salas de Amigos</h3>
+                <ul class="list-group">
+                    <li *ngFor="let room of roomsFriends" class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-0"><strong>Nombre del Servidor:</strong> {{ room.server_name }}</p>
+                                <p class="mb-0"><strong>Código:</strong> {{ room.code }}</p>
+                                <p class="mb-0"><strong>Amigo:</strong> {{ room.friend }}</p>
+                                <p class="mb-0" *ngIf="room.public"><strong>Publica</strong></p>
+                                <p class="mb-0" *ngIf="!room.public"><strong>Privada</strong></p>
+                            </div>
+                            <button class="btn btn-primary" (click)="joinRoom(room.code)">Unirse</button>
+                        </div>
+                    </li>
+                    <li *ngIf="roomsFriends.length === 0" class="list-group-item">No hay salas de amigos disponibles
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
