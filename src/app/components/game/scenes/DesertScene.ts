@@ -1,7 +1,6 @@
 import { right } from '@popperjs/core';
 import { MainScene } from './MainScene';
 import { objectCoollectible } from '../objects/objectCoollectible';
-import { Text } from '@angular/compiler';
 import { ScoreBoard } from '../objects/scoreBoard';
 
 enum Direction {
@@ -51,8 +50,7 @@ export class DesertScene extends MainScene {
         this.socket.id = data.socketId;
         this.myNumber = data.myNumber;
         this.scoreText = new ScoreBoard(this);
-        this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
-        this.posicionesItems = data.posicionesItems;
+        
         this.socket.on('connect', () => {
             if (this.socket.id) {
                 this.playerId = this.socket.id;
@@ -66,6 +64,7 @@ export class DesertScene extends MainScene {
                 delete this.otherSprites[playerId]; 
             }
         });
+
     }
 
     override preload() {
@@ -80,18 +79,28 @@ export class DesertScene extends MainScene {
     }
 
     override create() {
+        var desert;
         const music = this.sound.add('desertMusic', { loop: true });
         const { width, height } = this.sys.game.canvas;
-        var desert;
         music.play();
         super.create_mapa(width, height + 380, 'first', 'desert', 'desert', ['suelo','objetos','solidos'],desert);
+        
+        this.socket.emit('valueCordinates', {
+            validCoordinates: super.validCoordinates()
+        });
+
+        this.socket.on('valueCordinates', (data) => {
+            this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
+            this.posicionesItems = data.posicionesItems;
+            this.createSkeletons();
+            this.createItems();
+        });
+        
         super.create_player(width, height + 380, this.startx, this.starty, 'player');
         this.createLifeBar();
         this.createGameOver();
         this.create_remote_players();
         this.create_animationSkeleton();
-        this.createSkeletons();
-        this.createItems();
         this.scoreText = new ScoreBoard(this);
         this.cameras.main.setAlpha(0);
 
