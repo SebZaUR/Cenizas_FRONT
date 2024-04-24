@@ -30,8 +30,6 @@ export class GameComponent implements OnInit {
   user: any;
   mail: any;
 
-
-
   constructor(private roomService: RoomsService, private route: ActivatedRoute, private http: HttpClient, private userService: UserService) {
     this.config = {
       type: Phaser.AUTO,
@@ -73,8 +71,8 @@ export class GameComponent implements OnInit {
       error: (error) => console.log(error),
       complete: () => console.info('Traer room completo')
     });
+
     this.socket.on('turnOffRoom', (data) => {
-      // Lógica para manejar la solicitud de amistad recibida
       console.log(`Apagame esta monda Room : ${data}`);
       this.switchRoom(false)
     })

@@ -1,12 +1,16 @@
 import { right } from '@popperjs/core';
 import { MainScene } from './MainScene';
-import { objectCoollectible } from './objectCoollectible';
+import { objectCoollectible } from '../objects/objectCoollectible';
+import { Text } from '@angular/compiler';
+import { ScoreBoard } from '../objects/scoreBoard';
+
 enum Direction {
     UP,
     DOWN,
     LEFT,
     RIGHT
 };
+
 export class DesertScene extends MainScene {
     protected override startx!: number;
     protected override starty: number = 270;
@@ -28,7 +32,8 @@ export class DesertScene extends MainScene {
     private cantidadVidaEnemigo: number = 100;
     private golpePorespada: number = 30;
     private  count: number[] = [];
-    private gameOverScreen!: HTMLElement; 
+    private gameOverScreen!: HTMLElement;
+    private scoreText!: any; 
 
     
     constructor(key: string, socket: any, code: string) {
@@ -45,6 +50,7 @@ export class DesertScene extends MainScene {
         this.socket.off('goToDesert');
         this.socket.id = data.socketId;
         this.myNumber = data.myNumber;
+        this.scoreText = new ScoreBoard(this);
         this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
         this.posicionesItems = data.posicionesItems;
         this.socket.on('connect', () => {
@@ -83,10 +89,12 @@ export class DesertScene extends MainScene {
         this.createLifeBar();
         this.createGameOver();
         this.create_remote_players();
-        this.cameras.main.setAlpha(0);
         this.create_animationSkeleton();
         this.createSkeletons();
         this.createItems();
+        this.scoreText = new ScoreBoard(this);
+        this.cameras.main.setAlpha(0);
+
         this.matter.world.on('collisionstart', (event: any) => {
             event.pairs.forEach((pair: any) => {
                 const bodyA = pair.bodyA;
@@ -144,7 +152,6 @@ export class DesertScene extends MainScene {
 
     protected create_skeleton ( position_x: number, position_y: number, spray: string) {
         const skeleton = this.matter.add.sprite(position_x, position_y, spray);
-        const velocity = new Phaser.Math.Vector2();
         skeleton.setDisplaySize(90, 90);
         skeleton.setRectangle(15, 25);
         skeleton.setOrigin(0.50, 0.55);
@@ -158,7 +165,6 @@ export class DesertScene extends MainScene {
     private createSkeletons() {
         const numSkeletons = 6; 
         for (let i = 0; i < numSkeletons; i++) {
-            console.log(this.posicionesInicialesEsqueletos);
             const posX = this.posicionesInicialesEsqueletos[i].x;
             const posY = this.posicionesInicialesEsqueletos[i].y;            
             const skeleton = this.create_skeleton(posX, posY, 'Skeleton');
@@ -180,7 +186,7 @@ export class DesertScene extends MainScene {
         }
     }
 
-    create_animationSkeleton() {
+    protected create_animationSkeleton() {
         this.anims.create({
             key: 'caminar',
             frames: this.anims.generateFrameNumbers('Skeleton', { start: 26, end: 37}),
@@ -208,7 +214,6 @@ export class DesertScene extends MainScene {
         });
 
     }
-
 
     protected override async create_remote_players() {
         this.socket.emit('updatePlayers', {
@@ -264,6 +269,7 @@ export class DesertScene extends MainScene {
             }
             if (this.skeletosnLife[index]< 0 && this.count[index]==0){
                 this.matarEsqueleto(index);
+                this.scoreText.incrementScore(10);
                 this.socket.emit('deadSkeleton', {
                     code: this.code,
                     index: index,
@@ -354,7 +360,7 @@ export class DesertScene extends MainScene {
         skeletonToUpdate.anims.play('morido');
         skeletonToUpdate.anims.stopAfterRepeat(0);
         skeletonToUpdate.setStatic(true);
-        this.time.delayedCall(1400, function() {
+        this.time.delayedCall(1400, () => {
             skeletonToUpdate.setVisible(false);
             skeletonToUpdate.setSensor(true);
             skeletonToUpdate.setCollisionCategory(0);
@@ -483,7 +489,7 @@ export class DesertScene extends MainScene {
         gameOverText.style.marginBottom = '20px';
 
         const backButton = document.createElement('button');
-        backButton.textContent = 'Volver al Menú Principal';
+        backButton.textContent = 'Salir de la partida';
         backButton.style.padding = '10px 20px';
         backButton.style.fontSize = '1.2em';
         backButton.style.backgroundColor = '#333';
@@ -492,7 +498,6 @@ export class DesertScene extends MainScene {
         backButton.style.borderRadius = '5px';
         backButton.style.cursor = 'pointer';
         backButton.addEventListener('click', () => {
-            console.log('Volver al menú principal');
             this.socket.disconnect();
             window.location.href = '/';
         });

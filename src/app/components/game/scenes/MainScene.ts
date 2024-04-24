@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
-import { objectCoollectible } from './objectCoollectible';
+import { objectCoollectible } from '../objects/objectCoollectible';
 import { GameComponent } from '../game.component';
 
 export class MainScene extends Phaser.Scene {
