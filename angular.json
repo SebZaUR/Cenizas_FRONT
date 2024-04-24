@@ -47,7 +47,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
+                  "maximumWarning": "3mb",
                   "maximumError": "5mb"
                 },
                 {
@@ -73,10 +73,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "my-game:build:production"
+              "buildTarget": "cenizasdelpasado:build:production"
             },
             "development": {
-              "buildTarget": "my-game:build:development"
+              "buildTarget": "cenizasdelpasado:build:development"
             }
           },
           "defaultConfiguration": "development"
