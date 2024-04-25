@@ -64,7 +64,22 @@ export class DesertScene extends MainScene {
                 delete this.otherSprites[playerId]; 
             }
         });
-
+        this.socket.on('goToCave', (data) => {
+            data.socketId = this.socket.id;
+            data.myNumber = this.myNumber;
+            data.code = this.code;
+            this.socket.off('updatePlayers');
+            this.tweens.add({
+                targets: this.cameras.main,
+                alpha: 0,
+                duration: 2000,
+                onComplete: () => {
+                    this.scene.start('goToCave',  data);
+                    this.socket.disconnect()
+                    this.scene.stop('DesertScene');
+                }
+            });
+        });
     }
 
     override preload() {
