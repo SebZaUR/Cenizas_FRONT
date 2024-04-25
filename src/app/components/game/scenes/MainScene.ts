@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
+import { objectCoollectible } from '../objects/objectCoollectible';
 import { GameComponent } from '../game.component';
+import { map } from 'rxjs';
 
 export class MainScene extends Phaser.Scene {
     keys!: any;
@@ -18,6 +20,7 @@ export class MainScene extends Phaser.Scene {
     protected socket!: Socket;
     protected otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
     protected barraVida!: Phaser.GameObjects.GameObject;
+    mapa!: Phaser.Tilemaps.Tilemap;
     
 
     constructor(key: string, socket: any, code: string) {
@@ -79,24 +82,32 @@ export class MainScene extends Phaser.Scene {
             frameWidth: 48,
             frameHeight: 48
         });
-
-      
         this.load.tilemapTiledJSON('lobby', 'assets/backgrounds/mapa.json');
         this.load.image('space', 'assets/backgrounds/spaceShip.png');
         this.load.image('vida', 'assets/icons/barraVida.png');
         this.load.image('corazon', 'assets/icons/corazon.png');
+        this.load.spritesheet("Llave" ,'assets/items/llave.png',{
+            frameWidth: 32,
+            frameHeight: 32
+        });
+        this.load.spritesheet("Herramienta" ,'assets/items/herramienta.png',{
+            frameWidth: 32,
+            frameHeight: 32
+        });
+        this.load.spritesheet("Metal" ,'assets/items/metal.png',{
+            frameWidth: 32,
+            frameHeight: 32
+        });
 
     }
 
     create() {
-   
         const { width, height } = this.sys.game.canvas;
         var spaceShip;
         this.create_mapa(width, height, 'lobby', 'spaceShip', 'space', ['negro','subcapa','solidos'], spaceShip);
         this.create_animation();
         this.create_player(width, height, this.startx, this.starty, 'player');      
         this.create_remote_players();
-    
     }
 
     protected create_mapa(width : number, height: number, key: string, tileImage: any, tileSet: any, layerNames: any, variableName: any) {
@@ -112,11 +123,12 @@ export class MainScene extends Phaser.Scene {
                     this.matter.world.convertTilemapLayer(layer);
                 }
             });
-        }
+        } 
+        this.mapa = mapa;
     }
     
 
-   protected create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
+    protected create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
         const newPositionX = position_x + Object.keys(this.otherSprites).length * 30;        
         this.player = this.matter.add.sprite(newPositionX, position_y, spray);
         this.player.setDisplaySize(70, 90);
@@ -346,7 +358,33 @@ export class MainScene extends Phaser.Scene {
             }
         }
     }
+
+    protected validCoordinates() {
+        const validCoordinates: { x: number; y: number; }[] = [];
+        const tiledMap = this.mapa; 
         
+        if (tiledMap != null) {
+            var solidLayer = tiledMap.getLayer('solidos')?.tilemapLayer;
+            if (solidLayer) {
+                solidLayer.forEachTile((tile: { index: number; pixelX: number; width: number; pixelY: number; height: number; }) => {
+                    if (tile.index === -1) { 
+                        validCoordinates.push({ x: tile.pixelX + tile.width / 2, y: tile.pixelY + tile.height / 2 });
+                    }
+                });
+            }
+
+            solidLayer = tiledMap.getLayer('suelo')?.tilemapLayer;
+            if (solidLayer) {
+                solidLayer.forEachTile((tile: { index: number; pixelX: number; width: number; pixelY: number; height: number; }) => {
+                    if (tile.index === -1) { 
+                        validCoordinates.push({ x: tile.pixelX + tile.width / 2, y: tile.pixelY + tile.height / 2 });
+                    }
+                });
+            }
+        }
+    
+        return validCoordinates;
+    }
 
     private enableStartButton() {
         const canvas = this.sys.game.canvas;
@@ -374,7 +412,7 @@ export class MainScene extends Phaser.Scene {
         startButton.addEventListener('click', () => {
             this.socket.emit('goToDesert', {
                 mapaActual: 'DesertScene',
-                idOwner:this.socket.id
+                idOwner:this.socket.id,
             });
         });
     }

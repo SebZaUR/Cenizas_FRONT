@@ -8,6 +8,7 @@ import { UserJson } from 'src/app/schemas/UserJson';
 import { UserService } from 'src/app/services/user/user.service';
 import { RoomWithFriend } from 'src/app/schemas/RoomWithFriend';
 
+
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
