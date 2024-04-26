@@ -11,7 +11,7 @@ import { UserService } from 'src/app/services/user/user.service';
 import { ProfileType } from 'src/app/schemas/ProfileTypeJson';
 import { UserJson } from 'src/app/schemas/UserJson';
 
-import { enviroment } from 'src/enviroment/enviroment';
+import { environment } from 'src/environments/environment';
 import { CavernaScene } from './scenes/CavernaScene';
 
 
