@@ -36,9 +36,8 @@ export class CavernaScene extends DesertScene {
         const music = this.sound.add('cavernaMusic', { loop: true });
         const { width, height } = this.sys.game.canvas;
         music.play();
-        super.create_mapa(width, height + 380, 'caverna', 'caverna', 'caverna', ['suelo','basura','pasillo','solido'],caverna);
-        super.create_player(width, height + 380, this.startx, this.starty, 'player');
-        this.createLifeBar();
+        super.create_mapa(width, height , 'caverna', 'caverna', 'caverna', ['suelo','basura','pasillo','solido'],caverna);
+        super.create_player(width, height , this.startx, this.starty, 'player');
         this.createGameOver();
         this.create_remote_players();
         this.scoreText = new ScoreBoard(this);
