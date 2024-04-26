@@ -36,8 +36,9 @@ export class CavernaScene extends DesertScene {
         const music = this.sound.add('cavernaMusic', { loop: true });
         const { width, height } = this.sys.game.canvas;
         music.play();
-        super.create_mapa(width, height , 'caverna', 'caverna', 'caverna', ['suelo','basura','pasillo','solido'],caverna);
-        super.create_player(width, height , this.startx, this.starty, 'player');
+        super.create_mapa(width, height + 380, 'caverna', 'caverna', 'caverna', ['Capa de patrones 1'],caverna);
+        super.create_player(width, height + 380,470.87098553608377, 191.45387158490442, 'player');
+        this.createLifeBar();
         this.createGameOver();
         this.create_remote_players();
         this.scoreText = new ScoreBoard(this);
@@ -178,113 +179,9 @@ export class CavernaScene extends DesertScene {
     }
 
     override update() {
-        const startButton = document.getElementById('startButton');
-        if (startButton && startButton.parentNode) {
-            startButton.parentNode.removeChild(startButton);
-        }
         super.update();
-
-        this.socket.on('updateSkeleton', (skeletonData) => {
-            this.updateSkeleton(skeletonData);
-        });
-
-        this.socket.on('deadSkeleton', (data) => {
-            this.matarEsqueleto(data.index);
-        });
-
-        this.socket.on('imHitted', (playerId: string) => {
-            const existingSprite = this.otherSprites[playerId];
-            this.tweenTint(existingSprite, 0xff0000, 500, () => {
-            });
-        });
-    
-        this.skeletonsGroup.forEach((skeleton: Phaser.Physics.Matter.Sprite, index: number) => {
-            const life = this.skeletosnLife[index];
-            const hit = this.skeletonsHitted[index];
-            
-            if (this.isAttacking && this.checkDistance(this.player, skeleton) && !hit && life > 0) {
-                skeleton.setTint(0xff0000);
-                this.skeletonsHitted[index] = true;
-                this.hitTimer = this.time.delayedCall(350, () => {
-                    this.skeletonsHitted[index] = false;
-                });
-                this.skeletosnLife[index] -= this.golpePorespada;
-            }
-
-    
-            if (this.isAttacking === false && this.checkDistance(this.player, skeleton)) {
-                skeleton.clearTint();
-            }
-            if (this.skeletosnLife[index]< 0 && this.count[index]==0){
-                this.matarEsqueleto(index);
-                this.scoreText.incrementScore(10);
-                this.socket.emit('deadSkeleton', {
-                    code: this.code,
-                    index: index,
-                });
-            }
-
-            let velocityX = 0;
-            let velocityY = 0;
-
-            switch (this.skeletonDirections[index].direction) {
-                case Direction.UP:
-                    velocityY = this.skeletonSpeed;
-                    velocityX = 0;
-                    break;
-                case Direction.DOWN:
-                    velocityY = -this.skeletonSpeed;
-                    velocityX = 0;
-                    break;
-                case Direction.LEFT:
-                    velocityX = -this.skeletonSpeed;
-                    velocityY = 0
-                    break;
-                case Direction.RIGHT:
-                    velocityX = this.skeletonSpeed;
-                    velocityY = 0;
-                    break;
-            }
-
-            this.socket.emit('updateSkeleton', {
-                index: this.skeletonsGroup.indexOf(skeleton),
-                velocityX: velocityX,
-                velocityY: velocityY,
-                key: skeleton.anims.currentAnim?.key,
-                color: skeleton.tint,
-                code: this.code
-            });
-        });
-    
-        this.matter.world.on('collisionstart', (event: any) => {
-            event.pairs.forEach((pair: any) => {
-                const bodyA = pair.bodyA;
-                const bodyB = pair.bodyB;
-    
-                this.skeletonsGroup.forEach((skeleton,index) => {
-                    if (this.skeletosnLife[index] > 0  ) {
-                        if(bodyA === this.player.body && bodyB === skeleton.body){
-                            this.reduceLife();
-                            skeleton.anims.play('apuyalado');
-                        } else if(this.chequearColisionRemota(skeleton, bodyA, bodyB)){
-                            // Le estan cascando a mi pana <---- 
-                            skeleton.anims.play('apuyalado');
-
-                        } else{
-                            skeleton.anims.play('caminar');
-                        }
-                    }
-                });
-            });
-        });
-
-        if (this.player.x >814  && this.player.x < 819 
-            && this.player. y > 575  && this.player.y < 585 ){
-                this.socket.emit('goToCave', {
-                    mapaActual: 'CavernaScene',
-                    idOwner:this.socket.id,
-                });
-            } 
+        console.log(this.player.x)
+        console.log(this.player.y) 
     }
     
     protected override checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
