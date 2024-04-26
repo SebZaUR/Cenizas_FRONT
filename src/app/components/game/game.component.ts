@@ -10,8 +10,10 @@ import { HttpClient } from '@angular/common/http';
 import { UserService } from 'src/app/services/user/user.service';
 import { ProfileType } from 'src/app/schemas/ProfileTypeJson';
 import { UserJson } from 'src/app/schemas/UserJson';
+
 import { enviroment } from 'src/enviroment/enviroment';
 import { CavernaScene } from './scenes/CavernaScene';
+
 
 
 @Component({
@@ -21,7 +23,7 @@ import { CavernaScene } from './scenes/CavernaScene';
 })
 
 export class GameComponent implements OnInit {
-  socket = io(enviroment.socketLink);
+  socket = io(environment.socketLink);
   phaserGame!: Phaser.Game;
   config: Phaser.Types.Core.GameConfig;
   code: string = '';
@@ -53,26 +55,28 @@ export class GameComponent implements OnInit {
   ngOnInit() {
     this.phaserGame = new Phaser.Game(this.config);
     this.http.get('https://graph.microsoft.com/v1.0/me')
-            .subscribe(profile => {
-                this.profile = profile;
-                if (this.profile && this.profile.mail) {
-                    this.mail =  this.profile.mail;
-                    this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
-                        this.user = room;
-                      });;
-                }
-            });
-    this.route.queryParams.subscribe(params => {
-      this.code = params['code'];
-      this.socket.emit('joinRoom', this.code)
+      .subscribe(profile => {
+        this.profile = profile;
+        if (this.profile && this.profile.mail) {
+          console.log(this.profile.mail)
+          this.mail = this.profile.mail;
+          this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
+            this.user = room;
+            console.log(this.user);
+          });;
+        }
+      });
+    this.roomService.getRoom(this.code).subscribe((room: RoomJson) => {
+      this.room = room;
     });
-    this.roomService.getRoom(this.code).subscribe({
-      next: (response) => {
-        this.room = response
-        this.switchRoom(true)
+    this.route.params?.subscribe({
+      next: (params) => {
+        this.code = params['code'];
+        console.log('Code from route params:', this.code); // Verificar el valor de this.code
+        this.socket.emit('joinRoom', this.code);
       },
-      error: (error) => console.log(error),
-      complete: () => console.info('Traer room completo')
+      error: (error) => console.error('Error al obtener código de sala:', error),
+      complete: () => console.info('Obtención de código de sala completa')
     });
 
     this.socket.on('turnOffRoom', (data) => {
