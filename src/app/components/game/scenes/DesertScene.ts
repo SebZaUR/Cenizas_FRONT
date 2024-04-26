@@ -13,26 +13,26 @@ enum Direction {
 export class DesertScene extends MainScene {
     protected override startx!: number;
     protected override starty: number = 270;
-    private hitTimer!: Phaser.Time.TimerEvent;
-    private heartsGroup!: Phaser.GameObjects.Group;
-    private cantidadVida: number = 100;
-    private golpePorCorazon: number = 20;
-    private isHit: boolean = false;
-    private itemsType:  string[]= ["Llave","Herramienta","Metal"];
-    private items: objectCoollectible[] = [];
-    private posicionesItems: { x: number, y: number }[] = [];
-    private posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
-    private skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
-    private skeletonDirections: { skeleton: Phaser.Physics.Matter.Sprite, direction: Direction }[] = [];
-    private skeletosnLife: number[] = []; 
-    private skeletonsHitted: boolean[] = []; 
-    private skeletonHitted: boolean =false;
-    private skeletonSpeed = 0.7; 
-    private cantidadVidaEnemigo: number = 100;
-    private golpePorespada: number = 30;
-    private  count: number[] = [];
-    private gameOverScreen!: HTMLElement;
-    private scoreText!: any; 
+    protected hitTimer!: Phaser.Time.TimerEvent;
+    protected heartsGroup!: Phaser.GameObjects.Group;
+    protected cantidadVida: number = 100;
+    protected golpePorCorazon: number = 20;
+    protected isHit: boolean = false;
+    protected itemsType:  string[]= ["Llave","Herramienta","Metal"];
+    protected items: objectCoollectible[] = [];
+    protected posicionesItems: { x: number, y: number }[] = [];
+    protected posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
+    protected skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
+    protected skeletonDirections: { skeleton: Phaser.Physics.Matter.Sprite, direction: Direction }[] = [];
+    protected skeletosnLife: number[] = []; 
+    protected skeletonsHitted: boolean[] = []; 
+    protected skeletonHitted: boolean =false;
+    protected skeletonSpeed = 0.7; 
+    protected cantidadVidaEnemigo: number = 100;
+    protected golpePorespada: number = 30;
+    protected  count: number[] = [];
+    protected gameOverScreen!: HTMLElement;
+    protected scoreText!: any; 
 
     
     constructor(key: string, socket: any, code: string) {
@@ -57,6 +57,7 @@ export class DesertScene extends MainScene {
                 this.getTurn(this.myNumber); 
             } 
         });
+
         this.socket.on('playerDisconnected', (playerId: string) => {
             const disconnectedPlayerSprite = this.otherSprites[playerId];
             if (disconnectedPlayerSprite) {
@@ -64,18 +65,19 @@ export class DesertScene extends MainScene {
                 delete this.otherSprites[playerId]; 
             }
         });
+
         this.socket.on('goToCave', (data) => {
             data.socketId = this.socket.id;
             data.myNumber = this.myNumber;
             data.code = this.code;
-            this.socket.off('updatePlayers');
+            this.sound.stopAll();
             this.tweens.add({
                 targets: this.cameras.main,
                 alpha: 0,
                 duration: 2000,
                 onComplete: () => {
-                    this.scene.start('goToCave',  data);
-                    this.socket.disconnect()
+                    this.scene.start('CavernaScene',  data);
+                    this.socket.disconnect();
                     this.scene.stop('DesertScene');
                 }
             });
@@ -144,7 +146,7 @@ export class DesertScene extends MainScene {
         });
     }
 
-    private changeSkeletonDirection(skeleton: Phaser.Physics.Matter.Sprite) {
+    protected changeSkeletonDirection(skeleton: Phaser.Physics.Matter.Sprite) {
         const index = this.skeletonDirections.findIndex(item => item.skeleton === skeleton);
         if (index !== -1) {
             const randomDirection = Phaser.Math.Between(0, 3);
@@ -186,7 +188,7 @@ export class DesertScene extends MainScene {
         return skeleton;
     }
 
-    private createSkeletons() {
+    protected createSkeletons() {
         const numSkeletons = 6; 
         for (let i = 0; i < numSkeletons; i++) {
             const posX = this.posicionesInicialesEsqueletos[i].x;
@@ -353,14 +355,22 @@ export class DesertScene extends MainScene {
                 });
             });
         });
+
+        if (this.player.x >814  && this.player.x < 819 
+            && this.player. y > 575  && this.player.y < 585 ){
+                this.socket.emit('goToCave', {
+                    mapaActual: 'DesertScene',
+                    idOwner:this.socket.id,
+                });
+            } 
     }
     
-    private checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
+    protected checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
         const distance = Phaser.Math.Distance.Between(bodyA.x, bodyA.y, bodyB.x, bodyB.y);
         return distance < 50 ;
     }
 
-    private chequearColisionRemota(skeleton: Phaser.Physics.Matter.Sprite, bodyA: MatterJS.BodyType, bodyB: MatterJS.BodyType): boolean {
+    protected chequearColisionRemota(skeleton: Phaser.Physics.Matter.Sprite, bodyA: MatterJS.BodyType, bodyB: MatterJS.BodyType): boolean {
         const skeletonBody = skeleton.body as MatterJS.BodyType;
     
         for (const spriteId in this.otherSprites) {
@@ -376,7 +386,7 @@ export class DesertScene extends MainScene {
         return false;
     }
     
-    private matarEsqueleto( index: number) {
+    protected matarEsqueleto( index: number) {
         const skeletonToUpdate = this.skeletonsGroup[index];
         this.count[index]+=1;      
         skeletonToUpdate.setVelocity(0, 0);
@@ -391,7 +401,7 @@ export class DesertScene extends MainScene {
         }, [], this);
     }
 
-    private getTurn(myNumber: number) {
+    protected getTurn(myNumber: number) {
         switch (myNumber) {
             case 1:
                 this.startx = 170;
@@ -411,7 +421,7 @@ export class DesertScene extends MainScene {
         }
     } 
     
-    private updateSkeleton(data: any) {
+    protected updateSkeleton(data: any) {
         const skeletonToUpdate = this.skeletonsGroup[data.index];
         if (skeletonToUpdate) {
             skeletonToUpdate.setVelocityX(data.velocityX)
@@ -420,7 +430,7 @@ export class DesertScene extends MainScene {
         }
     }
 
-    private reduceLife() {
+    protected reduceLife() {
         if (this.cantidadVida > 0 && this.isHit == false) {
             this.cantidadVida -= this.golpePorCorazon;
             this.tweenTint(this.player, 0xff0000, 500, () => {
@@ -450,7 +460,7 @@ export class DesertScene extends MainScene {
         }
     }
 
-    private updateLifeBar() {
+    protected updateLifeBar() {
         const heartsToShow = Math.ceil(this.cantidadVida / this.golpePorCorazon);
         this.isHit = true;
         this.hitTimer = this.time.delayedCall(1000, () => {
@@ -469,7 +479,7 @@ export class DesertScene extends MainScene {
         });
         
     }
-    private tweenTint(sprite: Phaser.GameObjects.Sprite, endColor: number, time: number, callback?: () => void) {
+    protected tweenTint(sprite: Phaser.GameObjects.Sprite, endColor: number, time: number, callback?: () => void) {
         this.tweens.add({
             targets: sprite,
             duration: time/2,
@@ -480,7 +490,7 @@ export class DesertScene extends MainScene {
         });
     }      
 
-    private createItems(){
+    protected createItems(){
         for (let index = 0; index < 6; index++) {
             for (let num = 0;num < 3; num++) {
                 const element = new objectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[num]);
@@ -490,7 +500,7 @@ export class DesertScene extends MainScene {
         }
     }
 
-    private createGameOver() {
+    protected createGameOver() {
         this.gameOverScreen = document.createElement('div');
         this.gameOverScreen.id = 'gameOverScreen';
         this.gameOverScreen.style.position = 'absolute';
@@ -531,7 +541,7 @@ export class DesertScene extends MainScene {
         this.gameOverScreen.appendChild(content);
     }
 
-    private gameOver() {
+    protected gameOver() {
         document.body.appendChild(this.gameOverScreen);
         this.player.setVelocity(0, 0);
         this.isKnockedDown = true;
