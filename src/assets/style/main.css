@@ -11,15 +11,26 @@ label {
     color: #ced4dd;
 }
 
+.card{
+    color: white;
+    background-color: #8B3C5E;
+    width: 75%;
+}
+
+.card-title{
+    color: #ced4dd;
+    font-family: minecraft;
+}
+
 
 h1 {
     color: #AD7757;
-    font-family: minecraft;
+    font-family: minecraft,Arial, Helvetica, sans-serif;
 }
 
 h2 {
     color: rgb(0, 22, 119);
-    font-family: minecraft;
+    font-family: minecraft,Arial, Helvetica, sans-serif;
 }
 
 li {
@@ -37,7 +48,7 @@ a {
 }
 
 .principal {
-    font-family: minecraft;
+    font-family: minecraft,Arial, Helvetica, sans-serif;
     background-image: url('../wallpapers/fondo_principal.png');
     position: fixed;
     background-repeat: no-repeat;
