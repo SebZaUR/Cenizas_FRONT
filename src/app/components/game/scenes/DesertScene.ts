@@ -1,6 +1,6 @@
 import { right } from '@popperjs/core';
 import { MainScene } from './MainScene';
-import { objectCoollectible } from '../objects/objectCoollectible';
+import { ObjectCoollectible } from '../objects/objectCoollectible';
 import { Text } from '@angular/compiler';
 import { ScoreBoard } from '../objects/scoreBoard';
 
@@ -20,7 +20,7 @@ export class DesertScene extends MainScene {
     private golpePorCorazon: number = 20;
     private isHit: boolean = false;
     private itemsType:  string[]= ["Llave","Herramienta","Metal"];
-    private items: objectCoollectible[] = [];
+    private items: ObjectCoollectible[] = [];
     private posicionesItems: { x: number, y: number }[] = [];
     private posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
     private skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
@@ -31,11 +31,11 @@ export class DesertScene extends MainScene {
     private skeletonSpeed = 0.7; 
     private cantidadVidaEnemigo: number = 100;
     private golpePorespada: number = 30;
-    private  count: number[] = [];
+    private count: number[] = [];
     private gameOverScreen!: HTMLElement;
     private scoreText!: any; 
-
-    
+    private itemsCollected: {[key:string]:number} = {};
+    private itemsTypeCollected: {[key:string]:number} = {} ;
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
     }
@@ -77,6 +77,9 @@ export class DesertScene extends MainScene {
             frameWidth: 64,
             frameHeight: 64
         });
+        this.itemsTypeCollected["Llave"] = 0;
+        this.itemsTypeCollected["Herramienta"] = 0;
+        this.itemsTypeCollected["Metal"] = 0;
     }
 
     override create() {
@@ -108,6 +111,13 @@ export class DesertScene extends MainScene {
                             this.skeletonDirections[data.index].direction = data.direction;
                         });
                     }
+                });
+                this.items.forEach((item) =>{
+                    if ((bodyA === item.body && bodyB === this.player.body) || (bodyA === this.player.body && bodyB === item.body)){
+                        this.collectItem(item);
+                    }else if(bodyA === this.player.body && bodyB === item.body){
+                        this.collectItem(item);
+                    } 
                 });
             });
         });
@@ -457,11 +467,16 @@ export class DesertScene extends MainScene {
     }      
 
     private createItems(){
+        let value: number = 0;
         for (let index = 0; index < 6; index++) {
-            for (let num = 0;num < 3; num++) {
-                const element = new objectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[num]);
+            if(value < 3){
+                const element = new ObjectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[value]);
                 this.add.existing(element);
                 this.items.push(element);
+                value++;
+            }else{
+                index--;
+                value = 0;
             }
         }
     }
@@ -515,5 +530,15 @@ export class DesertScene extends MainScene {
         this.player.anims.stopAfterRepeat(0);
         this.player.setStatic(true);
         this.gameOverScreen.style.display = 'flex'; 
+    }
+
+    private collectItem(item: any){
+        if(this.playerId in this.itemsCollected){
+            this.itemsCollected[this.playerId]++;
+            item.destroy();
+        }else{
+            this.itemsCollected[this.playerId] = 1;
+            item.destroy();
+        }
     }
 }   
