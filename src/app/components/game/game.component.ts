@@ -30,6 +30,7 @@ export class GameComponent implements OnInit {
   profile!: ProfileType;
   user: any;
   mail: any;
+  nickname : string = "";
 
   constructor(private roomService: RoomsService, private route: ActivatedRoute, private http: HttpClient, private userService: UserService) {
     this.config = {
@@ -59,12 +60,14 @@ export class GameComponent implements OnInit {
                     this.mail =  this.profile.mail;
                     this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
                         this.user = room;
+                        this.nickname= room.nickname;
                       });;
                 }
             });
     this.route.queryParams.subscribe(params => {
       this.code = params['code'];
       this.socket.emit('joinRoom', this.code)
+      this.socket.emit('saveNickname',this.nickname)
     });
     this.roomService.getRoom(this.code).subscribe({
       next: (response) => {

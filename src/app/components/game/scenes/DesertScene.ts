@@ -1,7 +1,9 @@
 import { right } from '@popperjs/core';
-import { MainScene } from './MainScene';
-import { objectCoollectible } from '../objects/objectCoollectible';
+
+import { ObjectCoollectible } from '../objects/objectCoollectible';
+import { Text } from '@angular/compiler';
 import { ScoreBoard } from '../objects/scoreBoard';
+import { MainScene } from './MainScene';
 
 enum Direction {
     UP,
@@ -19,7 +21,7 @@ export class DesertScene extends MainScene {
     protected golpePorCorazon: number = 20;
     protected isHit: boolean = false;
     protected itemsType:  string[]= ["Llave","Herramienta","Metal"];
-    protected items: objectCoollectible[] = [];
+    protected items: ObjectCoollectible[] = [];
     protected posicionesItems: { x: number, y: number }[] = [];
     protected posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
     protected skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
@@ -33,8 +35,7 @@ export class DesertScene extends MainScene {
     protected  count: number[] = [];
     protected gameOverScreen!: HTMLElement;
     protected scoreText!: any; 
-
-    
+    itemsTypeCollected: any;
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
     }
@@ -93,6 +94,9 @@ export class DesertScene extends MainScene {
             frameWidth: 64,
             frameHeight: 64
         });
+        //this.itemsTypeCollected["Llave"] = 0;
+        //this.itemsTypeCollected["Herramienta"] = 0;
+        //this.itemsTypeCollected["Metal"] = 0;
     }
 
     override create() {
@@ -134,6 +138,13 @@ export class DesertScene extends MainScene {
                             this.skeletonDirections[data.index].direction = data.direction;
                         });
                     }
+                });
+                this.items.forEach((item) =>{
+                    if ((bodyA === item.body && bodyB === this.player.body) || (bodyA === this.player.body && bodyB === item.body)){
+                        this.collectItem(item);
+                    }else if(bodyA === this.player.body && bodyB === item.body){
+                        this.collectItem(item);
+                    } 
                 });
             });
         });
@@ -490,12 +501,18 @@ export class DesertScene extends MainScene {
         });
     }      
 
+
     protected createItems(){
+        let value: number = 0;
         for (let index = 0; index < 6; index++) {
-            for (let num = 0;num < 3; num++) {
-                const element = new objectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[num]);
+            if(value < 3){
+                const element = new ObjectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[value]);
                 this.add.existing(element);
                 this.items.push(element);
+                value++;
+            }else{
+                index--;
+                value = 0;
             }
         }
     }
@@ -549,5 +566,15 @@ export class DesertScene extends MainScene {
         this.player.anims.stopAfterRepeat(0);
         this.player.setStatic(true);
         this.gameOverScreen.style.display = 'flex'; 
+    }
+
+    protected collectItem(item: any){
+        item.destroy();
+        if(this.items.length==0){
+            this.socket.emit("changeLevel",{
+                mapaActual: '',
+                idOwner:this.socket.id
+            });
+        }
     }
 }   
