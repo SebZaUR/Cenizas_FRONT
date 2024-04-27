@@ -502,7 +502,7 @@ export class DesertScene extends MainScene {
     }      
 
 
-    private createItems(){
+    protected createItems(){
         let value: number = 0;
         for (let index = 0; index < 6; index++) {
             if(value < 3){
@@ -568,7 +568,7 @@ export class DesertScene extends MainScene {
         this.gameOverScreen.style.display = 'flex'; 
     }
 
-    private collectItem(item: any){
+    protected collectItem(item: any){
         item.destroy();
         if(this.items.length==0){
             this.socket.emit("changeLevel",{

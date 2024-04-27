@@ -1,6 +1,6 @@
 import { right } from '@popperjs/core';
 import { MainScene } from './MainScene';
-import { objectCoollectible } from '../objects/objectCoollectible';
+import { ObjectCoollectible } from '../objects/objectCoollectible';
 import { ScoreBoard } from '../objects/scoreBoard';
 import { DesertScene } from './DesertScene';
 
@@ -312,7 +312,7 @@ export class CavernaScene extends DesertScene {
     protected override createItems(){
         for (let index = 0; index < 6; index++) {
             for (let num = 0;num < 3; num++) {
-                const element = new objectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[num]);
+                const element = new ObjectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[num]);
                 this.add.existing(element);
                 this.items.push(element);
             }
