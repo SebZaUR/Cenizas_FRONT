@@ -32,6 +32,7 @@ export class GameComponent implements OnInit {
   profile!: ProfileType;
   user: any;
   mail: any;
+  nickname : string = "";
 
   constructor(private roomService: RoomsService, private route: ActivatedRoute, private http: HttpClient, private userService: UserService) {
     this.config = {
@@ -55,17 +56,16 @@ export class GameComponent implements OnInit {
   ngOnInit() {
     this.phaserGame = new Phaser.Game(this.config);
     this.http.get('https://graph.microsoft.com/v1.0/me')
-      .subscribe(profile => {
-        this.profile = profile;
-        if (this.profile && this.profile.mail) {
-          console.log(this.profile.mail)
-          this.mail = this.profile.mail;
-          this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
-            this.user = room;
-            console.log(this.user);
-          });;
+            .subscribe(profile => {
+                this.profile = profile;
+                if (this.profile && this.profile.mail) {
+                    this.mail =  this.profile.mail;
+                    this.userService.getUser(this.profile.mail).subscribe((room: UserJson) => {
+                        this.user = room;
+                        this.nickname= room.nickname;
+                });;
         }
-      });
+     });
     
     this.route.queryParams?.subscribe({
       next: (params) => {
@@ -75,18 +75,14 @@ export class GameComponent implements OnInit {
           this.room = room;
           this.switchRoom(true)
         });
-        this.socket.emit('joinRoom', this.code);
-        
+        this.socket.emit('joinRoom', this.code)
+        this.socket.emit('saveNickname',this.nickname)
       },
       error: (error) => console.error('Error al obtener código de sala:', error),
       complete: () => {
         console.info('Obtención de código de sala completa')
-        
       }
     });
-
-    
-
     this.socket.on('turnOffRoom', (data) => {
       console.log(`Apagame esta monda Room : ${data}`);
       this.switchRoom(false)

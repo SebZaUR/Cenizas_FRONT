@@ -27,7 +27,6 @@ export class LogginComponent implements OnInit {
       .subscribe(profile => {
         this.profile = profile;
         if (this.profile && this.profile.mail) {
-          console.log(this.profile.mail)
           this.userService.getUser(this.profile.mail).subscribe((user: UserJson) => {
             this.user = user;
             this.tokenExpiration = localStorage.getItem('tokenExpiration')!;

@@ -1,12 +1,13 @@
 import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
-import { objectCoollectible } from '../objects/objectCoollectible';
+import { ObjectCoollectible } from '../objects/objectCoollectible';
 import { GameComponent } from '../game.component';
 import { map } from 'rxjs';
 
 export class MainScene extends Phaser.Scene {
     keys!: any;
     solidos!: any;
+    private prueba : GameComponent | undefined;
     protected code!: string;
     protected player!: Phaser.Physics.Matter.Sprite;
     protected isKnockedDown: boolean = false;
@@ -202,7 +203,7 @@ export class MainScene extends Phaser.Scene {
                     }
                 }
             });
-        });
+        },);
     }
 
     create_animation() {
