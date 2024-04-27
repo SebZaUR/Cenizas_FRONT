@@ -1,6 +1,6 @@
 export const environment = {
-    backLink: 'https://cenizasdemoback.azurewebsites.net',
-    socketLink: 'https://cenizasdemosocket.azurewebsites.net',
-    homeLink: 'https://cenizasdelpasadogame.azurewebsites.net',
+    backLink: 'https://cenizasbackendgame.azurewebsites.net',
+    socketLink: 'https://cenizassocketgame.azurewebsites.net',
+    homeLink: 'https://cenizasgame.azurewebsites.net',
     production: true
 };
