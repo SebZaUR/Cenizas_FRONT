@@ -1,12 +1,9 @@
 import { right } from '@popperjs/core';
-import { MainScene } from './MainScene';
-<<<<<<< HEAD
+
 import { ObjectCoollectible } from '../objects/objectCoollectible';
 import { Text } from '@angular/compiler';
-=======
-import { objectCoollectible } from '../objects/objectCoollectible';
->>>>>>> af806135bfb6a31c7a97bdf8d6858ce963d5c6ff
 import { ScoreBoard } from '../objects/scoreBoard';
+import { MainScene } from './MainScene';
 
 enum Direction {
     UP,
@@ -18,37 +15,13 @@ enum Direction {
 export class DesertScene extends MainScene {
     protected override startx!: number;
     protected override starty: number = 270;
-<<<<<<< HEAD
-    private hitTimer!: Phaser.Time.TimerEvent;
-    private heartsGroup!: Phaser.GameObjects.Group;
-    private cantidadVida: number = 100;
-    private golpePorCorazon: number = 20;
-    private isHit: boolean = false;
-    private itemsType:  string[]= ["Llave","Herramienta","Metal"];
-    private items: ObjectCoollectible[] = [];
-    private posicionesItems: { x: number, y: number }[] = [];
-    private posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
-    private skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
-    private skeletonDirections: { skeleton: Phaser.Physics.Matter.Sprite, direction: Direction }[] = [];
-    private skeletosnLife: number[] = []; 
-    private skeletonsHitted: boolean[] = []; 
-    private skeletonHitted: boolean =false;
-    private skeletonSpeed = 0.7; 
-    private cantidadVidaEnemigo: number = 100;
-    private golpePorespada: number = 30;
-    private count: number[] = [];
-    private gameOverScreen!: HTMLElement;
-    private scoreText!: any; 
-    private itemsCollected: {[key:string]:number} = {};
-    private itemsTypeCollected: {[key:string]:number} = {} ;
-=======
     protected hitTimer!: Phaser.Time.TimerEvent;
     protected heartsGroup!: Phaser.GameObjects.Group;
     protected cantidadVida: number = 100;
     protected golpePorCorazon: number = 20;
     protected isHit: boolean = false;
     protected itemsType:  string[]= ["Llave","Herramienta","Metal"];
-    protected items: objectCoollectible[] = [];
+    protected items: ObjectCoollectible[] = [];
     protected posicionesItems: { x: number, y: number }[] = [];
     protected posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
     protected skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
@@ -62,9 +35,7 @@ export class DesertScene extends MainScene {
     protected  count: number[] = [];
     protected gameOverScreen!: HTMLElement;
     protected scoreText!: any; 
-
-    
->>>>>>> af806135bfb6a31c7a97bdf8d6858ce963d5c6ff
+    itemsTypeCollected: any;
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
     }
@@ -530,12 +501,9 @@ export class DesertScene extends MainScene {
         });
     }      
 
-<<<<<<< HEAD
+
     private createItems(){
         let value: number = 0;
-=======
-    protected createItems(){
->>>>>>> af806135bfb6a31c7a97bdf8d6858ce963d5c6ff
         for (let index = 0; index < 6; index++) {
             if(value < 3){
                 const element = new ObjectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[value]);
@@ -601,12 +569,12 @@ export class DesertScene extends MainScene {
     }
 
     private collectItem(item: any){
-        if(this.playerId in this.itemsCollected){
-            this.itemsCollected[this.playerId]++;
-            item.destroy();
-        }else{
-            this.itemsCollected[this.playerId] = 1;
-            item.destroy();
+        item.destroy();
+        if(this.items.length==0){
+            this.socket.emit("changeLevel",{
+                mapaActual: '',
+                idOwner:this.socket.id
+            });
         }
     }
 }   
