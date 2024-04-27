@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
 import { ObjectCoollectible } from '../objects/objectCoollectible';
 import { GameComponent } from '../game.component';
+import { map } from 'rxjs';
 
 export class MainScene extends Phaser.Scene {
     keys!: any;
@@ -20,6 +21,7 @@ export class MainScene extends Phaser.Scene {
     protected socket!: Socket;
     protected otherSprites: { [playerId: string]: Phaser.Physics.Matter.Sprite } = {};
     protected barraVida!: Phaser.GameObjects.GameObject;
+    mapa!: Phaser.Tilemaps.Tilemap;
     
 
     constructor(key: string, socket: any, code: string) {
@@ -122,7 +124,8 @@ export class MainScene extends Phaser.Scene {
                     this.matter.world.convertTilemapLayer(layer);
                 }
             });
-        }
+        } 
+        this.mapa = mapa;
     }
     
 
@@ -356,7 +359,33 @@ export class MainScene extends Phaser.Scene {
             }
         }
     }
+
+    protected validCoordinates() {
+        const validCoordinates: { x: number; y: number; }[] = [];
+        const tiledMap = this.mapa; 
         
+        if (tiledMap != null) {
+            var solidLayer = tiledMap.getLayer('solidos')?.tilemapLayer;
+            if (solidLayer) {
+                solidLayer.forEachTile((tile: { index: number; pixelX: number; width: number; pixelY: number; height: number; }) => {
+                    if (tile.index === -1) { 
+                        validCoordinates.push({ x: tile.pixelX + tile.width / 2, y: tile.pixelY + tile.height / 2 });
+                    }
+                });
+            }
+
+            solidLayer = tiledMap.getLayer('suelo')?.tilemapLayer;
+            if (solidLayer) {
+                solidLayer.forEachTile((tile: { index: number; pixelX: number; width: number; pixelY: number; height: number; }) => {
+                    if (tile.index === -1) { 
+                        validCoordinates.push({ x: tile.pixelX + tile.width / 2, y: tile.pixelY + tile.height / 2 });
+                    }
+                });
+            }
+        }
+    
+        return validCoordinates;
+    }
 
     private enableStartButton() {
         const canvas = this.sys.game.canvas;
@@ -384,7 +413,7 @@ export class MainScene extends Phaser.Scene {
         startButton.addEventListener('click', () => {
             this.socket.emit('goToDesert', {
                 mapaActual: 'DesertScene',
-                idOwner:this.socket.id
+                idOwner:this.socket.id,
             });
         });
     }
