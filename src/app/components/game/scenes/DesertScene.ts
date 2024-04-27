@@ -94,9 +94,9 @@ export class DesertScene extends MainScene {
             frameWidth: 64,
             frameHeight: 64
         });
-        this.itemsTypeCollected["Llave"] = 0;
-        this.itemsTypeCollected["Herramienta"] = 0;
-        this.itemsTypeCollected["Metal"] = 0;
+        //this.itemsTypeCollected["Llave"] = 0;
+        //this.itemsTypeCollected["Herramienta"] = 0;
+        //this.itemsTypeCollected["Metal"] = 0;
     }
 
     override create() {
