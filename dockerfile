@@ -1,20 +1,30 @@
-# Etapa de construcción
-FROM node:20.11.0 as build-step
+# Etapa de compilación
+FROM node:latest AS builder
 
-# Crear directorio de la aplicación
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+# Directorio de trabajo en la imagen
+WORKDIR /app
 
-# Copiar los archivos de dependencias e instalarlas
-COPY package.json /usr/src/app
+# Copiar el archivo package.json y el archivo package-lock.json (si existe)
+COPY package*.json ./
+
+# Instalar las dependencias
+RUN npm install phaser
 RUN npm install
 
-# Copiar el resto de los archivos y compilar la aplicación
-COPY . /usr/src/app
-RUN npm run build --prod
+# Copiar el resto de los archivos del proyecto
+COPY . .
+
+# Compilar la aplicación
+RUN npm run build --omit=dev
 
 # Etapa de producción
 FROM nginx:latest
 
-# Copiar los archivos compilados a NGINX
-COPY --from=build-step /usr/src/app/dist/cenizasdelpasado /usr/share/nginx/html
+# Copiar los archivos de la etapa de compilación a la imagen de Nginx
+COPY --from=builder /app/dist/my-game /usr/share/nginx/html
+
+# Exponer el puerto 80 para que pueda ser accedido desde fuera del contenedor
+EXPOSE 80
+
+# Comando para iniciar el servidor Nginx
+CMD ["nginx", "-g", "daemon off;"]
