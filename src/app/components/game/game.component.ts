@@ -11,6 +11,7 @@ import { UserService } from 'src/app/services/user/user.service';
 import { ProfileType } from 'src/app/schemas/ProfileTypeJson';
 import { UserJson } from 'src/app/schemas/UserJson';
 import { enviroment } from 'src/enviroment/enviroment';
+import { CavernaScene } from './scenes/CavernaScene';
 
 
 @Component({
@@ -30,12 +31,12 @@ export class GameComponent implements OnInit {
   user: any;
   mail: any;
 
-
-
   constructor(private roomService: RoomsService, private route: ActivatedRoute, private http: HttpClient, private userService: UserService) {
     this.config = {
       type: Phaser.AUTO,
-      scene: [new MainScene('MainScene', this.socket, this.code), new DesertScene('DesertScene', this.socket, this.code)],
+      scene: [new MainScene('MainScene', this.socket, this.code), 
+              new DesertScene('DesertScene', this.socket, this.code),
+              new CavernaScene('CavernaScene', this.socket, this.code)],
       width: 900,
       height: 630,
       parent: 'gameContainer',
@@ -73,8 +74,8 @@ export class GameComponent implements OnInit {
       error: (error) => console.log(error),
       complete: () => console.info('Traer room completo')
     });
+
     this.socket.on('turnOffRoom', (data) => {
-      // Lógica para manejar la solicitud de amistad recibida
       console.log(`Apagame esta monda Room : ${data}`);
       this.switchRoom(false)
     })

@@ -2,6 +2,7 @@ import { right } from '@popperjs/core';
 import { MainScene } from './MainScene';
 import { objectCoollectible } from '../objects/objectCoollectible';
 import { ScoreBoard } from '../objects/scoreBoard';
+import { DesertScene } from './DesertScene';
 
 enum Direction {
     UP,
@@ -10,85 +11,20 @@ enum Direction {
     RIGHT
 };
 
-export class DesertScene extends MainScene {
-    protected override startx!: number;
-    protected override starty: number = 270;
-    protected hitTimer!: Phaser.Time.TimerEvent;
-    protected heartsGroup!: Phaser.GameObjects.Group;
-    protected cantidadVida: number = 100;
-    protected golpePorCorazon: number = 20;
-    protected isHit: boolean = false;
-    protected itemsType:  string[]= ["Llave","Herramienta","Metal"];
-    protected items: objectCoollectible[] = [];
-    protected posicionesItems: { x: number, y: number }[] = [];
-    protected posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
-    protected skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
-    protected skeletonDirections: { skeleton: Phaser.Physics.Matter.Sprite, direction: Direction }[] = [];
-    protected skeletosnLife: number[] = []; 
-    protected skeletonsHitted: boolean[] = []; 
-    protected skeletonHitted: boolean =false;
-    protected skeletonSpeed = 0.7; 
-    protected cantidadVidaEnemigo: number = 100;
-    protected golpePorespada: number = 30;
-    protected  count: number[] = [];
-    protected gameOverScreen!: HTMLElement;
-    protected scoreText!: any; 
-
-    
+export class CavernaScene extends DesertScene {
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
     }
 
     override init(data: any) {
-        this.socket.connect();
-        this.code = data.code;
-        this.socket.emit('joinRoom', this.code);
-        this.socket.off('initialCoordinates');
-        this.socket.off('firstPlayer');
-        this.socket.off('playerNumber');
-        this.socket.off('goToDesert');
-        this.socket.id = data.socketId;
-        this.myNumber = data.myNumber;
-        this.scoreText = new ScoreBoard(this);
-        
-        this.socket.on('connect', () => {
-            if (this.socket.id) {
-                this.playerId = this.socket.id;
-                this.getTurn(this.myNumber); 
-            } 
-        });
-
-        this.socket.on('playerDisconnected', (playerId: string) => {
-            const disconnectedPlayerSprite = this.otherSprites[playerId];
-            if (disconnectedPlayerSprite) {
-                disconnectedPlayerSprite.destroy(); 
-                delete this.otherSprites[playerId]; 
-            }
-        });
-
-        this.socket.on('goToCave', (data) => {
-            data.socketId = this.socket.id;
-            data.myNumber = this.myNumber;
-            data.code = this.code;
-            this.sound.stopAll();
-            this.tweens.add({
-                targets: this.cameras.main,
-                alpha: 0,
-                duration: 2000,
-                onComplete: () => {
-                    this.scene.start('CavernaScene',  data);
-                    this.socket.disconnect();
-                    this.scene.stop('DesertScene');
-                }
-            });
-        });
+        super.init(data);
     }
 
     override preload() {
         super.preload();
-        this.load.tilemapTiledJSON('first', 'assets/backgrounds/desert.json');
-        this.load.image('desert', 'assets/backgrounds/desert.png');
-        this.load.audio('desertMusic', 'assets/music/desertMusic.ogg');
+        this.load.tilemapTiledJSON('caverna', 'assets/backgrounds/caverna.json');
+        this.load.image('caverna', 'assets/backgrounds/caverna.png');
+        this.load.audio('cavernaMusic', 'assets/music/cavernaMusic.ogg');
         this.load.spritesheet("Skeleton", "assets/characters/Skeleton.png", {
             frameWidth: 64,
             frameHeight: 64
@@ -96,28 +32,15 @@ export class DesertScene extends MainScene {
     }
 
     override create() {
-        var desert;
-        const music = this.sound.add('desertMusic', { loop: true });
+        var caverna;
+        const music = this.sound.add('cavernaMusic', { loop: true });
         const { width, height } = this.sys.game.canvas;
         music.play();
-        super.create_mapa(width, height + 380, 'first', 'desert', 'desert', ['suelo','objetos','solidos'],desert);
-        
-        this.socket.emit('valueCordinates', {
-            validCoordinates: super.validCoordinates()
-        });
-
-        this.socket.on('valueCordinates', (data) => {
-            this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
-            this.posicionesItems = data.posicionesItems;
-            this.createSkeletons();
-            this.createItems();
-        });
-        
-        super.create_player(width, height + 380, this.startx, this.starty, 'player');
+        super.create_mapa(width, height + 380, 'caverna', 'caverna', 'caverna', ['Capa de patrones 1'],caverna);
+        super.create_player(width, height + 380,470.87098553608377, 191.45387158490442, 'player');
         this.createLifeBar();
         this.createGameOver();
         this.create_remote_players();
-        this.create_animationSkeleton();
         this.scoreText = new ScoreBoard(this);
         this.cameras.main.setAlpha(0);
 
@@ -146,7 +69,7 @@ export class DesertScene extends MainScene {
         });
     }
 
-    protected changeSkeletonDirection(skeleton: Phaser.Physics.Matter.Sprite) {
+    protected override changeSkeletonDirection(skeleton: Phaser.Physics.Matter.Sprite) {
         const index = this.skeletonDirections.findIndex(item => item.skeleton === skeleton);
         if (index !== -1) {
             const randomDirection = Phaser.Math.Between(0, 3);
@@ -176,7 +99,7 @@ export class DesertScene extends MainScene {
         }
     }
 
-    protected create_skeleton ( position_x: number, position_y: number, spray: string) {
+    protected override create_skeleton ( position_x: number, position_y: number, spray: string) {
         const skeleton = this.matter.add.sprite(position_x, position_y, spray);
         skeleton.setDisplaySize(90, 90);
         skeleton.setRectangle(15, 25);
@@ -188,7 +111,7 @@ export class DesertScene extends MainScene {
         return skeleton;
     }
 
-    protected createSkeletons() {
+    protected override createSkeletons() {
         const numSkeletons = 6; 
         for (let i = 0; i < numSkeletons; i++) {
             const posX = this.posicionesInicialesEsqueletos[i].x;
@@ -204,7 +127,7 @@ export class DesertScene extends MainScene {
     }
 
     
-    protected createLifeBar() {
+    protected override createLifeBar() {
         this.heartsGroup = this.add.group();
         for (let i = 0; i < 5; i++) {
             const heart = this.add.image(300 + i * 20, 210, 'corazon').setScrollFactor(0);
@@ -212,7 +135,7 @@ export class DesertScene extends MainScene {
         }
     }
 
-    protected create_animationSkeleton() {
+    protected override create_animationSkeleton() {
         this.anims.create({
             key: 'caminar',
             frames: this.anims.generateFrameNumbers('Skeleton', { start: 26, end: 37}),
@@ -256,121 +179,17 @@ export class DesertScene extends MainScene {
     }
 
     override update() {
-        const startButton = document.getElementById('startButton');
-        if (startButton && startButton.parentNode) {
-            startButton.parentNode.removeChild(startButton);
-        }
         super.update();
-
-        this.socket.on('updateSkeleton', (skeletonData) => {
-            this.updateSkeleton(skeletonData);
-        });
-
-        this.socket.on('deadSkeleton', (data) => {
-            this.matarEsqueleto(data.index);
-        });
-
-        this.socket.on('imHitted', (playerId: string) => {
-            const existingSprite = this.otherSprites[playerId];
-            this.tweenTint(existingSprite, 0xff0000, 500, () => {
-            });
-        });
-    
-        this.skeletonsGroup.forEach((skeleton: Phaser.Physics.Matter.Sprite, index: number) => {
-            const life = this.skeletosnLife[index];
-            const hit = this.skeletonsHitted[index];
-            
-            if (this.isAttacking && this.checkDistance(this.player, skeleton) && !hit && life > 0) {
-                skeleton.setTint(0xff0000);
-                this.skeletonsHitted[index] = true;
-                this.hitTimer = this.time.delayedCall(350, () => {
-                    this.skeletonsHitted[index] = false;
-                });
-                this.skeletosnLife[index] -= this.golpePorespada;
-            }
-
-    
-            if (this.isAttacking === false && this.checkDistance(this.player, skeleton)) {
-                skeleton.clearTint();
-            }
-            if (this.skeletosnLife[index]< 0 && this.count[index]==0){
-                this.matarEsqueleto(index);
-                this.scoreText.incrementScore(10);
-                this.socket.emit('deadSkeleton', {
-                    code: this.code,
-                    index: index,
-                });
-            }
-
-            let velocityX = 0;
-            let velocityY = 0;
-
-            switch (this.skeletonDirections[index].direction) {
-                case Direction.UP:
-                    velocityY = this.skeletonSpeed;
-                    velocityX = 0;
-                    break;
-                case Direction.DOWN:
-                    velocityY = -this.skeletonSpeed;
-                    velocityX = 0;
-                    break;
-                case Direction.LEFT:
-                    velocityX = -this.skeletonSpeed;
-                    velocityY = 0
-                    break;
-                case Direction.RIGHT:
-                    velocityX = this.skeletonSpeed;
-                    velocityY = 0;
-                    break;
-            }
-
-            this.socket.emit('updateSkeleton', {
-                index: this.skeletonsGroup.indexOf(skeleton),
-                velocityX: velocityX,
-                velocityY: velocityY,
-                key: skeleton.anims.currentAnim?.key,
-                color: skeleton.tint,
-                code: this.code
-            });
-        });
-    
-        this.matter.world.on('collisionstart', (event: any) => {
-            event.pairs.forEach((pair: any) => {
-                const bodyA = pair.bodyA;
-                const bodyB = pair.bodyB;
-    
-                this.skeletonsGroup.forEach((skeleton,index) => {
-                    if (this.skeletosnLife[index] > 0  ) {
-                        if(bodyA === this.player.body && bodyB === skeleton.body){
-                            this.reduceLife();
-                            skeleton.anims.play('apuyalado');
-                        } else if(this.chequearColisionRemota(skeleton, bodyA, bodyB)){
-                            // Le estan cascando a mi pana <---- 
-                            skeleton.anims.play('apuyalado');
-
-                        } else{
-                            skeleton.anims.play('caminar');
-                        }
-                    }
-                });
-            });
-        });
-
-        if (this.player.x >814  && this.player.x < 819 
-            && this.player. y > 575  && this.player.y < 585 ){
-                this.socket.emit('goToCave', {
-                    mapaActual: 'DesertScene',
-                    idOwner:this.socket.id,
-                });
-            } 
+        console.log(this.player.x)
+        console.log(this.player.y) 
     }
     
-    protected checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
+    protected override checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {
         const distance = Phaser.Math.Distance.Between(bodyA.x, bodyA.y, bodyB.x, bodyB.y);
         return distance < 50 ;
     }
 
-    protected chequearColisionRemota(skeleton: Phaser.Physics.Matter.Sprite, bodyA: MatterJS.BodyType, bodyB: MatterJS.BodyType): boolean {
+    protected override chequearColisionRemota(skeleton: Phaser.Physics.Matter.Sprite, bodyA: MatterJS.BodyType, bodyB: MatterJS.BodyType): boolean {
         const skeletonBody = skeleton.body as MatterJS.BodyType;
     
         for (const spriteId in this.otherSprites) {
@@ -386,7 +205,7 @@ export class DesertScene extends MainScene {
         return false;
     }
     
-    protected matarEsqueleto( index: number) {
+    protected override matarEsqueleto( index: number) {
         const skeletonToUpdate = this.skeletonsGroup[index];
         this.count[index]+=1;      
         skeletonToUpdate.setVelocity(0, 0);
@@ -401,7 +220,7 @@ export class DesertScene extends MainScene {
         }, [], this);
     }
 
-    protected getTurn(myNumber: number) {
+    protected override getTurn(myNumber: number) {
         switch (myNumber) {
             case 1:
                 this.startx = 170;
@@ -421,7 +240,7 @@ export class DesertScene extends MainScene {
         }
     } 
     
-    protected updateSkeleton(data: any) {
+    protected override updateSkeleton(data: any) {
         const skeletonToUpdate = this.skeletonsGroup[data.index];
         if (skeletonToUpdate) {
             skeletonToUpdate.setVelocityX(data.velocityX)
@@ -430,7 +249,7 @@ export class DesertScene extends MainScene {
         }
     }
 
-    protected reduceLife() {
+    protected override reduceLife() {
         if (this.cantidadVida > 0 && this.isHit == false) {
             this.cantidadVida -= this.golpePorCorazon;
             this.tweenTint(this.player, 0xff0000, 500, () => {
@@ -460,7 +279,7 @@ export class DesertScene extends MainScene {
         }
     }
 
-    protected updateLifeBar() {
+    protected override updateLifeBar() {
         const heartsToShow = Math.ceil(this.cantidadVida / this.golpePorCorazon);
         this.isHit = true;
         this.hitTimer = this.time.delayedCall(1000, () => {
@@ -479,7 +298,7 @@ export class DesertScene extends MainScene {
         });
         
     }
-    protected tweenTint(sprite: Phaser.GameObjects.Sprite, endColor: number, time: number, callback?: () => void) {
+    protected override tweenTint(sprite: Phaser.GameObjects.Sprite, endColor: number, time: number, callback?: () => void) {
         this.tweens.add({
             targets: sprite,
             duration: time/2,
@@ -490,7 +309,7 @@ export class DesertScene extends MainScene {
         });
     }      
 
-    protected createItems(){
+    protected override createItems(){
         for (let index = 0; index < 6; index++) {
             for (let num = 0;num < 3; num++) {
                 const element = new objectCoollectible(this,this.posicionesItems[index].x,this.posicionesItems[index].y,this.itemsType[num]);
@@ -500,7 +319,7 @@ export class DesertScene extends MainScene {
         }
     }
 
-    protected createGameOver() {
+    protected override createGameOver() {
         this.gameOverScreen = document.createElement('div');
         this.gameOverScreen.id = 'gameOverScreen';
         this.gameOverScreen.style.position = 'absolute';
@@ -541,7 +360,7 @@ export class DesertScene extends MainScene {
         this.gameOverScreen.appendChild(content);
     }
 
-    protected gameOver() {
+    protected override gameOver() {
         document.body.appendChild(this.gameOverScreen);
         this.player.setVelocity(0, 0);
         this.isKnockedDown = true;
