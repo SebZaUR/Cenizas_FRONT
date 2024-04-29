@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Cenizas Front 
 ## Por la liga internacional de los superconocidos
 ## Proyecto de Arquitectura de software
@@ -29,5 +28,3 @@ Integrantes:
 3. Carolina Medina
 4. Sebastian Camargo
 
-no esta protegiaas
->>>>>>> 6a66a32930080cb5ff86610a6ebb743d3c3f334c
