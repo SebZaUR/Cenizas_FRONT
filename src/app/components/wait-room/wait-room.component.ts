@@ -20,13 +20,11 @@ export class WaitRoomComponent implements OnInit {
   constructor(private roomService: RoomsService, private route: ActivatedRoute, private router: Router,private appComponent: AppComponent) {
   }
   ngOnInit(): void {
-    console.log(this.appComponent.user)
     this.route.queryParams.subscribe(params => {
       this.code = params['code'];
     });
     this.roomService.getRoom(this.code).subscribe((room: RoomJson) => {
       this.room = room;
-      console.log(this.room);
     });
     this.roomService.getRoomUsers(this.code).subscribe((users: string[]) => {
       console.log(users);
