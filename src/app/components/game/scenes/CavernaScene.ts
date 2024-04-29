@@ -180,8 +180,7 @@ export class CavernaScene extends DesertScene {
 
     override update() {
         super.update();
-        console.log(this.player.x)
-        console.log(this.player.y) 
+
     }
     
     protected override checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite) {

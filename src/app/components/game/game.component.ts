@@ -79,7 +79,6 @@ export class GameComponent implements OnInit {
     });
 
     this.socket.on('turnOffRoom', (data) => {
-      console.log(`Apagame esta monda Room : ${data}`);
       this.switchRoom(false)
     })
   }
