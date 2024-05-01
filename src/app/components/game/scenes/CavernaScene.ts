@@ -44,22 +44,6 @@ export class CavernaScene extends DesertScene {
         this.scoreText = new ScoreBoard(this);
         this.cameras.main.setAlpha(0);
 
-        this.matter.world.on('collisionstart', (event: any) => {
-            event.pairs.forEach((pair: any) => {
-                const bodyA = pair.bodyA;
-                const bodyB = pair.bodyB;
-        
-                this.skeletonsGroup.forEach((skeleton) => {
-                    if ((bodyA === skeleton.body || bodyB === skeleton.body) && this.myNumber == 1) {
-                        this.changeSkeletonDirection(skeleton);
-                    } else{
-                        this.socket.on('directionsEnemys', (data) => {
-                            this.skeletonDirections[data.index].direction = data.direction;
-                        });
-                    }
-                });
-            });
-        });
 
         this.tweens.add({
             targets: this.cameras.main,

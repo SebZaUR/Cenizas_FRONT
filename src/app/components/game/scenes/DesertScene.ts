@@ -22,6 +22,7 @@ export class DesertScene extends MainScene {
     protected isHit: boolean = false;
     protected itemsType:  string[]= ["Llave","Herramienta","Metal"];
     protected items: ObjectCoollectible[] = [];
+    protected itemsTaked: boolean[] = []; 
     protected posicionesItems: { x: number, y: number }[] = [];
     protected posicionesInicialesEsqueletos: { x: number, y: number }[] = [];
     protected skeletonsGroup: Phaser.Physics.Matter.Sprite[] = [];
@@ -118,7 +119,6 @@ export class DesertScene extends MainScene {
             
         });
 
-        
         super.create_player(width, height + 380, this.startx, this.starty, 'player');
         this.createLifeBar();
         this.createGameOver();
@@ -286,6 +286,7 @@ export class DesertScene extends MainScene {
         this.socket.on('deleteItem', (data) => {
             const existingItem = this.items[data.index];
             this.collectItem(existingItem);
+            this.itemsTaked[data.index] = true;
         })
 
     
@@ -350,7 +351,9 @@ export class DesertScene extends MainScene {
         this.matter.world.on('collisionstart', (event: any) => {
             event.pairs.forEach((pair: any) => {
                 this.items.forEach((item) =>{
-                    if(this.checkDistance(item, this.player, 45)){
+                    var itemDeleted = this.itemsTaked[this.items.indexOf(item)];
+
+                    if(this.checkDistance(item, this.player, 45) && !itemDeleted){
                         this.socket.emit('deleteItem', {
                             index: this.items.indexOf(item),
                             code: this.code
@@ -377,13 +380,6 @@ export class DesertScene extends MainScene {
             });
         });
 
-        if (this.player.x > 814  && this.player.x < 819 
-            && this.player. y > 575  && this.player.y < 585 ){
-                this.socket.emit('goToCave', {
-                    mapaActual: 'DesertScene',
-                    idOwner:this.socket.id,
-                });
-            } 
     }
     
     protected checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite, cantidad: number) {
@@ -519,7 +515,8 @@ export class DesertScene extends MainScene {
                 const element = new ObjectCoollectible(this, this.posicionesItems[index].x, this.posicionesItems[index].y, this.itemsType[value]);
                 this.add.existing(element);
                 this.items.push(element);
-                value = (value + 1) % 3; // Reiniciar value a 0 después de llegar a 3
+                this.itemsTaked.push(false);
+                value = (value + 1) % 3; 
             }
         }
 
@@ -607,11 +604,12 @@ export class DesertScene extends MainScene {
         if (itemIndex !== -1) {    
             item.destroy();
             this.items.splice(itemIndex, 1);
+            console.log(this.items);
     
             if (this.items.length === 0) {
-                this.socket.emit("changeLevel", {
-                    mapaActual: '',
-                    idOwner: this.socket.id
+                this.socket.emit("goToCave", {
+                    mapaActual: 'DesertScene',
+                    idOwner:this.socket.id,
                 });
             }
         }
