@@ -7,6 +7,7 @@ import { UserJson } from "src/app/schemas/UserJson";
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { FriendRequest } from "src/app/schemas/FriendRequest";
+import { waitForAsync } from "@angular/core/testing";
 
 @Component({
     selector: 'app-friends',
@@ -27,19 +28,23 @@ export class FriendsComponent implements OnInit {
     constructor(private userService: UserService, private router: Router, private http: HttpClient) { }
 
     ngOnInit(): void {
-        this.http.get('https://graph.microsoft.com/v1.0/me')
-            .subscribe(profile => {
-                this.profile = profile;
-                if (this.profile && this.profile.mail && this.profile.displayName) {
-                    this.nickname = this.profile.displayName;
-                    this.bringUserInfo(this.profile.mail)
-                    this.socket.connect()
-                    this.socket.emit('registPlayer', ({ user: this.profile.mail, id: this.socket.id }))
-                    this.bringPendingSendFriendRequest(this.profile.mail)
-                    this.bringFriendRequestReceived(this.profile.mail)
-                    this.bringUserFriends(this.profile.mail)
+        this.socket.connect();
+    
+        this.socket.on('connect', () => {
+            this.http.get('https://graph.microsoft.com/v1.0/me').subscribe(
+                (profile: any) => {
+                    this.profile = profile;
+                    if (this.profile && this.profile.mail && this.profile.displayName) {
+                        this.nickname = this.profile.displayName;
+                        const userEmail = this.profile.mail;
+                        this.processUserData(userEmail);
+                    }
+                },
+                (error: any) => {
+                    console.error('Error al obtener el perfil del usuario:', error);
                 }
-            });
+            );
+        });
         this.socket.on('friendRequestReceived', (data) => {
             // Lógica para manejar la solicitud de amistad recibida
             console.log(`El usuario con correo electrónico ${data} te envio una solicitud.`);
@@ -54,6 +59,15 @@ export class FriendsComponent implements OnInit {
             this.bringPendingSendFriendRequest(this.user.mail)
         })
     }
+    
+    processUserData(userEmail: string): void {
+        this.bringUserInfo(userEmail);
+        this.socket.emit('registPlayer', { user: userEmail, id: this.socket.id });
+        this.bringPendingSendFriendRequest(userEmail);
+        this.bringFriendRequestReceived(userEmail);
+        this.bringUserFriends(userEmail);
+    }
+    
 
     sendFriendRequest(correo: string) {
         if (correo == this.user.mail) {
@@ -70,7 +84,7 @@ export class FriendsComponent implements OnInit {
                     // Mostrar un mensaje de error al usuario
                     this.showError = true
                 },
-                complete: () => console.info('complete')
+                complete: () => console.info('Send Friend Request complete')
             })
         }
     }
@@ -89,7 +103,7 @@ export class FriendsComponent implements OnInit {
                 // Mostrar un mensaje de error al usuario
                 this.showError = true
             },
-            complete: () => console.info('Respuesta complete')
+            complete: () => console.info('Respond To FriendRequest complete')
         })
         
     }
