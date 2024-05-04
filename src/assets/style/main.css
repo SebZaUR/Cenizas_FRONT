@@ -58,6 +58,10 @@ a {
     height: 100%;
 }
 
+.flow{
+    overflow-y:auto;
+}
+
 .center-container {
     display: flex;
     flex-direction: column;

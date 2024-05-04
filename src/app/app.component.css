@@ -1,0 +1,145 @@
+/*=============== VARIABLES CSS ===============*/
+:root {
+  --header-height: 3.5rem;
+
+  /*========== Colors ==========*/
+  /*Color mode HSL(hue, saturation, lightness)*/
+  --black-color: hsl(0, 0%, 0%);
+  --black-color-light: hsl(0, 0%, 20%);
+  --black-color-lighten: hsl(0, 0%, 40%);
+  --white-color: #fff;
+  --body-color: hsl(0, 0%, 97%); /* Cambiamos el color del cuerpo */
+
+  /*========== Font and typography ==========*/
+  /*.5rem = 8px | 1rem = 16px ...*/
+  --body-font: "Montserrat", sans-serif;
+  --normal-font-size: .938rem;
+
+  /*========== Font weight ==========*/
+  --font-regular: 400;
+  --font-semi-bold: 600;
+
+  /*========== z index ==========*/
+  --z-tooltip: 10;
+  --z-fixed: 100;
+}
+
+ul {
+  list-style: none;
+}
+.notification-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-icon:hover {
+  color: #ffc107; /* Cambia el color al pasar el cursor */
+}
+
+.notification-icon::after {
+  content: ''; /* Crea un pseudo-elemento para el indicador de notificación */
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: red; /* Color del indicador de notificación */
+  border-radius: 50%;
+  transform: translate(50%, -50%);
+}
+
+.dropdown__item {
+  cursor: pointer;
+}
+
+.dropdown__item:hover .dropdown__menu,
+.dropdown__subitem:hover > .dropdown__submenu {
+  max-height: 1000px;
+  transition: max-height .4s ease-in;
+}
+
+.dropdown__item:hover .dropdown__arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown__item,
+.dropdown__subitem {
+  position: relative;
+}
+
+.dropdown__item:hover .dropdown__menu {
+  opacity: 1;
+  pointer-events: initial;
+  transition: opacity .3s;
+}
+
+.dropdown__menu,
+.dropdown__submenu {
+  max-height: initial;
+  overflow: initial;
+  position: absolute;
+  left: 0;
+  top: calc(var(--header-height) + 2rem);
+  opacity: 1;
+  visibility: hidden;
+  transition: opacity .3s;
+  background-color: rgba(var(--bs-dark-rgb),var(--bs-bg-opacity))!important; /* Cambiamos el color de fondo */
+  border-radius: 0.5rem;
+  
+}
+
+.dropdown__submenu {
+  position: absolute;
+  left: auto; /* Cambiamos left a auto */
+  right:101%; /* Añadimos right */
+  top: 0;
+  background-color: hsl(0, 0%, 22%); /* Agregamos fondo negro */
+  text-align: center;
+}
+
+
+.dropdown__link,
+.dropdown__sublink {
+  padding: 1.25rem 1.25rem 1.25rem 2.5rem;
+  color: white; /* Cambiamos el color del texto a blanco */
+  display: flex;
+  align-items: center;
+  column-gap: .5rem;
+  font-weight: var(--font-semi-bold);
+  transition: background-color .3s;
+}
+
+.dropdown__link i,
+.dropdown__sublink i {
+  font-size: 1.25rem;
+  font-weight: initial;
+}
+
+.dropdown__link:hover,
+.dropdown__sublink:hover {
+  background-color: var(--black-color-lighten);
+}
+
+.dropdown__link,
+.dropdown__sublink {
+  padding-inline: 1rem 3.5rem;
+}
+
+.dropdown__subitem .dropdown__link {
+  padding-inline: 1rem;
+}
+
+/* Mostrar menú desplegable */
+.dropdown__item:hover .dropdown__menu,
+.dropdown__subitem:hover > .dropdown__submenu {
+  visibility: visible;
+}
+
+
+
+
+
+
+
+
+
