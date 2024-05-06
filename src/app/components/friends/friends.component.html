@@ -1,6 +1,6 @@
-<div class="principal">
-    <div class="container center-container mt-5">
-        <div class="text-center">
+<div class="principal flow">
+    <div class="container center-container pt-5 pb-5">
+        <div class="text-center ">
             <h1>Enviar Solicitud de Amistad</h1>
             <div *ngIf="showError" class="text-danger">Error al enviar la solicitud de amistad. Verifique entradas.
             </div>
@@ -45,7 +45,7 @@
                 </ng-template>
             </div>
         </div>
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-body">
                 <h3 class="card-title">Solicitudes de Amistad Recibidas</h3>
                 <ul *ngIf="receivedList.length > 0; else noReceivedRequests" class="list-group" id="receivedRequests">
