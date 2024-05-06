@@ -37,7 +37,7 @@ export class DesertScene extends MainScene {
     protected  count: number[] = [];
     protected gameOverScreen!: HTMLElement;
     protected scoreText!: any; 
-    itemsTypeCollected: any;
+    protected itemsTypeCollected: any;
     constructor(key: string, socket: any, code: string) {
         super(key, socket, code);
     }
@@ -47,7 +47,7 @@ export class DesertScene extends MainScene {
         this.code = data.code;
         this.socket.emit('joinRoom', this.code);
         this.socket.off('initialCoordinates');
-     //   this.socket.off('firstPlayer');
+        this.socket.off('firstPlayer');
         this.socket.off('playerNumber');
         this.socket.off('goToDesert');
         this.socket.id = data.socketId;
@@ -59,8 +59,6 @@ export class DesertScene extends MainScene {
                 this.playerId = this.socket.id;
                 this.getTurn(this.myNumber); 
             } 
-            
-          
         });
         
 
@@ -113,19 +111,23 @@ export class DesertScene extends MainScene {
         music.play();
         super.create_mapa(width, height + 380, 'first', 'desert', 'desert', ['suelo','objetos','solidos'],desert);
         if (this.myNumber==1) {
-            // Si es el primer jugador, emitir el evento valueCordinates
             this.socket.emit('valueCordinates', {
                 validCoordinates: super.validCoordinates()
             });
         }
     
+        this.socket.on('valueCordinates', (data) => {
+            this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
+            this.createSkeletons();
+            this.posicionesItems = data.posicionesItems;
+            this.createItems();
+        });
 
-    // Escuchar el evento valueCordinates para recibir los datos de los esqueletos
-    this.socket.on('valueCordinates', (data) => {
-        this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
-        this.createSkeletons();
-    });
-      
+        this.socket.on('deleteItem', (data) => {
+            const existingItem = this.items[data.index];
+            this.collectItem(existingItem);
+            this.itemsTaked[data.index] = true;
+        })
 
         super.create_player(width, height + 380, this.startx, this.starty, 'player');
         this.createLifeBar();
@@ -134,9 +136,6 @@ export class DesertScene extends MainScene {
         this.create_animationSkeleton();
         this.scoreText = new ScoreBoard(this);
         this.cameras.main.setAlpha(0);
-
-
-
         this.tweens.add({
             targets: this.cameras.main,
             alpha: 1,
@@ -144,7 +143,8 @@ export class DesertScene extends MainScene {
             onComplete: () => {}
             
         });
-          this.matter.world.on('collisionstart', (event: any) => {
+
+        this.matter.world.on('collisionstart', (event: any) => {
             event.pairs.forEach((pair: any) => {
                 const bodyA = pair.bodyA;
                 const bodyB = pair.bodyB;
@@ -168,7 +168,6 @@ export class DesertScene extends MainScene {
 
 
         this.events.on('CascandoAlesqueleto', (event: any) => {
-       
                 this.skeletonsGroup.forEach((skeleton,index) =>{
                     if (this.checkDistance(skeleton, this.player, 40) && !this.skeletonsHitted[index] ){
                         this.skeletosnLife[index] -= this.golpePorespada;
@@ -184,9 +183,7 @@ export class DesertScene extends MainScene {
                             index: index,
                         });
                         this.scoreText.incrementScore(10);
-                    }
-              
-                    
+                    }  
                 })
         })
     }
@@ -308,8 +305,7 @@ export class DesertScene extends MainScene {
 
         if( this.isAttacking && this.isAnySkeletonNearby()){
             this.events.emit('CascandoAlesqueleto');
-        }
-        
+        }        
 
         super.update();
 
@@ -364,7 +360,6 @@ export class DesertScene extends MainScene {
                 color: skeleton.tint,
                 code: this.code
             });
-        
     }
         
 }
@@ -374,7 +369,7 @@ export class DesertScene extends MainScene {
     
     protected checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite, cantidad: number) {
         if (!bodyA || !bodyB) {
-            return false; // Salir de la función si bodyA o bodyB son undefined
+            return false; 
         }
     
         const distance = Phaser.Math.Distance.Between(bodyA.x, bodyA.y, bodyB.x, bodyB.y);
@@ -399,13 +394,10 @@ export class DesertScene extends MainScene {
 
     protected isAnySkeletonNearby() {
         for (const skeleton of this.skeletonsGroup) {
-            // Verificar si el esqueleto actual está cerca del jugador
             if (this.checkDistance(this.player, skeleton, 50)) {
-                // Si al menos un esqueleto está cerca, devolver verdadero
                 return true;
             }
         }
-        // Si ninguno de los esqueletos está cerca, devolver falso
         return false;
     }
     
@@ -420,7 +412,6 @@ export class DesertScene extends MainScene {
         this.time.delayedCall(1400, () => {
             skeletonToUpdate.setSensor(true);
             skeletonToUpdate.setVisible(false);
-    
             skeletonToUpdate.setCollisionCategory(0);
         }, [], this);
     }
@@ -569,5 +560,32 @@ export class DesertScene extends MainScene {
         this.gameOverScreen.style.display = 'flex'; 
     }
 
+    protected collectItem(item: any){
+        const itemIndex = this.items.indexOf(item);
+        if (itemIndex !== -1) {    
+            item.destroy();
+            this.items.splice(itemIndex, 1);
+            console.log(this.items);
+    
+            if (this.items.length === 0) {
+                this.socket.emit("goToCave", {
+                    mapaActual: 'DesertScene',
+                    idOwner:this.socket.id,
+                });
+            }
+        }
+    }
 
+    protected createItems(){
+        if (this.items.length === 0) {
+            let value: number = 0;
+            for (let index = 0; index < 6; index++) {
+                const element = new ObjectCoollectible(this, this.posicionesItems[index].x, this.posicionesItems[index].y, this.itemsType[value]);
+                this.add.existing(element);
+                this.items.push(element);
+                this.itemsTaked.push(false);
+                value = (value + 1) % 3; 
+            }
+        }
+    }
 }   
