@@ -47,14 +47,13 @@ export class GameComponent implements OnInit {
       physics: {
         default: 'matter',
         matter: {
-          debug: false,
+          debug: true,
           gravity: { x: 0, y: 0 }
         }
       },
     };
   }
   ngOnInit() {
-    this.phaserGame = new Phaser.Game(this.config);
     this.http.get('https://graph.microsoft.com/v1.0/me')
             .subscribe(profile => {
                 this.profile = profile;
@@ -84,10 +83,14 @@ export class GameComponent implements OnInit {
       }
     });
     this.socket.on('turnOffRoom', (data) => {
-      console.log(`Apagame esta monda Room : ${data}`);
       this.switchRoom(false)
     })
+    setTimeout(() => {
+    }, 3000); 
+    this.phaserGame = new Phaser.Game(this.config);
+
   }
+  
 
   switchRoom(state: boolean) {
     if (state) {
