@@ -31,6 +31,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     init(data: any) {
+        
         this.socket.on('connect', () => {
             if (this.socket.id) {
                 this.playerId = this.socket.id; 
