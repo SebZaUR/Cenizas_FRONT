@@ -179,8 +179,6 @@ export class DesertScene extends MainScene {
                         });
                     } 
                     if (this.skeletosnLife[index] <= 0 && this.count[index] == 0) {
-                        // Emitir evento de esqueleto muerto
-                        console.log(this.skeletonsGroup.length)
                         this.socket.emit('deadSkeleton', {
                             code: this.code,
                             index: index,
@@ -310,7 +308,6 @@ export class DesertScene extends MainScene {
 
         if( this.isAttacking && this.isAnySkeletonNearby()){
             this.events.emit('CascandoAlesqueleto');
-            console.log("Aca si entra");
         }
         
 
@@ -425,30 +422,6 @@ export class DesertScene extends MainScene {
             skeletonToUpdate.setVisible(false);
     
             skeletonToUpdate.setCollisionCategory(0);
-        }, [], this);
-    }
-    protected  matarEsqueleto1(index: number) {
-        const skeletonToUpdate = this.skeletonsGroup[index];
-        this.count[index] = 1;
-        skeletonToUpdate.setVelocity(0, 0);
-
-        // Detenemos la animación y configuramos el esqueleto como estático
-        skeletonToUpdate.anims.stop();
-        skeletonToUpdate.anims.play('morido');
-        skeletonToUpdate.setStatic(true);
-    
-        // Después de un breve período de tiempo, eliminamos el esqueleto
-        this.time.delayedCall(1400, () => {
-            this.skeletonsGroup.splice(index, 1);
-            this.skeletonDirections.splice(index, 1);
-            this.skeletosnLife.splice(index, 1);
-            this.skeletonsHitted.splice(index, 1);
-            this.count.splice(index, 1);
-
-            // Destruimos el sprite del esqueleto
-            skeletonToUpdate.destroy();
-       
-            
         }, [], this);
     }
     
