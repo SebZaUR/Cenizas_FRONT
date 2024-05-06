@@ -4,6 +4,7 @@ import { ObjectCoollectible } from '../objects/objectCoollectible';
 import { Text } from '@angular/compiler';
 import { ScoreBoard } from '../objects/scoreBoard';
 import { MainScene } from './MainScene';
+import { coerceStringArray } from '@angular/cdk/coercion';
 
 enum Direction {
     UP,
@@ -46,7 +47,7 @@ export class DesertScene extends MainScene {
         this.code = data.code;
         this.socket.emit('joinRoom', this.code);
         this.socket.off('initialCoordinates');
-        this.socket.off('firstPlayer');
+     //   this.socket.off('firstPlayer');
         this.socket.off('playerNumber');
         this.socket.off('goToDesert');
         this.socket.id = data.socketId;
@@ -58,7 +59,10 @@ export class DesertScene extends MainScene {
                 this.playerId = this.socket.id;
                 this.getTurn(this.myNumber); 
             } 
+            
+          
         });
+        
 
         this.socket.on('playerDisconnected', (playerId: string) => {
             const disconnectedPlayerSprite = this.otherSprites[playerId];
@@ -84,6 +88,8 @@ export class DesertScene extends MainScene {
                 }
             });
         });
+        
+        
     }
 
     override preload() {
@@ -106,18 +112,20 @@ export class DesertScene extends MainScene {
         const { width, height } = this.sys.game.canvas;
         music.play();
         super.create_mapa(width, height + 380, 'first', 'desert', 'desert', ['suelo','objetos','solidos'],desert);
-        
-        this.socket.emit('valueCordinates', {
-            validCoordinates: super.validCoordinates()
-        });
+        if (this.myNumber==1) {
+            // Si es el primer jugador, emitir el evento valueCordinates
+            this.socket.emit('valueCordinates', {
+                validCoordinates: super.validCoordinates()
+            });
+        }
+    
 
-        this.socket.on('valueCordinates', (data) => {
-            this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
-            this.createSkeletons();
-            this.posicionesItems = data.posicionesItems;
-            this.createItems();
-            
-        });
+    // Escuchar el evento valueCordinates para recibir los datos de los esqueletos
+    this.socket.on('valueCordinates', (data) => {
+        this.posicionesInicialesEsqueletos = data.posicionesInicialesEsqueletos;
+        this.createSkeletons();
+    });
+      
 
         super.create_player(width, height + 380, this.startx, this.starty, 'player');
         this.createLifeBar();
@@ -127,22 +135,6 @@ export class DesertScene extends MainScene {
         this.scoreText = new ScoreBoard(this);
         this.cameras.main.setAlpha(0);
 
-        this.matter.world.on('collisionstart', (event: any) => {
-            event.pairs.forEach((pair: any) => {
-                const bodyA = pair.bodyA;
-                const bodyB = pair.bodyB;
-        
-                this.skeletonsGroup.forEach((skeleton) => {
-                    if ((bodyA === skeleton.body || bodyB === skeleton.body) && this.myNumber == 1) {
-                        this.changeSkeletonDirection(skeleton);
-                    } else{
-                        this.socket.on('directionsEnemys', (data) => {
-                            this.skeletonDirections[data.index].direction = data.direction;
-                        });
-                    }
-                });
-            });
-        });
 
 
         this.tweens.add({
@@ -150,7 +142,55 @@ export class DesertScene extends MainScene {
             alpha: 1,
             duration: 2000,
             onComplete: () => {}
+            
         });
+          this.matter.world.on('collisionstart', (event: any) => {
+            event.pairs.forEach((pair: any) => {
+                const bodyA = pair.bodyA;
+                const bodyB = pair.bodyB;
+    
+                this.skeletonsGroup.forEach((skeleton,index) => {
+                    if (this.skeletosnLife[index] > 0  ) {
+                        if(bodyA === this.player.body && bodyB === skeleton.body){
+                            this.reduceLife();
+                            skeleton.anims.play('apuyalado');
+                        } else if(this.chequearColisionRemota(skeleton, bodyA, bodyB)){
+                            // Le estan cascando a mi pana <---- 
+                            skeleton.anims.play('apuyalado');
+                        } else{
+                            skeleton.anims.play('caminar');
+ 
+                        }
+                    }         
+                });;
+            });
+        });
+
+
+        this.events.on('CascandoAlesqueleto', (event: any) => {
+       
+                this.skeletonsGroup.forEach((skeleton,index) =>{
+                    if (this.checkDistance(skeleton, this.player, 40) && !this.skeletonsHitted[index] ){
+                        this.skeletosnLife[index] -= this.golpePorespada;
+                        skeleton.setTint(0xff0000);
+                        this.skeletonsHitted[index] = true;
+                        this.time.delayedCall(350, () => {
+                            this.skeletonsHitted[index] = false;
+                        });
+                    } 
+                    if (this.skeletosnLife[index] <= 0 && this.count[index] == 0) {
+                        // Emitir evento de esqueleto muerto
+                        console.log(this.skeletonsGroup.length)
+                        this.socket.emit('deadSkeleton', {
+                            code: this.code,
+                            index: index,
+                        });
+                        this.scoreText.incrementScore(10);
+                    }
+              
+                    
+                })
+        })
     }
 
     protected changeSkeletonDirection(skeleton: Phaser.Physics.Matter.Sprite) {
@@ -267,6 +307,13 @@ export class DesertScene extends MainScene {
         if (startButton && startButton.parentNode) {
             startButton.parentNode.removeChild(startButton);
         }
+
+        if( this.isAttacking && this.isAnySkeletonNearby()){
+            this.events.emit('CascandoAlesqueleto');
+            console.log("Aca si entra");
+        }
+        
+
         super.update();
 
         this.socket.on('updateSkeleton', (skeletonData) => {
@@ -274,7 +321,8 @@ export class DesertScene extends MainScene {
         });
 
         this.socket.on('deadSkeleton', (data) => {
-            this.matarEsqueleto(data.index);
+          this.matarEsqueleto(data.index);
+          
         });
 
         this.socket.on('imHitted', (playerId: string) => {
@@ -283,108 +331,57 @@ export class DesertScene extends MainScene {
             });
         });
 
-        this.socket.on('deleteItem', (data) => {
-            const existingItem = this.items[data.index];
-            this.collectItem(existingItem);
-            this.itemsTaked[data.index] = true;
-        })
-
-    
-        this.skeletonsGroup.forEach((skeleton: Phaser.Physics.Matter.Sprite, index: number) => {
-            const life = this.skeletosnLife[index];
-            const hit = this.skeletonsHitted[index];
-            
-            if (this.isAttacking && this.checkDistance(this.player, skeleton, 50) && !hit && life > 0) {
-                skeleton.setTint(0xff0000);
-                this.skeletonsHitted[index] = true;
-                this.hitTimer = this.time.delayedCall(350, () => {
-                    this.skeletonsHitted[index] = false;
-                });
-                this.skeletosnLife[index] -= this.golpePorespada;
-            }
-
-    
-            if (this.isAttacking === false && this.checkDistance(this.player, skeleton, 50)) {
-                skeleton.clearTint();
-            }
-            if (this.skeletosnLife[index]< 0 && this.count[index]==0){
-                this.matarEsqueleto(index);
-                this.scoreText.incrementScore(10);
-                this.socket.emit('deadSkeleton', {
-                    code: this.code,
-                    index: index,
-                });
-            }
-
+     
+        for (let index = 0; index < this.skeletonsGroup.length; index++) {
+            const skeleton = this.skeletonsGroup[index];           
             let velocityX = 0;
             let velocityY = 0;
-
-            switch (this.skeletonDirections[index].direction) {
+        
+            switch ( this.skeletonDirections[index].direction) {
                 case Direction.UP:
-                    velocityY = this.skeletonSpeed;
-                    velocityX = 0;
+                    velocityY = -this.skeletonSpeed;
                     break;
                 case Direction.DOWN:
-                    velocityY = -this.skeletonSpeed;
-                    velocityX = 0;
+                    velocityY = this.skeletonSpeed;
                     break;
                 case Direction.LEFT:
                     velocityX = -this.skeletonSpeed;
-                    velocityY = 0
                     break;
                 case Direction.RIGHT:
                     velocityX = this.skeletonSpeed;
-                    velocityY = 0;
                     break;
             }
-
+        
+            if(skeleton){
+                skeleton.setVelocityX(velocityX);
+                skeleton.setVelocityY(velocityY);
+                if (this.isAttacking == false){
+                    skeleton.clearTint();
+                }
+                
             this.socket.emit('updateSkeleton', {
-                index: this.skeletonsGroup.indexOf(skeleton),
+                index: index,
                 velocityX: velocityX,
                 velocityY: velocityY,
                 key: skeleton.anims.currentAnim?.key,
                 color: skeleton.tint,
                 code: this.code
             });
-        });
-    
-        this.matter.world.on('collisionstart', (event: any) => {
-            event.pairs.forEach((pair: any) => {
-                this.items.forEach((item) =>{
-                    var itemDeleted = this.itemsTaked[this.items.indexOf(item)];
-
-                    if(this.checkDistance(item, this.player, 45) && !itemDeleted){
-                        this.socket.emit('deleteItem', {
-                            index: this.items.indexOf(item),
-                            code: this.code
-                        })
-                    }
-                })
-
-                const bodyA = pair.bodyA;
-                const bodyB = pair.bodyB;
-    
-                this.skeletonsGroup.forEach((skeleton,index) => {
-                    if (this.skeletosnLife[index] > 0  ) {
-                        if(bodyA === this.player.body && bodyB === skeleton.body){
-                            this.reduceLife();
-                            skeleton.anims.play('apuyalado');
-                        } else if(this.chequearColisionRemota(skeleton, bodyA, bodyB)){
-                            // Le estan cascando a mi pana <---- 
-                            skeleton.anims.play('apuyalado');
-                        } else{
-                            skeleton.anims.play('caminar');
-                        }
-                    }
-                });;
-            });
-        });
+        
+    }
+        
+}
+        
 
     }
     
     protected checkDistance(bodyA: Phaser.Physics.Matter.Sprite, bodyB: Phaser.Physics.Matter.Sprite, cantidad: number) {
+        if (!bodyA || !bodyB) {
+            return false; // Salir de la función si bodyA o bodyB son undefined
+        }
+    
         const distance = Phaser.Math.Distance.Between(bodyA.x, bodyA.y, bodyB.x, bodyB.y);
-        return distance < cantidad ;
+        return distance < cantidad;
     }
 
     protected chequearColisionRemota(skeleton: Phaser.Physics.Matter.Sprite, bodyA: MatterJS.BodyType, bodyB: MatterJS.BodyType): boolean {
@@ -402,6 +399,19 @@ export class DesertScene extends MainScene {
     
         return false;
     }
+
+    protected isAnySkeletonNearby() {
+        for (const skeleton of this.skeletonsGroup) {
+            // Verificar si el esqueleto actual está cerca del jugador
+            if (this.checkDistance(this.player, skeleton, 50)) {
+                // Si al menos un esqueleto está cerca, devolver verdadero
+                return true;
+            }
+        }
+        // Si ninguno de los esqueletos está cerca, devolver falso
+        return false;
+    }
+    
     
     protected matarEsqueleto( index: number) {
         const skeletonToUpdate = this.skeletonsGroup[index];
@@ -409,14 +419,39 @@ export class DesertScene extends MainScene {
         skeletonToUpdate.setVelocity(0, 0);
         skeletonToUpdate.anims.stop();
         skeletonToUpdate.anims.play('morido');
-        skeletonToUpdate.anims.stopAfterRepeat(0);
         skeletonToUpdate.setStatic(true);
         this.time.delayedCall(1400, () => {
-            skeletonToUpdate.setVisible(false);
             skeletonToUpdate.setSensor(true);
+            skeletonToUpdate.setVisible(false);
+    
             skeletonToUpdate.setCollisionCategory(0);
         }, [], this);
     }
+    protected  matarEsqueleto1(index: number) {
+        const skeletonToUpdate = this.skeletonsGroup[index];
+        this.count[index] = 1;
+        skeletonToUpdate.setVelocity(0, 0);
+
+        // Detenemos la animación y configuramos el esqueleto como estático
+        skeletonToUpdate.anims.stop();
+        skeletonToUpdate.anims.play('morido');
+        skeletonToUpdate.setStatic(true);
+    
+        // Después de un breve período de tiempo, eliminamos el esqueleto
+        this.time.delayedCall(1400, () => {
+            this.skeletonsGroup.splice(index, 1);
+            this.skeletonDirections.splice(index, 1);
+            this.skeletosnLife.splice(index, 1);
+            this.skeletonsHitted.splice(index, 1);
+            this.count.splice(index, 1);
+
+            // Destruimos el sprite del esqueleto
+            skeletonToUpdate.destroy();
+       
+            
+        }, [], this);
+    }
+    
 
     protected getTurn(myNumber: number) {
         switch (myNumber) {
@@ -508,45 +543,7 @@ export class DesertScene extends MainScene {
     }      
 
 
-    protected createItems(){
-        if (this.items.length === 0) {
-            let value: number = 0;
-            for (let index = 0; index < 6; index++) {
-                const element = new ObjectCoollectible(this, this.posicionesItems[index].x, this.posicionesItems[index].y, this.itemsType[value]);
-                this.add.existing(element);
-                this.items.push(element);
-                this.itemsTaked.push(false);
-                value = (value + 1) % 3; 
-            }
-        }
-
-        const skeletonCollisionGroup = this.matter.world.nextGroup(true);
-
-        this.skeletonsGroup.forEach((skeleton) => {
-            skeleton.setCollisionGroup(skeletonCollisionGroup);
-            skeleton.setCollidesWith([skeletonCollisionGroup]); 
-        });
-        
-        const itemCollisionGroup = this.matter.world.nextGroup(true);
-        
-        this.items.forEach((item) => {
-            item.setCollisionGroup(itemCollisionGroup);
-            item.setCollidesWith([itemCollisionGroup]); 
-        });
-        
-        this.matter.world.on('collisionstart', (event: any) => {
-            event.pairs.forEach((pair: any) => {
-                const bodyA = pair.bodyA;
-                const bodyB = pair.bodyB;
-        
-                if ((bodyA.collisionGroup === skeletonCollisionGroup && bodyB.collisionGroup === itemCollisionGroup) ||
-                    (bodyA.collisionGroup === itemCollisionGroup && bodyB.collisionGroup === skeletonCollisionGroup)) {
-                    pair.isSensor = true; 
-                }
-            });
-        });
-
-    }
+  
 
     protected createGameOver() {
         this.gameOverScreen = document.createElement('div');
@@ -561,7 +558,7 @@ export class DesertScene extends MainScene {
         this.gameOverScreen.style.display = 'flex';
         this.gameOverScreen.style.justifyContent = 'center';
         this.gameOverScreen.style.alignItems = 'center';
-
+        
         const content = document.createElement('div');
         content.style.textAlign = 'center';
 
@@ -599,19 +596,5 @@ export class DesertScene extends MainScene {
         this.gameOverScreen.style.display = 'flex'; 
     }
 
-    protected collectItem(item: any){
-        const itemIndex = this.items.indexOf(item);
-        if (itemIndex !== -1) {    
-            item.destroy();
-            this.items.splice(itemIndex, 1);
-            console.log(this.items);
-    
-            if (this.items.length === 0) {
-                this.socket.emit("goToCave", {
-                    mapaActual: 'DesertScene',
-                    idOwner:this.socket.id,
-                });
-            }
-        }
-    }
+
 }   
