@@ -161,53 +161,40 @@ export class MainScene extends Phaser.Scene {
                     const existingSprite = this.otherSprites[player.id]; 
                     if (existingSprite && existingSprite != this.player) {
                         existingSprite.setVelocity(player.velocityx, player.velocityy);
-                        if (player.animation) {
-                            if(player.key === undefined || player.key === 'dead'){
-                                existingSprite.setStatic(true)
-                                existingSprite.anims.play('laying');
-                                existingSprite.anims.stopAfterRepeat(0);
-                                return;
-                            } else if (player.key === 'move_x' && player.velocityx < 0) {
-                                existingSprite.setFlipX(true);
-                                existingSprite.anims.play(player.animation, true);
-                            } else if(player.key === 'move_x' && player.velocityx > 0){
-                                existingSprite.anims.play(player.animation, true);
-                                existingSprite.setFlipX(false);
-                            } else{
-                                existingSprite.anims.play(player.animation, true);
-                            }
-                        }
                     } else if(player.id != null){
                         const newSprite = this.matter.add.sprite(player.posx, player.posy, 'player');
                         newSprite.setDisplaySize(70, 90);
                         newSprite.setRectangle(20, 35);
                         newSprite.setOrigin(0.5, 0.70);
                         newSprite.setFixedRotation();
-                        this.otherSprites[player.id] = newSprite; 
-                        if (player.animation) {
-                            if(player.key === undefined || player.key === 'dead'){
-                                existingSprite.setStatic(true)
-                                existingSprite.anims.play('laying');
-                                existingSprite.anims.stopAfterRepeat(0);
-                                return;
-                            } else if (player.key === 'move_x' && player.velocityx < 0) {
-                                existingSprite.setFlipX(true);
-                                existingSprite.anims.play(player.animation, true);
-                            } else if (player.key === 'move_x' && player.velocityx > 0){
-                                existingSprite.anims.play(player.animation, true);
-                                existingSprite.setFlipX(false);
-                            } else{
-                                    existingSprite.anims.play(player.animation, true);
-                            }
-                        }
-                        
+                        this.otherSprites[player.id] = newSprite;
                     }
+                    this.validAnimations(player, existingSprite);
                 }
             });
+
         },);
     }
 
-    create_animation() {
+    protected validAnimations(player:any, existingSprite: Phaser.Physics.Matter.Sprite) {
+        if (player.animation) {
+            if(player.key === undefined || player.key === 'dead'){
+                existingSprite.setStatic(true)
+                existingSprite.anims.play('laying');
+                existingSprite.anims.stopAfterRepeat(0);
+                return;
+            } else if (player.key === 'move_x' && player.velocityx < 0) {
+                existingSprite.setFlipX(true);
+                existingSprite.anims.play(player.animation, true);
+            } else if(player.key === 'move_x' && player.velocityx > 0){
+                existingSprite.anims.play(player.animation, true);
+                existingSprite.setFlipX(false);
+            } else{
+                existingSprite.anims.play(player.animation, true);
+            }
+        }
+    }
+    protected create_animation() {
         this.anims.create({
             key: 'attack_down',
             frames: this.anims.generateFrameNumbers('player', { start: 36, end: 39 }),

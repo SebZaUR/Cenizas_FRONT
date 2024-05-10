@@ -1,10 +1,7 @@
-import { right } from '@popperjs/core';
-
 import { ObjectCoollectible } from '../objects/objectCoollectible';
-import { Text } from '@angular/compiler';
 import { ScoreBoard } from '../objects/scoreBoard';
 import { MainScene } from './MainScene';
-import { coerceStringArray } from '@angular/cdk/coercion';
+
 
 enum Direction {
     UP,
@@ -100,13 +97,10 @@ export class DesertScene extends MainScene {
             frameWidth: 64,
             frameHeight: 64
         });
-        //this.itemsTypeCollected["Llave"] = 0;
-        //this.itemsTypeCollected["Herramienta"] = 0;
-        //this.itemsTypeCollected["Metal"] = 0;
     }
 
     override create() {
-        var desert;
+        let desert;
         const music = this.sound.add('desertMusic', { loop: true });
         const { width, height } = this.sys.game.canvas;
         music.play();

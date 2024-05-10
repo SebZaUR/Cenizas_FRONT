@@ -1,6 +1,3 @@
-import { right } from '@popperjs/core';
-import { MainScene } from './MainScene';
-import { ObjectCoollectible } from '../objects/objectCoollectible';
 import { ScoreBoard } from '../objects/scoreBoard';
 import { DesertScene } from './DesertScene';
 
@@ -32,7 +29,7 @@ export class CavernaScene extends DesertScene {
     }
 
     override create() {
-        var caverna;
+        let caverna;
         const music = this.sound.add('cavernaMusic', { loop: true });
         const { width, height } = this.sys.game.canvas;
         music.play();
