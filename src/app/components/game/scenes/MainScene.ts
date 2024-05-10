@@ -128,7 +128,7 @@ export class MainScene extends Phaser.Scene {
         } 
         this.mapa = mapa;
     }
-    /* eslint-enable @typescript-eslint/no-unused-vars */
+    // eslint-enable @typescript-eslint/no-unused-vars 
 
 
     protected create_player(width: number, height: number, position_x: number, position_y: number, spray: string) {
