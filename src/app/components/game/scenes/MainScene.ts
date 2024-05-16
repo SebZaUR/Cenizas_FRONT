@@ -28,6 +28,8 @@ export class MainScene extends Phaser.Scene {
 
     init(data: any) {   
         this.socket.on('connect', () => {
+            
+            this.code = data.code;
             if (this.socket.id) {
                 this.playerId = this.socket.id; 
                 this.socket.on('initialCoordinates', ({ x, y }) => {
@@ -174,7 +176,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     protected validAnimations(player: any, existingSprite: Phaser.Physics.Matter.Sprite) {
-        if (existingSprite && existingSprite.anims) { 
+        if (existingSprite?.anims) {
             if (player.animation) {
                 if(player.key === undefined || player.key === 'dead'){
                     existingSprite.setStatic(true)
