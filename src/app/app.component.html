@@ -1,14 +1,88 @@
-<nav class="navbar navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="#">CENIZAS DEL PASADO</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container d-flex justify-content-between">
     <div>
-      <button *ngIf="!loginDisplay" class="btn btn-secondary" (click)="login()">Sign In</button>
-      <button *ngIf="loginDisplay" class="btn btn-secondary"  [routerLink]="['loggin']">User Info</button>
-      <button *ngIf="loginDisplay" class="btn btn-secondary" (click)="logout()">Sign Out</button>
-      
+      <a class="navbar-brand" href="#">
+        <i class="ri-planet-line"></i> Cenizas del Pasado
+      </a>
+    </div>
+
+    <div>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav align-items-center mr-auto">
+          <li class="nav-item" *ngIf="loginDisplay"><a class="nav-link" href="#">Inicio</a></li>
+          <li class="nav-item">
+            <a class="nav-link" *ngIf="loginDisplay" href="/loggin">Usuario</a>
+          </li>
+          <li class="nav-item dropdown__item">
+            <div class="nav__link">
+              <a class="nav-link" *ngIf="loginDisplay" href="/amigos">
+                  <span *ngIf="newNot" class="notification-icon">
+                      <i class="ri-notification-line"></i> <!-- Icono de notificación -->
+                  </span>
+                  Amigos <i class="ri-arrow-down-s-line dropdown_arrow"></i>
+              </a>
+          </div>
+          
+            <div class="dropdown__menu">
+              <li class="dropdown__subitem">
+                <div class="nav-link dropdown__link">
+                  <i class="ri-bar-chart-line"></i> Activos
+                  <i class="ri-add-line dropdown__add"></i>
+                </div>
+
+                <div class="dropdown__submenu">
+                  <li *ngFor="let friend of friends">
+                    <div class="nav-link dropdown__sublink">
+                      <strong>Nombre:</strong> {{ friend }}
+                    </div>
+                  </li>
+                </div>
+              </li>
+              <li class="dropdown__subitem">
+                <div class="dropdown__link">
+                  <i class="ri-bar-chart-line"></i> Solicitudes enviadas
+                  <i class="ri-add-line dropdown__add"></i>
+                </div>
+                <div class="dropdown__submenu">
+                  <li *ngFor="let friendRequest of sentList">
+                    <div class="nav-link dropdown__sublink">
+                      <p class="mb-0">
+                        <strong>Jugador:</strong> {{ friendRequest.receiver }}
+                      </p>
+                      <p class="mb-0">
+                        <strong>Estado:</strong> {{ friendRequest.state }}
+                      </p>
+                    </div>
+                  </li>
+                  <li *ngIf="sentList.length == 0">
+                    <div
+                      class="nav-link dropdown__sublink"
+                      style="width: max-content"
+                    >
+                      No tienes solicitudes de amistad enviadas.
+                    </div>
+                  </li>
+                </div>
+              </li>
+              <li class="dropdown__subitem">
+                <div class="dropdown__link">
+                  <i class="ri-bar-chart-line"></i> Solicitudes recibidas
+                  <strong>{{ receivedList.length }}</strong>
+                  <i class="ri-add-line dropdown__add"></i>
+                </div>
+              </li>
+            </div>
+          </li>
+
+          <li class="nav-item" style="cursor: pointer" *ngIf="!loginDisplay">
+            <a class="nav-link" (click)="login()">Iniciar sesión</a>
+          </li>
+          <li class="nav-item" style="cursor: pointer" *ngIf="loginDisplay">
+            <a class="nav-link" (click)="logout()">Cerrar sesión</a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </nav>
-<div>
-	<router-outlet></router-outlet>
-</div>
+<router-outlet></router-outlet>

@@ -7,8 +7,6 @@ import { UserJson } from "src/app/schemas/UserJson";
 
 import { HttpClient } from '@angular/common/http';
 import { RoomJson } from "src/app/schemas/RoomJson";
-import { __values } from "tslib";
-
 
 
 @Component({
@@ -36,8 +34,7 @@ export class HostComponent implements OnInit {
         this.http.get('https://graph.microsoft.com/v1.0/me')
             .subscribe(profile => {
                 this.profile = profile;
-                if (this.profile && this.profile.mail && this.profile.displayName) {
-                    console.log(this.profile.mail)
+                if (this.profile?.mail && this.profile?.displayName) {
                     this.nickname = this.profile.displayName;
                     this.bringUserInfo(this.profile.mail)
                     this.bringUserRooms(this.profile.mail)
@@ -47,8 +44,7 @@ export class HostComponent implements OnInit {
     }
 
     createRoom(server_name: string) {
-        console.log(this.roomType)
-        const type = this.roomType === "public" ? true : false;
+        const type = this.roomType === "public";
         const user = this.user.mail;
         this.roomService.createRoom(server_name, type, user).subscribe({
             next: (response) => {
@@ -106,7 +102,6 @@ export class HostComponent implements OnInit {
                 this.rooms.forEach(roomId => {
                     this.roomService.getRoom(roomId).subscribe({
                         next: (room) => {
-                            console.log(this.roomsInfo);
                             this.roomsInfo.push(room); // Agrega la información de la habitación al array roomsInfo
                             if (this.roomsInfo.length >= this.MAX_ROOM) {
                                 this.full = true;
