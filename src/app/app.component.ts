@@ -53,23 +53,24 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.socket.connect();
     this.setLoginDisplay();
-    if(this.loginDisplay){
+    if (this.loginDisplay) {
       this.socket.on('connect', () => {
         this.http.get('https://graph.microsoft.com/v1.0/me').subscribe(
-            (profile: any) => {
-                this.profile = profile;
-                if (this.profile && this.profile.mail && this.profile.displayName) {
-                    this.nickname = this.profile.displayName;
-                    const userEmail = this.profile.mail;
-                    this.processUserData(userEmail);
-                }
-            },
-            (error: any) => {
-                console.error('Error al obtener el perfil del usuario:', error);
+          (profile: any) => {
+            this.profile = profile;
+            if (this.profile?.mail && this.profile?.displayName) {
+              this.nickname = this.profile.displayName;
+              const userEmail = this.profile.mail;
+              this.processUserData(userEmail);
             }
+          },
+          (error: any) => {
+            console.error('Error al obtener el perfil del usuario:', error);
+          }
         );
-    });
+      });
     }
+
     this.msalBroadcastService.inProgress$
       .pipe(
         filter((status: InteractionStatus) => status === InteractionStatus.None),

@@ -56,6 +56,7 @@ ul {
 .dropdown__subitem:hover > .dropdown__submenu {
   max-height: 1000px;
   transition: max-height .4s ease-in;
+  visibility: visible;
 }
 
 .dropdown__item:hover .dropdown__arrow {
@@ -107,10 +108,6 @@ ul {
   column-gap: .5rem;
   font-weight: var(--font-semi-bold);
   transition: background-color .3s;
-}
-
-.dropdown__link i,
-.dropdown__sublink i {
   font-size: 1.25rem;
   font-weight: initial;
 }
@@ -127,12 +124,6 @@ ul {
 
 .dropdown__subitem {
   padding-inline: 1rem;
-}
-
-/* Mostrar menú desplegable */
-.dropdown__item:hover .dropdown__menu,
-.dropdown__subitem:hover > .dropdown__submenu {
-  visibility: visible;
 }
 
 
